@@ -1150,6 +1150,31 @@
       border-radius: 4px;
       color: var(--orange);
     }
+
+    /* 懸浮說明卡片 (Floating Hover Tooltip Card) */
+    .floating-hover-card {
+      position: absolute;
+      width: 330px;
+      background: rgba(18, 20, 26, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 1px rgba(255, 255, 255, 0.2);
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity var(--transition-fast), transform var(--transition-fast);
+      text-align: left;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .floating-hover-card.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
   </style>
 </head>
 <body>
@@ -1451,6 +1476,9 @@
       </div>
     </div>
   </div>
+
+  <!-- 4. 懸浮提示泡泡卡片 -->
+  <div class="floating-hover-card" id="floating-hover-card"></div>
 
   <!-- ==========================================================================
        13. 核心 JavaScript 引擎 (Rules, Math, Controls & SVG Drawer)
@@ -2652,7 +2680,7 @@
                 <span class="param-dot" style="background:${m.color};"></span>
                 <span>${m.label}</span>
               </div>
-              <button class="popover-btn" onclick="showPopover('${m.key}')">i</button>
+              <button class="popover-btn" onmouseenter="showHoverCard(event, '${m.key}')" onmouseleave="hideHoverCard()" onclick="showPopover('${m.key}')">i</button>
             </div>
             <div class="param-help">正常範圍：${m.normal} | 異常範圍：${m.abnormal}</div>
             <div class="param-controls">
@@ -3082,6 +3110,48 @@
       `;
 
       document.getElementById("popover-overlay").style.display = "grid";
+    }
+
+    // 懸浮說明卡片動態定位與渲染
+    function showHoverCard(event, key) {
+      const metric = METRICS.find(m => m.key === key);
+      if (!metric) return;
+      
+      const card = document.getElementById("floating-hover-card");
+      const note = extraNotes[key] || metric.help;
+      const caption = thresholdCaption(metric);
+      
+      card.innerHTML = `
+        <div style="font-weight: 800; color: var(--orange); margin-bottom: 6px; font-size: 14px;">${metric.label}</div>
+        <div style="color: var(--text-muted); margin-bottom: 10px; font-size: 12px; line-height: 1.5;">${note}</div>
+        <div style="border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 8px; margin-top: 8px;">
+          <div style="font-weight: 700; margin-bottom: 2px; font-size: 12px;">指標參考界線：</div>
+          <div style="color: var(--text-muted); font-size: 12px;">正常：${metric.normal}　|　異常：${metric.abnormal}</div>
+        </div>
+        <div style="margin-top: 8px;">
+          <div style="font-weight: 700; margin-bottom: 2px; font-size: 12px;">專家推理評分級距：</div>
+          <div style="color: var(--orange); font-family: 'JetBrains Mono', monospace; font-size: 11px;">${caption}</div>
+        </div>
+      `;
+      
+      const rect = event.target.getBoundingClientRect();
+      const cardWidth = 330;
+      
+      let left = rect.left + window.scrollX - cardWidth + rect.width;
+      let top = rect.top + window.scrollY + rect.height + 8;
+      
+      if (left < 10) left = 10;
+      
+      card.style.left = `${left}px`;
+      card.style.top = `${top}px`;
+      card.classList.add("visible");
+    }
+
+    function hideHoverCard() {
+      const card = document.getElementById("floating-hover-card");
+      if (card) {
+        card.classList.remove("visible");
+      }
     }
 
     // ==========================================================================
