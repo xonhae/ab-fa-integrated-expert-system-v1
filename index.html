@@ -2608,7 +2608,25 @@
       const modelDefects = DEFECTS.filter(d => defectIds.includes(d.id));
       
       modelSelect.innerHTML = modelDefects.map(d => `<option value="${d.id}">${d.name} (${d.id})</option>`).join("");
+
+      // 動態更新「查看故障模組知識庫」表格內容 (原先的索引說明)
+      const kbBody = document.getElementById("knowledge-table-body");
+      if (kbBody) {
+        kbBody.innerHTML = modelDefects.map(defect => {
+          const evidenceStr = STAGE_DEFECT_DETAILS[stage]?.[defect.id]?.evidence || defect.evidence;
+          const solutionStr = STAGE_DEFECT_DETAILS[stage]?.[defect.id]?.solution || defect.solution;
+          return `
+            <tr>
+              <td style="white-space: nowrap;"><strong>${defect.name}</strong></td>
+              <td style="white-space: nowrap; color: var(--text-muted); font-size: 11px;">${defect.en}</td>
+              <td style="color: var(--text-muted);">${evidenceStr}</td>
+              <td>${solutionStr}</td>
+            </tr>
+          `;
+        }).join("");
+      }
     }
+
 
     // 根據 Stage 動態生成下方參數輸入控制框
     function renderInputMetrics() {
