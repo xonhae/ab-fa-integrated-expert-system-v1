@@ -1,6 +1,7 @@
 # Wafer-Pro 半導體缺陷整合專家診斷系統 (Static Web Version)
 
 這是一個基於 HTML5 / CSS3 / ES6 JavaScript 的**高響應度無伺服器（Serverless）半導體缺陷專家診斷儀表板**。
+
 點擊連結即可使用：https://xonhae.github.io/ab-fa-integrated-expert-system-v1/
 
 移植自原先的 Python Streamlit 版本，本版本已被完全重構為**純靜態網頁應用**。所有評分邏輯、Boost 機制、SVG 失效拓撲繪製與 Radar 機率多邊形渲染，皆在瀏覽器端本地進行（運算速度低於 10ms），不需依賴任何 Python 後端伺服器與資料庫，且支援完全離線使用。
