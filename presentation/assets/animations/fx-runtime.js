@@ -8,7 +8,7 @@
   'use strict';
 
   const FX_LIST = [
-    '_util',
+    'util',
     'particle-burst','confetti-cannon','firework','starfield','matrix-rain',
     'knowledge-graph','neural-net','constellation','orbit-ring','galaxy-swirl',
     'word-cascade','letter-explode','chain-react','magnetic-field','data-stream',
@@ -27,13 +27,28 @@
   const total = FX_LIST.length;
   const ready = new Promise((resolve) => {
     if (!total) return resolve();
-    FX_LIST.forEach((name) => {
-      const s = document.createElement('script');
-      s.src = base + name + '.js';
-      s.async = false;
-      s.onload = s.onerror = () => { if (++loaded >= total) resolve(); };
-      document.head.appendChild(s);
-    });
+    // Load util.js first to ensure it's executed before other modules try to access window.HPX._u
+    const mainUtil = document.createElement('script');
+    mainUtil.src = base + 'util.js';
+    mainUtil.async = false;
+    mainUtil.onload = () => {
+      loaded = 1;
+      if (loaded >= total) return resolve();
+      
+      const others = FX_LIST.filter(name => name !== 'util');
+      others.forEach((name) => {
+        const s = document.createElement('script');
+        s.src = base + name + '.js';
+        s.async = false;
+        s.onload = s.onerror = () => { if (++loaded >= total) resolve(); };
+        document.head.appendChild(s);
+      });
+    };
+    mainUtil.onerror = () => {
+      console.error('[hpx-fx] Failed to load utility script.');
+      resolve();
+    };
+    document.head.appendChild(mainUtil);
   });
 
   window.__hpxActive = window.__hpxActive || new Map();
