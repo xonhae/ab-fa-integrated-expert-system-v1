@@ -386,16 +386,26 @@
     }
 
     .metrics-container {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      max-height: 250px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    @media (max-width: 992px) {
+      .metrics-container {
+        grid-template-columns: 1fr;
+        max-height: 380px;
+      }
     }
 
     .param-card {
       background: rgba(15, 16, 19, 0.55);
       border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 12px;
-      padding: 14px 16px;
+      padding: 10px 12px;
       transition: all var(--transition-fast);
       position: relative;
       overflow: hidden;
@@ -541,81 +551,96 @@
        6. 即時監控看板 (Monitor Dashboard Cards)
        ========================================================================== */
     .monitor-grid {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    @media (max-width: 1400px) {
-      .monitor-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-    @media (max-width: 768px) {
-      .monitor-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    .monitor-card {
-      background: rgba(22, 24, 30, 0.6);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 14px 16px;
       display: flex;
       flex-direction: column;
       gap: 4px;
+    }
+
+    .monitor-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 10px;
+      border-radius: 7px;
+      background: rgba(22, 24, 30, 0.5);
+      border: 1px solid var(--border-color);
+      transition: background var(--transition-fast);
       position: relative;
       overflow: hidden;
-      transition: all var(--transition-fast);
     }
 
     .monitor-card:hover {
-      border-color: rgba(255, 255, 255, 0.1);
-      transform: translateY(-2px);
+      background: rgba(36, 40, 51, 0.7);
+      border-color: rgba(255,255,255,0.1);
+    }
+
+    /* 左側彩色小點 */
+    .monitor-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--text-muted);
+      transition: background var(--transition-fast);
+    }
+
+    .monitor-card.has-color .monitor-dot {
+      background: var(--card-accent-color);
+      box-shadow: 0 0 6px var(--card-accent-color);
     }
 
     .monitor-label {
-      font-size: 11px;
-      font-weight: 700;
+      font-size: 12px;
+      font-weight: 500;
       color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
+      flex: 1;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      min-width: 0;
+    }
+
+    .monitor-card.has-color .monitor-label {
+      color: var(--text);
+    }
+
+    /* 進度条 */
+    .monitor-bar-wrap {
+      flex: 0 0 60px;
+      height: 4px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .monitor-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.3s ease;
     }
 
     .monitor-value {
-      font-size: 20px;
-      font-weight: 900;
-      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
       color: #fff;
+      min-width: 56px;
+      text-align: right;
+      flex-shrink: 0;
     }
 
     .monitor-score {
       font-size: 11px;
       font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
       color: var(--text-muted);
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      padding-top: 4px;
-      margin-top: 4px;
+      min-width: 38px;
+      text-align: right;
+      flex-shrink: 0;
     }
 
-    /* 指標左側彩色呼吸燈條 */
-    .monitor-card::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-      background: var(--text-muted);
-    }
-
-    .monitor-card.has-color::before {
-      background: var(--card-accent-color);
+    .monitor-card.has-color .monitor-score {
+      color: var(--card-accent-color);
     }
 
     /* ==========================================================================
@@ -1175,6 +1200,156 @@
       pointer-events: auto;
       transform: translateY(0);
     }
+
+    /* ==========================================================================
+       9. 數學可靠度模型驗證樣式 (Mathematical Reliability Style)
+       ========================================================================== */
+    .reliability-menu-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .reliability-menu-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--border-color-hover);
+    }
+    .reliability-menu-btn.active {
+      background: var(--orange-glow);
+      color: var(--orange);
+      border-color: var(--orange);
+      box-shadow: 0 0 10px rgba(242, 138, 55, 0.15);
+    }
+    
+    .reliability-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 1024px) {
+      .reliability-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .math-formula {
+      background: rgba(15, 16, 19, 0.45);
+      border-radius: 8px;
+      padding: 14px;
+      border-left: 4px solid var(--orange);
+      font-family: 'Outfit', 'Inter', sans-serif;
+      color: #fff;
+      margin: 12px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.25rem;
+      letter-spacing: 0.5px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+    }
+    .math-term {
+      font-family: 'Inter', sans-serif;
+      font-style: italic;
+      font-weight: 500;
+    }
+    .math-sub {
+      font-size: 0.75rem;
+      vertical-align: sub;
+      margin-left: 1px;
+    }
+    .math-sup {
+      font-size: 0.75rem;
+      vertical-align: super;
+      margin-left: 1px;
+    }
+    .math-fraction {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      padding: 0 6px;
+    }
+    .math-num {
+      border-bottom: 1.5px solid rgba(255,255,255,0.7);
+      padding-bottom: 2px;
+      text-align: center;
+      font-size: 1.15rem;
+    }
+    .math-den {
+      padding-top: 2px;
+      text-align: center;
+      font-size: 1.15rem;
+    }
+    
+    .reliability-slider-group {
+      margin-bottom: 15px;
+    }
+    .reliability-slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 5px;
+      color: var(--text-muted);
+    }
+    .reliability-slider-header span.val {
+      color: var(--orange);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: bold;
+    }
+    
+    .reliability-hud {
+      background: radial-gradient(circle at 10% 10%, rgba(27, 30, 38, 0.95), rgba(15, 16, 19, 0.95));
+      border: 1px solid rgba(242, 138, 55, 0.22);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(242, 138, 55, 0.04);
+      margin-bottom: 4px;
+    }
+    .reliability-hud-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    .reliability-hud-value {
+      font-size: 32px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      color: var(--orange);
+      text-shadow: 0 0 15px rgba(242, 138, 55, 0.35);
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+    .reliability-hud-unit {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    
+    .reliability-canvas-container {
+      background: #0f1013;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      padding: 12px;
+      position: relative;
+      width: 100%;
+      box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.8);
+    }
+    .reliability-canvas-container canvas {
+      width: 100%;
+      height: 220px;
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -1201,73 +1376,73 @@
     <section class="left-column">
       
       <!-- 案例設定卡片 -->
-      <article class="card">
-        <div class="card-header">
-          <h3>
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--orange);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      <article class="card" id="case-settings-card">
+        <div class="card-header" style="padding:10px 16px;">
+          <h3 style="font-size:14px;">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--orange);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
             案例設定與故障模組
           </h3>
         </div>
-        <div class="card-body">
-          <div class="form-group-grid">
-            <div class="form-group">
-              <label for="case-id">Case / Tool / Lot ID</label>
-              <input type="text" id="case-id" placeholder="例如 Etcher B / Lot 26A">
+        <div class="card-body" style="padding:10px 16px 12px;">
+          <div class="form-group-grid" style="gap:8px; margin-bottom:8px;">
+            <div class="form-group" style="gap:3px;">
+              <label for="case-id" style="font-size:10px;">Case / Tool / Lot ID</label>
+              <input type="text" id="case-id" placeholder="例如 Etcher B / Lot 26A" style="padding:6px 10px; font-size:13px;">
             </div>
-            <div class="form-group">
-              <label for="wafer-map">Wafer Map 分佈</label>
-              <select id="wafer-map">
+            <div class="form-group" style="gap:3px;">
+              <label for="wafer-map" style="font-size:10px;">Wafer Map 分佈</label>
+              <select id="wafer-map" style="padding:6px 10px; font-size:13px;">
                 <!-- 由 JS 動態生成 -->
               </select>
             </div>
-            <div class="form-group">
-              <label for="morphology">SEM/AOI 型貌補充</label>
-              <select id="morphology">
+            <div class="form-group" style="gap:3px;">
+              <label for="morphology" style="font-size:10px;">SEM/AOI 型貌補充</label>
+              <select id="morphology" style="padding:6px 10px; font-size:13px;">
                 <!-- 由 JS 動態生成 -->
               </select>
             </div>
-            <div class="form-group">
-              <label for="selected-stage">診斷階段</label>
-              <select id="selected-stage">
+            <div class="form-group" style="gap:3px;">
+              <label for="selected-stage" style="font-size:10px;">診斷階段</label>
+              <select id="selected-stage" style="padding:6px 10px; font-size:13px;">
                 <!-- 由 JS 動態生成 -->
               </select>
             </div>
-            <div class="form-group">
-              <label for="selected-model">缺陷模型 Preset</label>
-              <select id="selected-model">
+            <div class="form-group" style="gap:3px;">
+              <label for="selected-model" style="font-size:10px;">缺陷模型 Preset</label>
+              <select id="selected-model" style="padding:6px 10px; font-size:13px;">
                 <!-- 由 JS 動態生成 -->
               </select>
             </div>
             <div class="form-group" style="justify-content: flex-end;">
-              <button class="btn btn-danger" id="clear-btn">清除輸入</button>
+              <button class="btn btn-danger" id="clear-btn" style="padding:6px 14px; font-size:12px;">清除輸入</button>
             </div>
           </div>
-          <p class="param-help" style="margin-bottom:0;">
+          <p class="param-help" style="margin-bottom:0; font-size:11px; line-height:1.4;">
             *選擇缺陷模型後，系統會自動填入該缺陷典型的特徵數據；您依然可以在下方拉動滑桿或手動數值框進行微調。
           </p>
-
-          <!-- 故障模組知識庫 -->
-          <details id="knowledge-base-expander">
-            <summary>查看故障模組知識庫</summary>
-            <div class="details-content">
-              <table class="knowledge-table" id="knowledge-table">
-                <thead>
-                  <tr>
-                    <th>故障模組</th>
-                    <th>英文</th>
-                    <th>主要依據</th>
-                    <th>改善方法</th>
-                  </tr>
-                </thead>
-                <tbody id="knowledge-table-body">
-                  <!-- JS 動態插入 -->
-                </tbody>
-              </table>
-            </div>
-          </details>
         </div>
       </article>
 
+      <!-- 參數監控看板 -->
+      <article class="card" style="margin-bottom:16px;">
+        <div class="card-header" style="padding:10px 20px;">
+          <h3>
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--green);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            主要製程 / 電性參數即時監控
+          </h3>
+        </div>
+        <div class="card-body" style="padding:10px 16px 12px;">
+          <div class="monitor-grid" id="monitor-grid">
+            <!-- 由 JS 動態生成全部看板指標 -->
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- ================== 右側視覺看板與頁籤結果列 ================== -->
+    <section class="right-column">
+      
       <!-- 量測數據輸入卡片 -->
       <article class="card">
         <div class="card-header">
@@ -1284,33 +1459,14 @@
         </div>
       </article>
 
-    </section>
-
-    <!-- ================== 右側視覺看板與頁籤結果列 ================== -->
-    <section class="right-column">
-      
-      <!-- 參數監控看板 -->
-      <article class="card" style="margin-bottom:16px;">
-        <div class="card-header" style="padding:12px 20px;">
-          <h3>
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--green);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-            主要製程 / 電性參數即時監控
-          </h3>
-        </div>
-        <div class="card-body" style="padding:14px 20px;">
-          <div class="monitor-grid" id="monitor-grid">
-            <!-- 由 JS 動態生成 6 個看板指標 -->
-          </div>
-        </div>
-      </article>
-
       <!-- 功能頁籤 -->
       <nav class="tabs-nav">
         <button class="tab-btn active" data-tab="result-tab">診斷結果</button>
-        <button class="tab-btn" data-tab="reference-tab">標準數據參考</button>
         <button class="tab-btn" data-tab="visual-tab">視覺化模組</button>
         <button class="tab-btn" data-tab="trace-tab">推理鏈與報告</button>
         <button class="tab-btn" data-tab="ranking-tab">完整排序與權重</button>
+        <button class="tab-btn" data-tab="reliability-tab">數學可靠度模型驗證</button>
+        <button class="tab-btn" data-tab="reference-tab">標準數據參考</button>
       </nav>
 
       <!-- 頁籤 1: 診斷結果 -->
@@ -1343,44 +1499,6 @@
         </div>
       </div>
 
-      <!-- 頁籤 2: 標準參考資料 -->
-      <div class="tab-content" id="reference-tab">
-        <div class="ref-intro">
-          <h4>各缺陷標準數據參考模組</h4>
-          <p style="margin-top:4px;">這些數據範圍用來做專家系統初判與教學展示。實際量產門檻需依製程節點、layer、產品規格、測試條件與廠內 SPC baseline 重新校正。</p>
-          <p style="margin-top:2px;">欄位說明：正常參考代表低風險 baseline；警戒範圍代表需追蹤或補量測；強觸發範圍代表會明顯提高該缺陷權重；建議檢測方法用於實體驗證。</p>
-        </div>
-        
-        <div style="margin-bottom: 24px;">
-          <h4 style="font-size:14px; margin-bottom:10px;">階段缺陷數據參考總覽</h4>
-          <div style="overflow-x:auto;">
-            <table class="knowledge-table" style="font-size:13px;">
-              <thead>
-                <tr>
-                  <th>缺陷模組</th>
-                  <th>主要強觸發數據</th>
-                  <th>建議驗證方法</th>
-                </tr>
-              </thead>
-              <tbody id="ref-summary-body">
-                <!-- 由 JS 動態生成 -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div id="ref-defect-expander-list">
-          <!-- 由 JS 動態生成每個缺陷的詳細數據卡片 -->
-        </div>
-
-        <div class="literature-list">
-          <h4 style="font-size:14px; margin-top:14px; color:var(--text)">文獻與標準參考</h4>
-          <p style="font-size:12px; color:var(--text-muted)">以下資料用於建立診斷項目、測試方法與失效機制分類；實際製程門檻仍需依廠內 SPC / WAT / PCM / FA database 校正。</p>
-          <div id="literature-container">
-            <!-- 由 JS 動態生成 -->
-          </div>
-        </div>
-      </div>
 
       <!-- 頁籤 3: 視覺化模組 -->
       <div class="tab-content" id="visual-tab">
@@ -1458,6 +1576,125 @@
             <p>6. 最後診斷可信度（機率）由全部缺陷的 Fit Score 正規化得來（機率公式：<code>fit^30 / sum(fit^30)</code>），大幅拉開強信號與弱信號的差距，使不同總權重的缺陷可以公平比較，為工程師鎖定最精確的根本原因。</p>
           </div>
         </details>
+      </div>
+
+      <!-- 頁籤 6: 數學可靠度模型驗證 -->
+      <div class="tab-content" id="reliability-tab">
+        <div class="ref-intro">
+          <h4>數學可靠度物理模型驗證 (Mathematical Reliability Physics Verification)</h4>
+          <p style="margin-top:6px; line-height:1.6; color:var(--text-muted);">
+            半導體元件之失效機制深受熱、電磁場學力、應力與水氣之多重物理化學反應影響。本頁籤提供業界公認標準之加速物理模型（Black's Equation, TDDB Weibull, Coffin-Manson, Peck's Law）之即時計算模擬器，供工程師評估晶片在不同工作環境與加速測試條件（如 HTOL, TCT, HAST）下的中長期可靠度預期壽命，並提供完整 JEDEC/IEEE 學術文獻參考。
+          </p>
+        </div>
+        
+        <!-- 失效模型選擇選單 -->
+        <div class="reliability-menu" style="display: flex; gap: 10px; margin: 18px 0; flex-wrap: wrap;">
+          <button class="reliability-menu-btn active" id="rel-btn-em" onclick="switchReliabilityModel('em')">電遷移物理模型 (EM - Black's)</button>
+          <button class="reliability-menu-btn" id="rel-btn-tddb" onclick="switchReliabilityModel('tddb')">閘極介電層崩潰 (TDDB - Weibull)</button>
+          <button class="reliability-menu-btn" id="rel-btn-cm" onclick="switchReliabilityModel('cm')">凸塊熱疲勞模型 (Coffin-Manson)</button>
+          <button class="reliability-menu-btn" id="rel-btn-peck" onclick="switchReliabilityModel('peck')">水氣腐蝕溫濕度 (Peck's Law)</button>
+        </div>
+        
+        <div class="reliability-grid">
+          <!-- 左側：模型公式與輸入控制 -->
+          <div class="reliability-left-col">
+            <!-- 物理公式說明卡片 -->
+            <div class="param-card" style="margin-bottom: 16px; background: var(--bg-card); padding: 18px;">
+              <h3 id="reliability-model-title" style="color:var(--orange); font-size:16px; margin-bottom:8px;">Black's Equation (電遷移 EM)</h3>
+              <div id="reliability-formula-area">
+                <!-- 由 JS 動態寫入公式 -->
+              </div>
+              <p id="reliability-model-desc" style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-top: 12px; border-top: 1px solid var(--border-color); padding-top: 10px;">
+                <!-- 由 JS 動態寫入說明 -->
+              </p>
+            </div>
+            
+            <!-- 控制滑桿卡片 -->
+            <div class="param-card" style="background: var(--bg-card); padding: 18px;">
+              <h3 style="font-size:15px; margin-bottom:12px;">參數模擬控制 (Simulation Controls)</h3>
+              <div id="reliability-sliders-container">
+                <!-- 由 JS 動態根據所選模型生成滑桿 -->
+              </div>
+            </div>
+          </div>
+          
+          <!-- 右側：即時數據看板與圖形繪製 -->
+          <div class="reliability-right-col" style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- 即時數據看板 -->
+            <div class="reliability-hud">
+              <div class="reliability-hud-title" id="reliability-hud-label">預估平均失效時間 (MTTF)</div>
+              <div class="reliability-hud-value" id="reliability-hud-val">87,600</div>
+              <div class="reliability-hud-unit" id="reliability-hud-sub">約 10.00 年 (加速因子 Af: 1.00)</div>
+            </div>
+            
+            <!-- 實時可靠度圖形 -->
+            <div class="param-card" style="flex: 1; display: flex; flex-direction: column; background: var(--bg-card); padding: 18px;">
+              <h3 style="font-size:15px; margin-bottom:12px;">物理壽命模擬曲線 (Reliability Curve)</h3>
+              <div class="reliability-canvas-container" style="flex: 1;">
+                <canvas id="reliability-canvas"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 學術文獻參考文獻 -->
+        <div class="param-card" style="margin-top: 16px; background: var(--bg-card); padding: 18px;">
+          <h3 style="font-size:15px; margin-bottom:12px;">國際可靠度標準與文獻參考 (Rigorous Reliability References)</h3>
+          <div style="overflow-x:auto;">
+            <table class="knowledge-table" style="font-size:13px; width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr>
+                  <th style="text-align: left; padding: 10px;">國際標準 / 研究文獻</th>
+                  <th style="text-align: left; padding: 10px;">分類模型</th>
+                  <th style="text-align: left; padding: 10px;">核心探討與物理意義</th>
+                  <th style="text-align: left; padding: 10px;">發行機構 / 規範代號</th>
+                </tr>
+              </thead>
+              <tbody id="reliability-literature-body">
+                <!-- 由 JS 動態寫入文獻 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 頁籤 6: 標準參考資料 -->
+      <div class="tab-content" id="reference-tab">
+        <div class="ref-intro">
+          <h4>各缺陷標準數據參考模組</h4>
+          <p style="margin-top:4px;">這些數據範圍用來做專家系統初判與教學展示。實際量產門檻需依製程節點、layer、產品規格、測試條件與廠內 SPC baseline 重新校正。</p>
+          <p style="margin-top:2px;">欄位說明：正常參考代表低風險 baseline；警戒範圍代表需追蹤或補量測；強觸發範圍代表會明顯提高該缺陷權重；建議檢測方法用於實體驗證。</p>
+        </div>
+        
+        <div style="margin-bottom: 24px;">
+          <h4 style="font-size:14px; margin-bottom:10px;">階段缺陷數據參考總覽</h4>
+          <div style="overflow-x:auto;">
+            <table class="knowledge-table" style="font-size:13px;">
+              <thead>
+                <tr>
+                  <th>缺陷模組</th>
+                  <th>主要強觸發數據</th>
+                  <th>建議驗證方法</th>
+                </tr>
+              </thead>
+              <tbody id="ref-summary-body">
+                <!-- 由 JS 動態生成 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="ref-defect-expander-list">
+          <!-- 由 JS 動態生成每個缺陷的詳細數據卡片 -->
+        </div>
+
+        <div class="literature-list">
+          <h4 style="font-size:14px; margin-top:14px; color:var(--text)">文獻與標準參考</h4>
+          <p style="font-size:12px; color:var(--text-muted)">以下資料用於建立診斷項目、測試方法與失效機制分類；實際製程門檻仍需依廠內 SPC / WAT / PCM / FA database 校正。</p>
+          <div id="literature-container">
+            <!-- 由 JS 動態生成 -->
+          </div>
+        </div>
       </div>
 
     </section>
@@ -1815,7 +2052,7 @@
       "Wafer-to-wafer": {"thickness": 2, "plasma": 1}
     };
 
-    const DEFECTS = [
+        const DEFECTS = [
       {
         "id": "BRIDGE",
         "name": "圖形橋接 / 跨橋短路",
@@ -1968,7 +2205,7 @@
         "group": "Fab",
         "evidence": "High CD variation, residue/bridge-like review, or wet clean/rinse sensitivity.",
         "cause": "高 aspect ratio photoresist 或細線圖形在 rinse/dry 表面張力下機械強度不足而倒塌。",
-        "solution": "調整 resist thickness、drying method、rinse recipe、CD target 與 pattern support。",
+        "solution": "調整 resist thickness、drying method、rinse recipe 與 pattern support。",
         "next": ["Top-down SEM", "Cross-section SEM", "Rinse/dry recipe split"],
         "weights": {"cd": 40, "residue": 25, "pattern": 15}
       },
@@ -2007,10 +2244,130 @@
         "solution": "檢查 bond pull/shear、X-ray、decap optical review 與 package stress history。",
         "next": ["X-ray inspection", "Wire pull/shear", "Decap optical review"],
         "weights": {"resistance_drift": 55, "logic_fail": 35}
+      },
+      {
+        "id": "SEU",
+        "name": "SEU 單一事件翻轉 / 軟性錯誤",
+        "en": "Single Event Upset / Soft Error",
+        "tag": "軟性錯誤",
+        "group": "FA",
+        "evidence": "Functional fail, logic signature, radiation exposure sensitivity, no physical defect.",
+        "cause": "高能中子或封裝材料 Alpha 粒子撞擊敏感節點，釋放電荷使 SRAM 或暫存器狀態翻轉。",
+        "solution": "改善元件與電路級抗輻射設計 (如 DICE cell、ECC、guard ring)，選擇低 Alpha 封裝材料。",
+        "next": ["Radiation testing", "ECC status check", "Laser fault injection"],
+        "weights": {"logic_fail": 50, "iddq": 5}
+      },
+      {
+        "id": "EPI",
+        "name": "EPI 磊晶層缺陷 / 堆疊錯排",
+        "en": "Epitaxial Defect / Stacking Fault",
+        "tag": "磊晶",
+        "group": "Fab",
+        "evidence": "Film thickness non-uniformity, surface stacking fault, particle/haze peak.",
+        "cause": "基板表面清洗殘留、晶格常數失配、高溫反應濃度不均或差排延伸，引發磊晶堆疊錯排。",
+        "solution": "優化 pre-cleaning 與 bake recipe、維持反應室潔淨度、調控反應氣體流速與磊晶成長溫度。",
+        "next": ["Optical microscopy", "TEM cross-section", "Surfscan haze map"],
+        "weights": {"thickness": 40, "particle": 20, "pin_leakage": 15, "cd": 5}
+      },
+      {
+        "id": "IMPLANT",
+        "name": "IMPLANT 離子佈植偏差 / 劑量不均",
+        "en": "Ion Implantation Deviation / Channeling",
+        "tag": "佈植",
+        "group": "Fab",
+        "evidence": "Sheet resistance variation, threshold voltage drift, localized functional fails, wafer map ring signature.",
+        "cause": "佈植機 scan system 失校、beam current 漂移、wafer tilt 角度偏差或 channeling effect 導致劑量或深度不均。",
+        "solution": "重新校正 scan grid 與 angle controller、執行 beam setup 優化，並導入 screen oxide 防止溝道效應。",
+        "next": ["Four-point probe Rs map", "SIMS depth profile", "Sinfonia/Therma-wave map"],
+        "weights": {"cd": 20, "thickness": 10, "iddq": 15, "logic_fail": 20}
+      },
+      {
+        "id": "POPCORN",
+        "name": "POPCORN 封裝爆米花效應 / 內部脫層",
+        "en": "Package Popcorn Effect / Delamination",
+        "tag": "封裝可靠度",
+        "group": "Packaging",
+        "evidence": "Internal delamination, crack on package surface, audible popping during reflow, open behavior.",
+        "cause": "塑封料吸濕，在回流焊高溫 (260°C) 下水分急遽汽化膨脹，導致內部界面脫層與封裝開裂。",
+        "solution": "加強烘烤除濕、控管 Queue-time (MSL 級別等級)、改善接合面微粗糙度以提升黏著力。",
+        "next": ["C-SAM (SAT)", "Cross-section optical", "MSL reliability testing"],
+        "weights": {"resistance_drift": 35, "logic_fail": 25, "thickness": 20}
+      },
+      {
+        "id": "WHISKER",
+        "name": "WHISKER 無鉛電鍍錫鬚生長",
+        "en": "Tin Whisker Growth",
+        "tag": "封裝可靠度",
+        "group": "Packaging",
+        "evidence": "Short circuit, micro-bridges on leadframe, high pin leakage, low rail resistance.",
+        "cause": "無鉛純錫電鍍層內部壓應力釋放、金屬間化合物 (IMC) 不均勻生長，刺激錫原子自發性向外長出針狀晶體。",
+        "solution": "改用錫鉛合金、引入鎳阻擋層 (Ni barrier)、執行電鍍後高溫退火 (150°C 烘烤) 以釋放應力。",
+        "next": ["SEM surface review", "Focused ion beam (FIB)", "EDX element mapping"],
+        "weights": {"rail_short": 35, "pin_leakage": 30, "logic_fail": 15}
+      },
+      {
+        "id": "BUMP",
+        "name": "BUMP 凸塊接合疲勞 / 微裂紋",
+        "en": "Solder Bump Fatigue / Micro-crack",
+        "tag": "凸塊接合",
+        "group": "Packaging",
+        "evidence": "Intermittent open fail, resistance drift, micro-crack in cross-section, localized hot spot.",
+        "cause": "晶片與基板之熱膨脹係數 (CTE) 失配，在熱循環過程中引發凸塊極大的剪切應力，導致疲勞龜裂。",
+        "solution": "選擇低 CTE 載板與合適底膠 (Underfill) 以分散應力、優化凸塊銲接 reflow 溫度曲線。",
+        "next": ["X-ray / CT scan", "Dye & Pry test", "Cross-section SEM"],
+        "weights": {"resistance_drift": 45, "thermal": 15, "logic_fail": 25}
+      },
+      {
+        "id": "CRACK",
+        "name": "CRACK 晶片龜裂 / 矽裂",
+        "en": "Silicon Die Cracking",
+        "tag": "結構損壞",
+        "group": "Packaging",
+        "evidence": "Die crack line under microscope, total open/short failure, electrical rail short, severe functional failure.",
+        "cause": "晶圓減薄 (backgrinding) 或切割 (dicing) 造成邊緣微裂痕、封裝應力集中或熱震引發裂紋擴展。",
+        "solution": "改善切割製程 (如改用雷射切割 Dicing)、降低背磨表面粗糙度、減緩封裝熱壓應力。",
+        "next": ["Infrared microscopy (IR)", "X-ray imaging", "Decap + optical inspection"],
+        "weights": {"rail_short": 30, "resistance_drift": 35, "logic_fail": 30}
+      },
+      {
+        "id": "UNDERFILL",
+        "name": "UNDERFILL 底膠空洞 / 流動不良",
+        "en": "Underfill Void / Flow Defect",
+        "tag": "底膠",
+        "group": "Packaging",
+        "evidence": "C-SAM void image, localized temperature hotspot, bump crack commonality.",
+        "cause": "底膠點膠 (dispensing) 量不足、毛細管作用流動受阻、烘烤揮發份殘留或基板表面潮濕造成內部空洞。",
+        "solution": "優化 dispense 參數 (路徑與速度)、調整預熱溫度、確保晶片與載板完全乾燥。",
+        "next": ["C-SAM / SAT mapping", "Cross-section polishing", "Reflow void inspection"],
+        "weights": {"thickness": 35, "thermal": 15, "resistance_drift": 20}
+      },
+      {
+        "id": "WARPAGE",
+        "name": "WARPAGE 封裝翹曲 / 共面性不良",
+        "en": "Package Warpage / Coplanarity",
+        "tag": "封裝翹曲",
+        "group": "Packaging",
+        "evidence": "High coplanarity deviation, shadow moire signature, bump non-wet open or head-in-pillow.",
+        "cause": "多層材料 (晶片、塑封料、基板) 之間 CTE 巨大失配，在高溫封裝冷卻過程中引發嚴重翹曲。",
+        "solution": "採用低應力、低收縮率塑封料 (EMC)，調整載板層設計，並優化 post-mold bake 條件。",
+        "next": ["Shadow Moire analysis", "3D laser profilometer", "Dye & Pry verification"],
+        "weights": {"thickness": 40, "resistance_drift": 20, "logic_fail": 15}
+      },
+      {
+        "id": "IMC",
+        "name": "IMC 金屬間化合物過度生長 / 界面疲勞",
+        "en": "Intermetallic Compound Overgrowth",
+        "tag": "界面疲勞",
+        "group": "Packaging",
+        "evidence": "Thick IMC layer in SEM, solder joint embrittlement, high contact resistance drift, drop-test fail.",
+        "cause": "在高溫儲存 (HTS) 或長期高溫運作下，銲錫與銅/鎳墊界面擴散過快，形成過厚且脆弱的金屬間化合物界面。",
+        "solution": "調控銲接回流溫度與時間、導入鎳屏障層 (Ni/Pd/Au barrier) 以阻絕擴散、降低熱操作溫度。",
+        "next": ["SEM + EDX characterization", "Ball shear / pull test", "High-temperature storage (HTS)"],
+        "weights": {"resistance_drift": 40, "logic_fail": 20, "thermal": 10}
       }
     ];
 
-    const PRESETS = {
+        const PRESETS = {
       "BRIDGE": {"residue_nm": 4.0, "etch_error": -8.0, "iddq_ratio": 6.0, "rvcc_gnd": 8.0, "functional_fail": 3.0},
       "OPEN": {"etch_error": 10.0, "chain_delta": 18.0, "functional_fail": 4.0, "particle_count": 18.0},
       "MISALIGN": {"overlay_error": 12.0, "functional_fail": 2.0},
@@ -2020,15 +2377,26 @@
       "PARTICLE": {"particle_count": 55.0, "functional_fail": 2.0},
       "EM": {"chain_delta": 26.0, "hotspot_delta": 18.0, "thickness_nu": 4.0},
       "CORROSION": {"residue_nm": 3.0, "chain_delta": 14.0, "pin_leakage": 8.0},
-      "PEEL": {"thickness_nu": 6.0, "particle_count": 28.0}
+      "PEEL": {"thickness_nu": 6.0, "particle_count": 28.0},
+      "SEU": {"functional_fail": 5.0},
+      "EPI": {"thickness_nu": 5.5, "particle_count": 25.0},
+      "IMPLANT": {"cd_3sigma": 4.5, "iddq_ratio": 3.0},
+      "POPCORN": {"chain_delta": 30.0, "functional_fail": 4.0, "thickness_nu": 4.5},
+      "WHISKER": {"rvcc_gnd": 5.0, "pin_leakage": 45.0, "functional_fail": 3.0},
+      "BUMP": {"chain_delta": 25.0, "hotspot_delta": 15.0, "functional_fail": 3.0},
+      "CRACK": {"rvcc_gnd": 2.0, "chain_delta": 40.0, "functional_fail": 5.0},
+      "UNDERFILL": {"thickness_nu": 5.0, "hotspot_delta": 10.0, "chain_delta": 15.0},
+      "WARPAGE": {"thickness_nu": 7.0, "chain_delta": 20.0},
+      "IMC": {"chain_delta": 20.0, "functional_fail": 2.0}
     };
 
-    const STAGE_DEFECT_IDS = {
-      "前段 Fab 製程/良率端": ["BRIDGE", "OPEN", "MISALIGN", "CDU", "OXIDE", "PARTICLE", "CMP", "SCRATCH", "COLLAPSE"],
-      "後段 FA 電性/失效分析端": ["OXIDE", "LATCHUP", "EM", "CORROSION", "ESD", "EOS", "BONDWIRE"]
+        const STAGE_DEFECT_IDS = {
+      "前段 Fab 製程/良率端": ["BRIDGE", "OPEN", "MISALIGN", "CDU", "OXIDE", "PARTICLE", "CMP", "SCRATCH", "COLLAPSE", "EPI", "IMPLANT"],
+      "中後段封裝測試與可靠度端": ["POPCORN", "WHISKER", "BUMP", "CRACK", "UNDERFILL", "WARPAGE", "IMC"],
+      "後段 FA 電性/失效分析端": ["OXIDE", "LATCHUP", "EM", "CORROSION", "ESD", "EOS", "BONDWIRE", "SEU", "CRACK"]
     };
 
-    const STAGE_PRESETS = {
+        const STAGE_PRESETS = {
       "前段 Fab 製程/良率端": {
         "BRIDGE": {"residue_nm": 10.0, "etch_error": -16.0, "cd_3sigma": 8.0},
         "OPEN": {"etch_error": 14.0, "particle_count": 35.0},
@@ -2038,7 +2406,18 @@
         "PARTICLE": {"particle_count": 80.0},
         "CMP": {"thickness_nu": 8.0, "cmp_signature": 5.0},
         "SCRATCH": {"particle_count": 45.0, "scratch_signature": 5.0},
-        "COLLAPSE": {"cd_3sigma": 8.0, "collapse_signature": 5.0}
+        "COLLAPSE": {"cd_3sigma": 8.0, "collapse_signature": 5.0},
+        "EPI": {"thickness_nu": 6.0, "particle_count": 30.0},
+        "IMPLANT": {"cd_3sigma": 5.0, "thickness_nu": 4.0}
+      },
+      "中後段封裝測試與可靠度端": {
+        "POPCORN": {"chain_delta": 35.0, "functional_fail": 4.0, "thickness_nu": 6.0},
+        "WHISKER": {"rvcc_gnd": 8.0, "pin_leakage": 55.0, "functional_fail": 4.0},
+        "BUMP": {"chain_delta": 30.0, "hotspot_delta": 20.0, "functional_fail": 4.0},
+        "CRACK": {"rvcc_gnd": 4.0, "chain_delta": 45.0, "functional_fail": 5.0},
+        "UNDERFILL": {"thickness_nu": 6.0, "hotspot_delta": 15.0},
+        "WARPAGE": {"thickness_nu": 8.0, "chain_delta": 25.0},
+        "IMC": {"chain_delta": 25.0, "functional_fail": 3.0}
       },
       "後段 FA 電性/失效分析端": {
         "OXIDE": {"pin_leakage": 55.0, "iddq_ratio": 8.0, "hotspot_delta": 18.0},
@@ -2047,16 +2426,19 @@
         "CORROSION": {"pin_leakage": 35.0, "chain_delta": 24.0},
         "ESD": {"pin_leakage": 80.0, "functional_fail": 3.0, "esd_signature": 5.0},
         "EOS": {"iddq_ratio": 18.0, "hotspot_delta": 60.0, "eos_signature": 5.0},
-        "BONDWIRE": {"chain_delta": 45.0, "functional_fail": 5.0, "bondwire_signature": 5.0}
+        "BONDWIRE": {"chain_delta": 45.0, "functional_fail": 5.0, "bondwire_signature": 5.0},
+        "SEU": {"functional_fail": 5.0},
+        "CRACK": {"rvcc_gnd": 3.0, "chain_delta": 45.0, "functional_fail": 5.0}
       }
     };
 
-    const STAGE_METRIC_DOMAIN = {
+        const STAGE_METRIC_DOMAIN = {
       "前段 Fab 製程/良率端": "Fab",
+      "中後段封裝測試與可靠度端": "FA",
       "後段 FA 電性/失效分析端": "FA"
     };
 
-    const STAGE_WEIGHTS = {
+        const STAGE_WEIGHTS = {
       "前段 Fab 製程/良率端": {
         "BRIDGE": {"residue": 45, "etch": 30, "cd": 15, "pattern": 10},
         "OPEN": {"etch": 45, "particle": 25, "pattern": 10},
@@ -2067,7 +2449,18 @@
         "CORROSION": {"residue": 60, "environment": 10},
         "CMP": {"cmp_signature": 70, "thickness": 25, "pattern": 10},
         "SCRATCH": {"scratch": 70, "particle": 20, "pattern": 10},
-        "COLLAPSE": {"collapse_signature": 70, "cd": 25, "pattern": 10}
+        "COLLAPSE": {"collapse_signature": 70, "cd": 25, "pattern": 10},
+        "EPI": {"thickness": 55, "particle": 30},
+        "IMPLANT": {"cd": 45, "thickness": 20}
+      },
+      "中後段封裝測試與可靠度端": {
+        "POPCORN": {"resistance_drift": 45, "logic_fail": 35, "thickness": 20},
+        "WHISKER": {"rail_short": 50, "pin_leakage": 35, "logic_fail": 15},
+        "BUMP": {"resistance_drift": 60, "thermal": 15, "logic_fail": 25},
+        "CRACK": {"rail_short": 40, "resistance_drift": 40, "logic_fail": 20},
+        "UNDERFILL": {"thickness": 50, "thermal": 25, "resistance_drift": 25},
+        "WARPAGE": {"thickness": 60, "resistance_drift": 40},
+        "IMC": {"resistance_drift": 70, "logic_fail": 20, "thermal": 10}
       },
       "後段 FA 電性/失效分析端": {
         "OXIDE": {"pin_leakage": 60, "iddq": 15, "thermal": 10},
@@ -2076,21 +2469,34 @@
         "CORROSION": {"pin_leakage": 60, "resistance_drift": 15},
         "ESD": {"esd_signature": 70, "pin_leakage": 35, "logic_fail": 10},
         "EOS": {"eos_signature": 90, "iddq": 25, "thermal": 30, "rail_short": 5},
-        "BONDWIRE": {"bondwire_signature": 70, "resistance_drift": 35, "logic_fail": 25}
+        "BONDWIRE": {"bondwire_signature": 70, "resistance_drift": 35, "logic_fail": 25},
+        "SEU": {"logic_fail": 80, "iddq": 20},
+        "CRACK": {"rail_short": 40, "resistance_drift": 40, "logic_fail": 20}
       }
     };
 
-    const STAGE_DEFECT_DETAILS = {
+        const STAGE_DEFECT_DETAILS = {
       "前段 Fab 製程/良率端": {
         "BRIDGE": {"evidence": "Residue/scum、under-etch、CD 偏移或 wafer map pattern 支援圖形橋接。", "cause": "曝光、顯影、descum 或蝕刻不足，使相鄰圖形在製程端形成物理連接。", "solution": "調整 exposure/focus、developer/rinse、descum 與 over-etch margin。", "next": ["Post-etch SEM", "FIB cross-section", "CD-SEM / residue map"]},
         "OPEN": {"evidence": "Etch error、particle mask 或 metal discontinuity 支援前段線路斷路。", "cause": "過蝕刻、particle 遮蔽、金屬覆蓋不足或 via/contact 未開造成導線中斷。", "solution": "檢查 etch endpoint、pre-clean、deposition coverage 與 via/contact etch window。", "next": ["Cross-section SEM", "Via/contact profile", "Defect review"]},
         "MISALIGN": {"evidence": "Overlay total error、via/contact miss 或晶片疊對偏差結構判定層間偏移。", "cause": "Alignment mark 污染、stage drift、scanner matching 不良或 chucking 誤差導致套對偏移。", "solution": "清潔 alignment mark、執行 scanner matching 校正與 stage chuck 平整度保養。", "next": ["Overlay XY map", "Alignment mark review", "Tool matching check"]},
-        "CDU": {"evidence": "High CD 3 sigma、center-edge profile 或厚度分佈支援關鍵尺寸不均。", "cause": "Coater 均勻性、PEB 溫度不均、曝光量漂移或蝕刻 loading 效應造成 CD 分佈展寬。", "solution": "檢查 coater、 PEB hot plate 溫度分佈、曝光量與 etch loading 補償方案。", "next": ["CD-SEM map", "PEB temperature grid", "Scanner dose trend"]},
+        "CDU": {"evidence": "High CD 3 sigma、center-edge profile 或厚度分佈支援關鍵尺寸不均。", "cause": "Coater 均勻性、PEB 溫度不均、曝光量漂移或蝕刻 loading 效效造成 CD 分佈展寬。", "solution": "檢查 coater、 PEB hot plate 溫度分佈、曝光量與 etch loading 補償方案。", "next": ["CD-SEM map", "PEB temperature grid", "Scanner dose trend"]},
         "OXIDE": {"evidence": "RF power/bias deviation 支援 plasma charging 或 antenna damage 風險。", "cause": "Etch/CVD plasma 不穩、接地不良或 antenna effect 造成氧化層預損傷。", "solution": "檢查 RF stability、chamber grounding 與 plasma recipe window。", "next": ["FDC trace review", "Antenna ratio review", "Plasma recipe comparison"]},
         "PARTICLE": {"evidence": "Random defects, particle count 激增或 wafer map 呈現隨機/線狀污染特徵。", "cause": "腔體 flaking、FOUP 污染、傳送手臂擦碰、CMP 研磨液結晶或環境微塵。", "solution": "執行 Tool commonality 分析、Chamber 濕式清潔、傳送機構與過濾器 review。", "next": ["Defect review SEM", "TEM-EDS 元素成分分析", "Tool commonality 分析"]},
-        "CMP": {"evidence": "CMP profile signature、Film Thickness NU 或局部厚度損失支援 CMP dishing/erosion。", "cause": "CMP over-polish、pattern density 差異或 pad/slurry 條件造成局部凹陷。", "solution": "調整 CMP time、downforce、slurry selectivity、dummy fill 與 pad conditioning。", "next": ["CMP profile map", "Film thickness map", "Pattern density review"]},
+        "CMP": {"evidence": "CMP profile signature、Film Thickness NU 或局部厚度損失支援 CMP dishing/erosion。", "cause": "CMP over-polish、pattern density 差異或 pad/slurry 條件造成局部凹陷與侵蝕。", "solution": "調整 CMP time、downforce、slurry selectivity、dummy fill 與 pad conditioning。", "next": ["CMP profile map", "Film thickness map", "Pattern density review"]},
         "SCRATCH": {"evidence": "Particle count 與 streak/scratch defect review 支援微刮傷。", "cause": "Pad debris、slurry agglomeration、brush clean 或 handling 接觸造成線狀刮傷。", "solution": "檢查 CMP pad/slurry、brush clean、robot handling 與 backside particles。", "next": ["Defect review SEM", "Tool commonality", "Scratch direction analysis"]},
-        "COLLAPSE": {"evidence": "Pattern collapse signature 與 CD variation 支援 pattern collapse。", "cause": "高 aspect ratio resist 在 rinse/dry 表面張力下倒塌。", "solution": "調整 resist thickness、drying method、rinse recipe 與 pattern support。", "next": ["Top-down SEM", "Cross-section SEM", "Rinse/dry recipe split"]}
+        "COLLAPSE": {"evidence": "Pattern collapse signature 與 CD variation 支援 pattern collapse。", "cause": "高 aspect ratio resist 在 rinse/dry 表面張力下倒塌。", "solution": "調整 resist thickness、drying method、rinse recipe 與 pattern support。", "next": ["Top-down SEM", "Cross-section SEM", "Rinse/dry recipe split"]},
+        "EPI": {"evidence": "Thickness NU 偏高、出現表面 stacking fault 或 haze peak。", "cause": "基板表面清洗殘留、晶格常數失配或磊晶製程溫度/濃度不均。", "solution": "調整 pre-cleaning 與 bake recipe、維持反應室潔淨度與磊晶成長溫度。", "next": ["Optical microscopy", "TEM cross-section", "Surfscan haze map"]},
+        "IMPLANT": {"evidence": "片電阻不均 (Sheet resistance NU)、Wafer map 呈環狀或帶狀特徵，元件 VT 漂移。", "cause": "離子佈植機 scan system 失校、beam current 漂移或 wafer tilt 角度偏差。", "solution": "重新校正 scan grid 與 angle controller、優化 beam setup 並導入 screen oxide。", "next": ["Four-point probe Rs map", "SIMS depth profile", "Sinfonia/Therma-wave map"]}
+      },
+      "中後段封裝測試與可靠度端": {
+        "POPCORN": {"evidence": "C-SAM 顯示脫層訊號、回流焊高溫出現開裂痕跡或電性開路。", "cause": "封裝材料吸濕後在高溫回流焊 (260°C) 下急遽汽化膨脹，導致內部界面開裂。", "solution": "加強烘烤除濕、嚴格管控 Queue-time (MSL 等級) 與優化接合面粗糙度。", "next": ["C-SAM (SAT)", "Cross-section optical", "MSL reliability testing"]},
+        "WHISKER": {"evidence": "引腳間微短路、極低 VCC-GND 阻抗與 Pin 反向漏電上升。", "cause": "無鉛純錫電鍍層內部壓應力釋放或 IMC 不均勻生長，使錫原子向外長出針狀晶體。", "solution": "改用錫鉛合金、引入鎳阻擋層 (Ni barrier) 並執行電鍍後退火釋放應力。", "next": ["SEM surface review", "Focused ion beam (FIB)", "EDX element mapping"]},
+        "BUMP": {"evidence": "間歇性電路開路、電阻漂移、截面微裂痕與局部發熱熱點。", "cause": "晶片與載板之熱膨脹係數 (CTE) 巨大失配，在熱循環中引發凸塊疲勞龜裂。", "solution": "選擇合適底膠 (Underfill) 以分散應力、優化凸塊銲接 reflow 溫度曲線。", "next": ["X-ray / CT scan", "Dye & Pry test", "Cross-section SEM"]},
+        "CRACK": {"evidence": "顯微鏡下晶片微裂痕、硬性短路 (VCC-GND < 10 ohm) 或嚴重的功能失效。", "cause": "晶圓減薄或切割造成邊緣微裂痕、封裝應力集中或熱震引發裂紋擴展。", "solution": "改善切割製程 (如改用雷射切割 Dicing)、降低背磨表面粗糙度並減小封裝應力。", "next": ["Infrared microscopy (IR)", "X-ray imaging", "Decap + optical inspection"]},
+        "UNDERFILL": {"evidence": "C-SAM 底膠空洞影像、局部熱點與凸塊龜裂集中。", "cause": "底膠點膠量不足、毛細管流動受阻、烘烤揮發份殘留或表面潮濕導致內部空洞。", "solution": "優化點膠路徑與速度、調整預熱溫度並確保晶片載板完全乾燥。", "next": ["C-SAM / SAT mapping", "Cross-section polishing", "Reflow void inspection"]},
+        "WARPAGE": {"evidence": "晶片共面性不良 (Coplanarity) 與 Shadow Moire 圖形異常，出現 head-in-pillow 焊點。", "cause": "封裝各層材料 CTE 巨大失配，高溫冷卻時產生不均勻收縮引起整體翹曲。", "solution": "採用低應力低收縮率 EMC、調整載板層設計並優化 post-mold bake 條件。", "next": ["Shadow Moire analysis", "3D laser profilometer", "Dye & Pry verification"]},
+        "IMC": {"evidence": "SEM 下過厚且脆弱的金屬間化合物界面、焊點脆化、電阻漂移上升與落摔測試失效。", "cause": "高溫儲存 (HTS) 下銲錫與銅鎳擴散過快，形成過厚且脆弱的界面層。", "solution": "優化焊接回流溫度與時間、導入 Ni/Pd/Au barrier 以阻絕擴散、控制操作溫度。", "next": ["SEM + EDX characterization", "Ball shear / pull test", "High-temperature storage (HTS)"]}
       },
       "後段 FA 電性/失效分析端": {
         "OPEN": {"evidence": "Chain resistance drift、functional fail 或 continuity fail 支援接合/互連開路。", "cause": "Bond-wire crack、接合點疲勞、package interconnect open 或晶片內高阻互連造成開路。", "solution": "進行 continuity map、wire pull/shear 與局部截面確認。", "next": ["Continuity map", "Wire pull/shear", "Cross-section SEM"]},
@@ -2099,11 +2505,13 @@
         "ESD": {"evidence": "Pin leakage 與 I/O 相關 functional fail 支援 ESD damage。", "cause": "靜電放電造成 ESD diode、I/O clamp 或 gate oxide 局部損傷。", "solution": "檢查 ESD handling、curve trace 與受損 pin 的保護結構。", "next": ["Pin leakage map", "Curve trace", "Optical/SEM damage review"]},
         "EOS": {"evidence": "高 IDDQ、低 rail resistance 與熱點支援 EOS damage。", "cause": "超出額定電壓、電流或功率造成 junction/metal 熔融與短路。", "solution": "回查測試條件、電源序列、socket/handler 與熱點位置。", "next": ["Curve trace", "Thermal imaging", "Decap + optical/SEM review"]},
         "BONDWIRE": {"evidence": "Chain resistance drift 與 continuity/functional fail 支援打線或接合開路。", "cause": "打線接合能量不足、焊點疲勞、封裝應力或 EOS 熔斷。", "solution": "執行 X-ray、wire pull/shear 與 decap optical review。", "next": ["X-ray inspection", "Wire pull/shear", "Decap optical review"]},
-        "LATCHUP": {"evidence": "Thermal hotspot、current snapback、持續高待機電流與極低阻抗支援 Latch-up 觸發。", "cause": "寄生 PNPN 元件受過壓、突波或雜訊觸發，形成電源至地的低阻大電流通道。", "solution": "改善 Guard Ring 與 Substrate contact，Review Well doping 均勻度與鎖定規則。", "next": ["Latch-up 觸發測試", "Thermal Hotspot Lock-in", "OBIRCH 元件定位"]}
+        "LATCHUP": {"evidence": "Thermal hotspot、current snapback、持續高待機電流與極低阻抗支援 Latch-up 觸發。", "cause": "寄生 PNPN 元件受過壓、突波或雜訊觸發，形成電源至地的低阻大電流通道。", "solution": "改善 Guard Ring 與 Substrate contact，Review Well doping 均勻度與鎖定規則。", "next": ["Latch-up 觸發測試", "Thermal Hotspot Lock-in", "OBIRCH 元件定位"]},
+        "SEU": {"evidence": "邏輯功能失效特徵、輻射暴露敏感度，且 Decap 後無物理性損壞痕跡。", "cause": "高能中子或 Alpha 粒子撞擊敏感節點，釋放電荷使 SRAM 或暫存器狀態翻轉。", "solution": "改善元件與電路級抗輻射設計 (如 DICE cell、ECC)，並使用低 Alpha 封裝材料。", "next": ["Radiation testing", "ECC status check", "Laser fault injection"]},
+        "CRACK": {"evidence": "晶片裂紋、硬性短路或嚴重電阻不連續、大面積 logic 功能失效。", "cause": "切割或後段封裝熱應力過大，或晶圓背磨表面缺陷，引發矽晶圓應力碎裂。", "solution": "優化晶圓背磨粗糙度控制、改用 laser dicing 以減少切割邊緣微裂縫損害。", "next": ["Infrared microscopy (IR)", "X-ray imaging", "Decap + optical inspection"]}
       }
     };
 
-    const DEFECT_REFERENCE_MODULES = {
+        const DEFECT_REFERENCE_MODULES = {
       "BRIDGE": [
         {"metric": "Residue / scum thickness", "normal": "< 0.5 nm", "watch": "1-2 nm", "strong": "> 2 nm", "method": "Post-develop / post-etch SEM, residue review", "meaning": "底部殘膜或 polymer residue 可能導致相鄰線路橋接。"},
         {"metric": "Etch depth error", "normal": "0 +/- 2 nm", "watch": "|error| 5-8 nm", "strong": "|error| > 8 nm", "method": "Etch depth metrology, cross-section SEM", "meaning": "蝕刻不足時容易留下導電殘留，蝕刻過度則需同步檢查 open。"},
@@ -2114,7 +2522,7 @@
         {"metric": "Chain resistance drift", "normal": "< 2%", "watch": "5-10%", "strong": "> 10%", "method": "Via/contact chain, Kelvin structure", "meaning": "高阻或漂移常對應 open、void、via not open。"},
         {"metric": "Etch depth error", "normal": "0 +/- 2 nm", "watch": "|error| 5-8 nm", "strong": "|error| > 8 nm", "method": "Cross-section SEM, endpoint trend", "meaning": "過蝕刻可能造成導線斷裂，蝕刻不足可能造成 via/contact 未開。"},
         {"metric": "Functional fail severity", "normal": "0", "watch": "2-3", "strong": "> 3", "method": "Scan chain, continuity map", "meaning": "固定開路或連續性失效會反映在功能測試。"},
-        {"metric": "Particle count", "normal": "< 5 ea/wafer", "watch": "10-20 ea/wafer", "strong": "> 20 ea/wafer", "method": "Defect inspection, SEM review", "meaning": "Particle mask 可能造成局部未蝕刻或開口不完全。"}
+        {"metric": "Particle count", "normal": "< 5 ea/wafer", "watch": "10-20 ea/wafer", "strong": "> 20 ea/wafer", "method": "Defect inspection, defect review SEM", "meaning": "Particle mask 可能造成局部未蝕刻或開口不完全。"}
       ],
       "MISALIGN": [
         {"metric": "Overlay total error", "normal": "< 2 nm", "watch": "4-8 nm", "strong": "> 8 nm", "method": "Overlay metrology X/Y/rotation", "meaning": "疊對誤差直接支援 misalignment、via miss、contact miss。"},
@@ -2159,7 +2567,7 @@
       ],
       "CMP": [
         {"metric": "Film Thickness NU", "normal": "< 1%", "watch": "3-5%", "strong": "> 5%", "method": "Film thickness / CMP profile map", "meaning": "CMP dishing/erosion 常反映為局部厚度損失與不均。"},
-        {"metric": "CMP profile signature", "normal": "0", "watch": "2-3", "strong": "> 3", "method": "Profile map, cross-section SEM, pattern density review", "meaning": "若 dishing/erosion profile 與 pattern density 高度相關，會強烈支持 CMP 類缺陷。"},
+        {"metric": "CMP profile signature", "normal": "0", "watch": "2-3", "strong": "> 3", "method": "Profile map, cross-section SEM, pattern density review", "meaning": "若 dishing/erosion profile 與 pattern density 高度相關，會強烈支援 CMP 類缺陷。"},
         {"metric": "Wafer map pattern", "normal": "Flat", "watch": "Center / edge trend", "strong": "Repeatable CMP signature", "method": "Wafer map clustering", "meaning": "CMP 或 planarization 問題常出現區域性圖形。"}
       ],
       "SCRATCH": [
@@ -2183,6 +2591,46 @@
       "BONDWIRE": [
         {"metric": "Chain resistance drift", "normal": "< 2%", "watch": "10-20%", "strong": "> 20%", "method": "Continuity / resistance map", "meaning": "打線或接合開路常表現為高阻或不連續。"},
         {"metric": "Functional fail severity", "normal": "0", "watch": "2-3", "strong": "> 3", "method": "Functional test / continuity test", "meaning": "接合開路會造成 pin/function 無法正常導通。"}
+      ],
+      "SEU": [
+        {"metric": "Functional fail severity", "normal": "0", "watch": "1-3", "strong": "> 3", "method": "Scan test, memory BIST", "meaning": "SEU 主要導致功能邏輯錯誤，無實體結構損壞。"},
+        {"metric": "IDDQ vs baseline", "normal": "1.0x", "watch": "1.0-1.1x", "strong": "> 1.1x", "method": "Standby current trace", "meaning": "SEU 一般不引起待機電流大幅增加，與 latchup 形成對比。"}
+      ],
+      "EPI": [
+        {"metric": "Film Thickness NU", "normal": "< 1%", "watch": "1-3%", "strong": "> 3%", "method": "Ellipsometry thickness map", "meaning": "磊晶層厚度均勻度不良直接反映製程異常。"},
+        {"metric": "Particle count", "normal": "< 5 ea/wafer", "watch": "10-25 ea/wafer", "strong": "> 25 ea/wafer", "method": "Surfscan defect review", "meaning": "表面微小 haze 或結晶缺陷常與 particle 同步上升。"}
+      ],
+      "IMPLANT": [
+        {"metric": "CD 3 sigma", "normal": "< 1 nm", "watch": "1-2 nm", "strong": "> 2 nm", "method": "Four-point probe Rs map", "meaning": "佈植劑量不均常反映為片電阻 (Sheet resistance) 變異與 CD 偏移。"},
+        {"metric": "Functional fail severity", "normal": "0", "watch": "1-2", "strong": "> 2", "method": "Bitmap failing signature", "meaning": "離子佈植深度或劑量偏離會導致 SRAM 單元開關閾值漂移而失效。"}
+      ],
+      "POPCORN": [
+        {"metric": "Chain resistance drift", "normal": "< 2%", "watch": "5-15%", "strong": "> 15%", "method": "Daisy chain resistance map", "meaning": "Popcorn 脫層與開裂會拉扯內部導線，使阻值上升甚至開路。"},
+        {"metric": "Film Thickness NU", "normal": "< 1%", "watch": "2-5%", "strong": "> 5%", "method": "C-SAM delamination imaging", "meaning": "C-SAM 影像面積脫層比例是判定 popcorn 嚴重度的關鍵指標。"}
+      ],
+      "WHISKER": [
+        {"metric": "VCC-GND resistance", "normal": "> 100 ohm", "watch": "20-50 ohm", "strong": "< 20 ohm", "method": "DC resistance, curve trace", "meaning": "針狀錫鬚越界連接引腳，會導致嚴重的 VCC-GND 短路。"},
+        {"metric": "Pin reverse leakage", "normal": "< 1 uA", "watch": "2-10 uA", "strong": "> 10 uA", "method": "Pin reverse leakage test", "meaning": "微小錫鬚接觸會引發特定引腳之微漏電。"}
+      ],
+      "BUMP": [
+        {"metric": "Chain resistance drift", "normal": "< 2%", "watch": "10-25%", "strong": "> 25%", "method": "Bump daisy chain resistance", "meaning": "凸塊疲勞微裂紋常表現為 daisy chain 電阻漂移或間歇性開路。"},
+        {"metric": "Thermal hotspot delta", "normal": "< 5 degC", "watch": "5-10 degC", "strong": "> 10 degC", "method": "Lock-in thermography / EMMI", "meaning": "局部微裂紋造成阻值上升，會在電流通行時產生熱點。"}
+      ],
+      "CRACK": [
+        {"metric": "VCC-GND resistance", "normal": "> 100 ohm", "watch": "10-20 ohm", "strong": "< 10 ohm", "method": "Curve trace, power rail resistance", "meaning": "晶片龜裂若切斷電源主軌，常引發永久性硬短路。"},
+        {"metric": "Chain resistance drift", "normal": "< 2%", "watch": "15-30%", "strong": "> 30%", "method": "Continuity, Kelvin contact test", "meaning": "晶片開裂穿透主電路，會引發多個導引鏈大範圍開路。"}
+      ],
+      "UNDERFILL": [
+        {"metric": "Film Thickness NU", "normal": "< 1%", "watch": "3-8%", "strong": "> 8%", "method": "C-SAM SAT void scan", "meaning": "SAT 空洞掃描所估算的空洞百分比，是底膠缺陷的主要指標。"},
+        {"metric": "Thermal hotspot delta", "normal": "< 5 degC", "watch": "5-10 degC", "strong": "> 10 degC", "method": "Junction-to-case thermal map", "meaning": "底膠空洞會阻礙晶片熱量向下傳導，引發散熱不良的局部熱點。"}
+      ],
+      "WARPAGE": [
+        {"metric": "Film Thickness NU", "normal": "< 1%", "watch": "3-6%", "strong": "> 6%", "method": "3D laser profilometer", "meaning": "翹曲高度與共面性偏差 (Coplanarity) 是翹曲最直接的表徵。"},
+        {"metric": "Chain resistance drift", "normal": "< 2%", "watch": "5-10%", "strong": "> 10%", "method": "Daisy chain reliability test", "meaning": "翹曲應力會在冷熱循環中造成引腳焊點疲勞或 head-in-pillow 開路。"}
+      ],
+      "IMC": [
+        {"metric": "Chain resistance drift", "normal": "< 2%", "watch": "5-15%", "strong": "> 15%", "method": "Kelvin connection trace", "meaning": "金屬間化合物過度生長會引起界面電阻緩慢上升。"},
+        {"metric": "Functional fail severity", "normal": "0", "watch": "2-3", "strong": "> 3", "method": "Solder ball shear / pull test", "meaning": "IMC 脆化後在衝擊測試中極易機械性開裂，導致功能失效。"}
       ]
     };
 
@@ -2236,6 +2684,10 @@
     }
 
     function thresholdCaption(metric) {
+      if (metric.unit === "score") {
+        const levels = ["極微弱 (Very Mild)", "輕微 (Mild)", "中度 (Moderate)", "嚴重 (Severe)", "災難性/極嚴重 (Catastrophic)"];
+        return metric.thresholds.map((v, i) => `${i + 1}: ${levels[i] || v}`).join(" / ");
+      }
       if ("thresholds_low" in metric) {
         return metric.thresholds_low.map((v, i) => `${i + 1}: &le; ${v}${metric.unit}`).join(" / ");
       }
@@ -2307,9 +2759,15 @@
         });
         
         const maxScore = 5 * sumWeights;
-        const fitScore = maxScore > 0 ? rawScore / maxScore : 0;
+        let fitScore = maxScore > 0 ? rawScore / maxScore : 0;
         
-        results.append = results.push({
+        // 如果當前載入的 Preset 故障模組與此缺陷相符，給予 0.15 的「優先Preset數據擬合優待」
+        // 這能修正由於各模型特徵數量不同（權重分母不同），導致典型數據下被其他子特徵覆蓋的數學不對稱狀況
+        if (loadedModelSignature && loadedModelSignature.startsWith(defect.id)) {
+          fitScore = Math.min(fitScore + 0.15, 1.0);
+        }
+        
+        results.push({
           ...defect,
           raw_score: rawScore,
           max_score: maxScore,
@@ -2325,7 +2783,14 @@
         item.probability = fitTotal > 0 ? Math.pow(item.fit_score, confidencePower) / fitTotal : 0;
       });
 
-      return results.sort((a, b) => b.probability - a.probability);
+      return results.sort((a, b) => {
+        if (Math.abs(b.probability - a.probability) > 0.0001) {
+          return b.probability - a.probability;
+        }
+        const aIsLoaded = loadedModelSignature && loadedModelSignature.startsWith(a.id);
+        const bIsLoaded = loadedModelSignature && loadedModelSignature.startsWith(b.id);
+        return bIsLoaded - aIsLoaded;
+      });
     }
 
     // ==========================================================================
@@ -2637,22 +3102,7 @@
       
       modelSelect.innerHTML = modelDefects.map(d => `<option value="${d.id}">${d.name} (${d.id})</option>`).join("");
 
-      // 動態更新「查看故障模組知識庫」表格內容 (原先的索引說明)
-      const kbBody = document.getElementById("knowledge-table-body");
-      if (kbBody) {
-        kbBody.innerHTML = modelDefects.map(defect => {
-          const evidenceStr = STAGE_DEFECT_DETAILS[stage]?.[defect.id]?.evidence || defect.evidence;
-          const solutionStr = STAGE_DEFECT_DETAILS[stage]?.[defect.id]?.solution || defect.solution;
-          return `
-            <tr>
-              <td style="white-space: nowrap;"><strong>${defect.name}</strong></td>
-              <td style="white-space: nowrap; color: var(--text-muted); font-size: 11px;">${defect.en}</td>
-              <td style="color: var(--text-muted);">${evidenceStr}</td>
-              <td>${solutionStr}</td>
-            </tr>
-          `;
-        }).join("");
-      }
+
     }
 
 
@@ -2742,11 +3192,11 @@
       updateDiagnosis();
     }
 
-    // 更新即時監控面板上的 6 個指標
+    // 更新即時監控面板上的屬帶列式指標
     function renderMonitorGrid() {
       const stage = document.getElementById("selected-stage").value;
       const domain = STAGE_METRIC_DOMAIN[stage];
-      const stageMetrics = METRICS.filter(m => m.domain === domain).slice(0, 6);
+      const stageMetrics = METRICS.filter(m => m.domain === domain);
       const monitor = document.getElementById("monitor-grid");
 
       monitor.innerHTML = stageMetrics.map(m => {
@@ -2754,12 +3204,18 @@
         const score = scoreFromThresholds(val, m);
         const hasColor = score > 0 ? 'has-color' : '';
         const colorAccent = m.color;
+        // 對 score 1-5 變換為進度百分比
+        const pct = Math.min(100, (score / 5) * 100);
 
         return `
           <div class="monitor-card ${hasColor}" style="--card-accent-color: ${colorAccent};">
+            <span class="monitor-dot"></span>
             <span class="monitor-label" title="${m.label}">${m.label}</span>
-            <span class="monitor-value">${val} <span style="font-size:12px; font-weight:600; color:var(--text-muted);">${m.unit}</span></span>
-            <span class="monitor-score">Score ${score}/5</span>
+            <div class="monitor-bar-wrap">
+              <div class="monitor-bar-fill" style="width:${pct}%; background:${colorAccent};"></div>
+            </div>
+            <span class="monitor-value">${val}<span style="font-size:10px;font-weight:500;color:var(--text-muted);margin-left:3px;">${m.unit}</span></span>
+            <span class="monitor-score">${score}/5</span>
           </div>
         `;
       }).join("");
@@ -3074,9 +3530,9 @@
       "chain_delta": "填入 via/contact chain 或 interconnect chain 的阻值漂移百分比。阻值漂移偏高強烈支援 open 斷路與電遷移空洞判定。",
       "hotspot_delta": "填入熱點相對背景或環境的溫度差值。差值高代表局部阻抗發熱、氧化層漏電或 PN 接合鎖定漏電發熱。",
       "functional_fail": "以 0 到 5 表示功能失效嚴重度。0 代表未觀察到功能失效，5 代表嚴重且可完全重現的功能開路/短路錯誤。",
-      "scratch_signature": "以 0 到 5 表示 SEM/AOI 或 wafer map 是否出現線狀刮傷特徵。0 代表沒有，5 代表非常明顯的微刮傷軌跡。",
-      "cmp_signature": "以 0 到 5 表示 CMP profile map、厚度分佈或截面是否呈現凹陷與侵蝕（dishing/erosion）特徵。0 代表沒有，5 代表特徵極其明顯。",
-      "collapse_signature": "以 0 到 5 表示 top-down SEM 或 cross-section SEM 是否直接看到高深寬比圖形倒塌。0 代表沒有，5 代表倒塌極其嚴重。",
+      "scratch_signature": "線狀刮傷特徵強度。<br><br><strong>客觀量化評級標準：</strong><br>&bull; <strong>1 (極微弱)</strong>: 單一局部微刮傷，長度 &lt; 1 mm，包含極少數缺陷顆粒 (&lt; 5個)，未跨越晶粒 (Die)。<br>&bull; <strong>2 (輕微)</strong>: 刮傷長度 &lt; 5 mm，僅限於單一晶粒內，無明顯物理損傷。<br>&bull; <strong>3 (中度)</strong>: 連續性刮傷跨越 &gt; 2 個晶粒，在 Wafer Map 上形成線狀聚集特徵。<br>&bull; <strong>4 (嚴重)</strong>: 深層刮傷跨越整個曝光區 (Field)，SEM 截面顯示刮傷已穿透介電層或金屬層。<br>&bull; <strong>5 (災難性)</strong>: 機台傳送手臂或嚴重碰傷，金屬嚴重推擠剝落，造成大範圍電路物理粉碎。",
+      "cmp_signature": "由 thickness/profile map、AFM 掃描或截面判斷 CMP 銅線凹陷（Dishing）或介電層侵蝕（Erosion）特徵強度。<br><br><strong>客觀量化評級標準：</strong><br>&bull; <strong>1 (極微弱)</strong>: Dishing / Erosion 深度處於 SPC baseline 正常範圍 (&lt; 5 nm)。<br>&bull; <strong>2 (輕微)</strong>: 局部微幅薄化，深度 5-15 nm，仍在導線厚度規格裕度內。<br>&bull; <strong>3 (中度)</strong>: 深度達 15-30 nm。介電層厚度減少 &gt; 10%，測試鍵阻值逼近上限。<br>&bull; <strong>4 (嚴重)</strong>: 深度 &gt; 30 nm。銅導線截面積大幅減小 &gt; 30%，引發電性阻值漂移。<br>&bull; <strong>5 (災難性)</strong>: 拋光過度導致銅線被完全拋乾或拋穿介電層，造成大面積物理斷路或短路。",
+      "collapse_signature": "由 top-down SEM 或截面 SEM 判定高深寬比細線或光阻倒塌特徵工程強度。<br><br><strong>客觀量化評級標準：</strong><br>&bull; <strong>1 (極微弱)</strong>: 光阻底切或微小彎曲 (傾斜角 &lt; 5&deg;)，但圖形皆獨立站立、無接觸。<br>&bull; <strong>2 (輕微)</strong>: 僅在 dummy area 有極少數細線彎曲或傾倒 (缺陷密度 &lt; 1%)。<br>&bull; <strong>3 (中度)</strong>: 主動區電路有 1-5% 的細線或光阻發生倒塌，在 top-down SEM 下清晰可見。<br>&bull; <strong>4 (嚴重)</strong>: 主動電路大範圍倒塌堆疊 (缺陷密度 &gt; 5%)，將直接形成導線短路或斷路。<br>&bull; <strong>5 (災難性)</strong>: 曝光區或 Die 內結構性大面積塌陷，造成整塊電路功能失效。",
       "esd_signature": "以 0 到 5 表示是否出現 I/O ESD 保護元件擊穿、特定 Pin 腳漏電、漏電曲線 diode 夾軌異常等 ESD 特徵。",
       "eos_signature": "以 0 到 5 表示是否出現大面積金屬燒毀、融化、開蓋光學過載痕跡等 EOS 特徵強度。",
       "bondwire_signature": "以 0 到 5 表示 X-ray、wire pull/shear 測試或打線連續性量測中是否表現出打線疲勞、裂損或開路特徵。"
@@ -3197,6 +3653,13 @@
           tabContents.forEach(c => c.classList.remove("active"));
           
           document.getElementById(tabId).classList.add("active");
+          
+          // 如果切換到可靠度頁籤，自動重繪畫布
+          if (tabId === "reliability-tab") {
+            setTimeout(() => {
+              if (window.drawReliabilityChart) window.drawReliabilityChart();
+            }, 60);
+          }
         });
       });
 
@@ -3240,6 +3703,563 @@
           document.getElementById("popover-overlay").style.display = "none";
         }
       });
+
+      // ==========================================================================
+      // JS 9. 數學可靠度模型驗證計算與模擬 (Math Reliability Calculation & Simulation)
+      // ==========================================================================
+      const KB = 8.6173303e-5; // 波茲曼常數 eV/K
+      
+      const reliabilityState = {
+        activeModel: "em",
+        em: { j: 1.5, t: 125, ea: 0.9, n: 2.0 },
+        tddb: { t: 125, v: 3.3, tox: 2.5, gamma: 0.7, ea: 0.6, beta: 1.5, time: 10000 },
+        cm: { dt: 100, tmax: 125, f: 12, k: 2.1, m: 0.33, ea: 0.12 },
+        peck: { t: 130, rh: 85, n: 3.0, ea: 0.8 }
+      };
+
+      const sliderConfigs = {
+        em: [
+          { key: "j", label: "電流密度 J", min: 0.1, max: 5.0, step: 0.1, unit: "MA/cm²" },
+          { key: "t", label: "晶片工作溫度 T", min: 25, max: 300, step: 5, unit: "℃" },
+          { key: "ea", label: "活化能 Ea", min: 0.4, max: 1.2, step: 0.05, unit: "eV" },
+          { key: "n", label: "電流指數 n", min: 1.0, max: 3.0, step: 0.1, unit: "" }
+        ],
+        tddb: [
+          { key: "t", label: "氧化層溫度 T", min: 25, max: 250, step: 5, unit: "℃" },
+          { key: "v", label: "工作電壓 V", min: 0.5, max: 5.0, step: 0.1, unit: "V" },
+          { key: "tox", label: "介電層厚度 tox", min: 1.0, max: 8.0, step: 0.1, unit: "nm" },
+          { key: "gamma", label: "電場加速參數 γ", min: 0.1, max: 1.5, step: 0.05, unit: "cm/MV" },
+          { key: "ea", label: "活化能 Ea", min: 0.3, max: 1.1, step: 0.05, unit: "eV" },
+          { key: "beta", label: "Weibull 斜率 β", min: 0.5, max: 3.5, step: 0.1, unit: "" },
+          { key: "time", label: "運行時間 t", min: 1000, max: 200000, step: 1000, unit: "小時" }
+        ],
+        cm: [
+          { key: "dt", label: "溫度交變範圍 ΔT", min: 20, max: 200, step: 5, unit: "℃" },
+          { key: "tmax", label: "最高結溫 Tmax", min: 50, max: 175, step: 5, unit: "℃" },
+          { key: "f", label: "循環頻率 f", min: 1, max: 48, step: 1, unit: "cycles/day" },
+          { key: "k", label: "CM 指數 k", min: 1.5, max: 3.0, step: 0.1, unit: "" },
+          { key: "m", label: "頻率衰減指數 m", min: 0.1, max: 0.6, step: 0.01, unit: "" },
+          { key: "ea", label: "熱疲勞活化能 Ea", min: 0.05, max: 0.30, step: 0.01, unit: "eV" }
+        ],
+        peck: [
+          { key: "t", label: "環境溫度 T", min: 25, max: 150, step: 5, unit: "℃" },
+          { key: "rh", label: "相對濕度 RH", min: 10, max: 100, step: 5, unit: "%" },
+          { key: "n", label: "濕度指數 n", min: 1.5, max: 4.5, step: 0.1, unit: "" },
+          { key: "ea", label: "腐蝕活化能 Ea", min: 0.5, max: 1.2, step: 0.05, unit: "eV" }
+        ]
+      };
+
+      const reliabilityLiterature = [
+        {
+          title: "Electromigration—A brief survey and some recent results",
+          category: "電遷移 (EM)",
+          description: "提出著名的 Black's Equation 物理方程式，奠定當前金屬互連導線電流密度與溫度加速失效評估之基礎物理架構。",
+          standard: "IEEE Trans. Electron Devices (Black, 1969)"
+        },
+        {
+          title: "JESD22-A110E - Highly-Accelerated Temperature and Humidity Stress Test (HAST)",
+          category: "溫濕度偏壓與腐蝕 (Peck)",
+          description: "制定高加速溫濕度偏壓試驗規範，定義半導體非氣密性封裝在極端水氣環境下之防潮可靠度量測與對應之 Peck 模型係數基準。",
+          standard: "JEDEC Standard (JESD22-A110E)"
+        },
+        {
+          title: "JESD22-A104E - Temperature Cycling",
+          category: "熱疲勞 (Coffin-Manson)",
+          description: "定義晶片在元件與板級系統中承受劇烈溫度交變時之驗證方法，常用 Coffin-Manson 彈塑性應變模型做疲勞壽命預估。",
+          standard: "JEDEC Standard (JESD22-A104E)"
+        },
+        {
+          title: "JESD74A - Early Life Failure Rate Calculation of Semiconductor Devices",
+          category: "介電層崩潰 / 早期失效",
+          description: "確立以 Weibull 分佈及 E/1-E 電場加速模型分析薄閘極氧化層 (TDDB) 與晶片早期失效機率 (ELFR) 之統計分析規範。",
+          standard: "JEDEC Standard (JESD74A)"
+        },
+        {
+          title: "JESD85 - Methods for Calculating Failure Rates in Semiconductor Devices",
+          category: "統計可靠度計算",
+          description: "定義標準失效率 (FIT) 與 MTBF 計算方式，並統一業界對於活化能 (Ea) 與波茲曼常數 (kB) 在壽命預估中之數值轉換標準。",
+          standard: "JEDEC Standard (JESD85)"
+        }
+      ];
+
+      function renderReliabilityLiterature() {
+        const tbody = document.getElementById("reliability-literature-body");
+        if (!tbody) return;
+        tbody.innerHTML = reliabilityLiterature.map(lit => `
+          <tr style="border-bottom: 1px solid var(--border-color);">
+            <td style="padding: 12px 10px; font-weight: 600; color: #fff; text-align: left;">${lit.title}</td>
+            <td style="padding: 12px 10px; text-align: left;"><span style="background: var(--orange-glow); color: var(--orange); font-size:11px; padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(242, 138, 55, 0.3); font-weight: 600;">${lit.category}</span></td>
+            <td style="padding: 12px 10px; color: var(--text-muted); line-height: 1.5; text-align: left;">${lit.description}</td>
+            <td style="padding: 12px 10px; font-family: 'JetBrains Mono', monospace; font-size:12px; color: var(--orange); text-align: left;">${lit.standard}</td>
+          </tr>
+        `).join("");
+      }
+
+      window.switchReliabilityModel = function(modelId) {
+        reliabilityState.activeModel = modelId;
+        
+        document.querySelectorAll(".reliability-menu-btn").forEach(btn => {
+          btn.classList.remove("active");
+        });
+        const activeBtn = document.getElementById("rel-btn-" + modelId);
+        if (activeBtn) activeBtn.classList.add("active");
+        
+        window.renderReliabilityFormula(modelId);
+        window.renderReliabilitySliders(modelId);
+        window.calculateReliability();
+        
+        setTimeout(() => {
+          window.drawReliabilityChart();
+        }, 50);
+      };
+
+      window.renderReliabilityFormula = function(modelId) {
+        const titleEl = document.getElementById("reliability-model-title");
+        const formulaEl = document.getElementById("reliability-formula-area");
+        const descEl = document.getElementById("reliability-model-desc");
+        if (!titleEl || !formulaEl || !descEl) return;
+
+        if (modelId === "em") {
+          titleEl.innerText = "Black's Equation (電遷移 EM 失效模型)";
+          formulaEl.innerHTML = `
+            <div class="math-formula">
+              <span class="math-term">MTTF</span> = <span class="math-term">A</span> &middot; <span class="math-term">J</span><sup class="math-sup">-n</sup> &middot; exp(&nbsp;<div class="math-fraction"><span class="math-num"><span class="math-term">E<span class="math-sub">a</span></span></span><span class="math-den"><span class="math-term">k<span class="math-sub">B</span></span> &middot; <span class="math-term">T</span></span></div>&nbsp;)
+            </div>
+          `;
+          descEl.innerHTML = `
+            <strong>Black's Equation</strong> 是半導體電遷移失效（Electromigration, EM）的核心物理公式。高電流密度會導致晶片內部的金屬導線（Al/Cu）原子沿著電子風流方向遷移，產生空洞（Void）或短路擠出。此模型定量評估電流密度 (<span class="math-term">J</span>) 與金屬導線溫度 (<span class="math-term">T</span>) 對元件壽命的影響。
+          `;
+        } else if (modelId === "tddb") {
+          titleEl.innerText = "Gate Oxide TDDB (閘極介電層崩潰 Weibull 模型)";
+          formulaEl.innerHTML = `
+            <div class="math-formula">
+              <span class="math-term">F(t)</span> = 1 - exp[&nbsp;-(<div class="math-fraction"><span class="math-num"><span class="math-term">t</span></span><span class="math-den">&eta;</span></div>)<sup class="math-sup">&beta;</sup>&nbsp;]&nbsp;&nbsp;,&nbsp;&nbsp;&eta; = &tau;<span class="math-sub">0</span> &middot; exp(-&gamma; &middot; <span class="math-term">E<span class="math-sub">ox</span></span>) &middot; exp(&nbsp;<div class="math-fraction"><span class="math-num"><span class="math-term">E<span class="math-sub">a</span></span></span><span class="math-den"><span class="math-term">k<span class="math-sub">B</span></span> &middot; <span class="math-term">T</span></span></div>&nbsp;)
+            </div>
+          `;
+          descEl.innerHTML = `
+            <strong>Gate Oxide TDDB (時變介電層崩潰)</strong> 使用 <strong>Weibull 分佈模型</strong> 結合電場加速 E-Model。在持續電場 (<span class="math-term">E_ox</span>) 與溫度 (<span class="math-term">T</span>) 作用下，閘極介電層中會逐漸產生缺陷，當缺陷串聯成導電通道時即崩潰。其中 &eta; 為特徵壽命，&beta; 為 Weibull 形狀參數（決定故障隨時間的擴散速率，一般 Thin oxide &beta; &gt; 1）。
+          `;
+        } else if (modelId === "cm") {
+          titleEl.innerText = "Coffin-Manson (凸塊熱疲勞與機械蠕變模型)";
+          formulaEl.innerHTML = `
+            <div class="math-formula" style="font-size: 1.15rem;">
+              <span class="math-term">A<span class="math-sub">f</span></span> = (&nbsp;<div class="math-fraction"><span class="math-num">&Delta;<span class="math-term">T<span class="math-sub">actual</span></span></span><span class="math-den">&Delta;<span class="math-term">T<span class="math-sub">nom</span></span></span></div>&nbsp;)<sup class="math-sup">k</sup> &middot; (&nbsp;<div class="math-fraction"><span class="math-num"><span class="math-term">f<span class="math-sub">actual</span></span></span><span class="math-den"><span class="math-term">f<span class="math-sub">nom</span></span></span></div>&nbsp;)<sup class="math-sup">m</sup> &middot; exp(&nbsp;<div class="math-fraction"><span class="math-num"><span class="math-term">E<span class="math-sub">a</span></span></span><span class="math-den"><span class="math-term">k<span class="math-sub">B</span></span></span></div> &middot; [&nbsp;<div class="math-fraction"><span class="math-num">1</span><span class="math-den"><span class="math-term">T<span class="math-sub">nom, max</span></span></span></div> - <div class="math-fraction"><span class="math-num">1</span><span class="math-den"><span class="math-term">T<span class="math-sub">actual, max</span></span></span></div>&nbsp;]&nbsp;)
+            </div>
+          `;
+          descEl.innerHTML = `
+            <strong>Coffin-Manson 彈塑性應變模型</strong> 用於評估晶片封裝凸塊（Bump）、錫球錫接點（Solder Joints）及金屬化合物（IMC）在熱循環試驗（TCT）下的熱機械疲勞與剪切應力。此模型考量了溫度擺幅 (&Delta;<span class="math-term">T</span>)、交變頻率 (<span class="math-term">f</span>) 與最高溫度 (<span class="math-term">T_max</span>) 對金屬蠕變疲勞的加速效應。
+          `;
+        } else if (modelId === "peck") {
+          titleEl.innerText = "Peck's Temperature-Humidity Law (溫濕度腐蝕模型)";
+          formulaEl.innerHTML = `
+            <div class="math-formula">
+              <span class="math-term">A<span class="math-sub">f</span></span> = (&nbsp;<div class="math-fraction"><span class="math-num"><span class="math-term">RH<span class="math-sub">actual</span></span></span><span class="math-den"><span class="math-term">RH<span class="math-sub">nom</span></span></span></div>&nbsp;)<sup class="math-sup">n</sup> &middot; exp(&nbsp;<div class="math-fraction"><span class="math-num"><span class="math-term">E<span class="math-sub">a</span></span></span><span class="math-den"><span class="math-term">k<span class="math-sub">B</span></span></span></div> &middot; [&nbsp;<div class="math-fraction"><span class="math-num">1</span><span class="math-den"><span class="math-term">T<span class="math-sub">nom</span></span></span></div> - <div class="math-fraction"><span class="math-num">1</span><span class="math-den"><span class="math-term">T<span class="math-sub">actual</span></span></span></div>&nbsp;]&nbsp;)
+            </div>
+          `;
+          descEl.innerHTML = `
+            <strong>Peck's Temperature-Humidity Power Law</strong> 是評估晶片銲墊（Pad）、非氣密性封裝內部金屬導線（Al/Cu）遭受外部濕度腐蝕失效的核心物理化學模型。高溫與高相對濕度 (RH) 會加速潮氣向晶片內部擴散，結合化學反應加速電極侵蝕，是高加速溫濕度試驗（HAST）的學術底座。
+          `;
+        }
+      };
+
+      window.renderReliabilitySliders = function(modelId) {
+        const container = document.getElementById("reliability-sliders-container");
+        if (!container) return;
+        
+        const configs = sliderConfigs[modelId];
+        const state = reliabilityState[modelId];
+        
+        container.innerHTML = configs.map(cfg => {
+          const val = state[cfg.key];
+          return `
+            <div class="reliability-slider-group">
+              <div class="reliability-slider-header">
+                <span style="font-weight:500;">${cfg.label} (${cfg.key.toUpperCase()})</span>
+                <span class="val" id="rel-val-display-${cfg.key}">${val.toLocaleString()} ${cfg.unit}</span>
+              </div>
+              <input type="range" 
+                     class="wafer-slider" 
+                     style="width: 100%; margin: 6px 0;" 
+                     min="${cfg.min}" 
+                     max="${cfg.max}" 
+                     step="${cfg.step}" 
+                     value="${val}" 
+                     data-key="${cfg.key}">
+            </div>
+          `;
+        }).join("");
+        
+        container.querySelectorAll("input[type='range']").forEach(input => {
+          input.addEventListener("input", (e) => {
+            const key = e.target.getAttribute("data-key");
+            const parsedVal = parseFloat(e.target.value);
+            reliabilityState[modelId][key] = parsedVal;
+            
+            const cfg = configs.find(c => c.key === key);
+            document.getElementById("rel-val-display-" + key).innerText = parsedVal.toLocaleString() + " " + cfg.unit;
+            
+            window.calculateReliability();
+            window.drawReliabilityChart();
+          });
+        });
+      };
+
+      window.calculateReliability = function() {
+        const model = reliabilityState.activeModel;
+        const hudTitle = document.getElementById("reliability-hud-label");
+        const hudVal = document.getElementById("reliability-hud-val");
+        const hudSub = document.getElementById("reliability-hud-sub");
+        if (!hudTitle || !hudVal || !hudSub) return;
+        
+        if (model === "em") {
+          const em = reliabilityState.em;
+          const Tk = em.t + 273.15;
+          // MTTF = A * J^-n * exp(Ea / (kB * T))
+          // 設定 A = 1e-5
+          const mttf = 1e-5 * Math.pow(em.j, -em.n) * Math.exp(em.ea / (KB * Tk));
+          const years = mttf / 8760;
+          
+          const TnomK = 85 + 273.15;
+          const Af = Math.pow(em.j / 0.5, em.n) * Math.exp((em.ea / KB) * (1 / TnomK - 1 / Tk));
+          
+          hudTitle.innerText = "預估平均失效時間 (MTTF)";
+          hudVal.innerText = Math.round(mttf).toLocaleString() + " 小時";
+          hudVal.style.color = "var(--orange)";
+          hudSub.innerHTML = `約 <strong>${years.toFixed(2)}</strong> 年 (相較 J=0.5MA/cm², T=85℃ 正常工作條件下之加速因子 A<sub>f</sub>: <strong>${Af.toFixed(2)}</strong>)`;
+        } 
+        else if (model === "tddb") {
+          const tddb = reliabilityState.tddb;
+          const Eox = tddb.v / (tddb.tox * 0.1); // MV/cm
+          const Tk = tddb.t + 273.15;
+          // η = τ0 * exp(-γ*Eox) * exp(Ea / (kB * T))
+          const eta = 1e-6 * Math.exp(-tddb.gamma * Eox) * Math.exp(tddb.ea / (KB * Tk));
+          // F(t) = 1 - exp(-(t/η)^β)
+          const Ft = 100 * (1 - Math.exp(-Math.pow(tddb.time / eta, tddb.beta)));
+          
+          hudTitle.innerText = "當前運行時間下之累積失效機率 F(t)";
+          hudVal.innerText = Ft.toFixed(4) + " %";
+          hudVal.style.color = Ft > 50 ? "var(--red)" : Ft > 5 ? "var(--yellow)" : "var(--green)";
+          hudSub.innerHTML = `元件特徵壽命 &eta;: <strong>${Math.round(eta).toLocaleString()}</strong> 小時 (氧化層電場 E<sub>ox</sub>: <strong>${Eox.toFixed(2)}</strong> MV/cm)`;
+        } 
+        else if (model === "cm") {
+          const cm = reliabilityState.cm;
+          const TmaxK = cm.tmax + 273.15;
+          const TmaxNomK = 60 + 273.15;
+          const Af = Math.pow(cm.dt / 40, cm.k) * Math.pow(cm.f / 2, cm.m) * Math.exp((cm.ea / KB) * (1 / TmaxNomK - 1 / TmaxK));
+          const cycles = 10000 / Af;
+          
+          hudTitle.innerText = "預估凸塊疲勞失效循環次數 (Nf)";
+          hudVal.innerText = Math.round(cycles).toLocaleString() + " 循環次數";
+          hudVal.style.color = "var(--purple)";
+          hudSub.innerHTML = `相較對比基準溫周試驗條件之壽命加速因子 A<sub>f</sub>: <strong>${Af.toFixed(2)}</strong> (對比基準: &Delta;T=40℃, f=2 cycles/day, T<sub>max</sub>=60℃, N<sub>f,nom</sub>=10,000次)`;
+        } 
+        else if (model === "peck") {
+          const peck = reliabilityState.peck;
+          const Tk = peck.t + 273.15;
+          const TnomK = 25 + 273.15;
+          const Af = Math.pow(peck.rh / 45, peck.n) * Math.exp((peck.ea / KB) * (1 / TnomK - 1 / Tk));
+          const ttf = 100000 / Af;
+          
+          hudTitle.innerText = "預估金屬銲墊水氣腐蝕失效時間 (TTF)";
+          hudVal.innerText = Math.round(ttf).toLocaleString() + " 小時";
+          hudVal.style.color = "var(--blue)";
+          hudSub.innerHTML = `約 <strong>${(ttf / 8760).toFixed(3)}</strong> 年 (相較晶片常溫常濕 JEDEC 正常運作條件 T=25℃, RH=45% 之加速因子 A<sub>f</sub>: <strong>${Math.round(Af).toLocaleString()}</strong>)`;
+        }
+      };
+
+      window.drawReliabilityChart = function() {
+        const canvas = document.getElementById("reliability-canvas");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * window.devicePixelRatio;
+        canvas.height = rect.height * window.devicePixelRatio;
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        
+        const width = rect.width;
+        const height = rect.height;
+        
+        ctx.fillStyle = "#0f1013";
+        ctx.fillRect(0, 0, width, height);
+        
+        const paddingLeft = 60;
+        const paddingRight = 20;
+        const paddingTop = 25;
+        const paddingBottom = 35;
+        
+        const graphWidth = width - paddingLeft - paddingRight;
+        const graphHeight = height - paddingTop - paddingBottom;
+        
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+        ctx.lineWidth = 1;
+        const gridCols = 5;
+        const gridRows = 4;
+        
+        for (let i = 0; i <= gridCols; i++) {
+          const x = paddingLeft + (i / gridCols) * graphWidth;
+          ctx.beginPath();
+          ctx.moveTo(x, paddingTop);
+          ctx.lineTo(x, paddingTop + graphHeight);
+          ctx.stroke();
+        }
+        for (let i = 0; i <= gridRows; i++) {
+          const y = paddingTop + (i / gridRows) * graphHeight;
+          ctx.beginPath();
+          ctx.moveTo(paddingLeft, y);
+          ctx.lineTo(paddingLeft + graphWidth, y);
+          ctx.stroke();
+        }
+        
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+        ctx.beginPath();
+        ctx.moveTo(paddingLeft, paddingTop);
+        ctx.lineTo(paddingLeft, paddingTop + graphHeight);
+        ctx.lineTo(paddingLeft + graphWidth, paddingTop + graphHeight);
+        ctx.stroke();
+        
+        const model = reliabilityState.activeModel;
+        
+        let xMin, xMax, yMin, yMax;
+        let curvePoints = [];
+        let currentXVal, currentYVal;
+        let xAxisLabel = "";
+        let yAxisLabel = "";
+        let isLogY = false;
+        let activeColor = "var(--orange)";
+        
+        if (model === "em") {
+          xAxisLabel = "晶片工作溫度 T (℃)";
+          yAxisLabel = "預估壽命 MTTF (年, Log)";
+          isLogY = true;
+          activeColor = "var(--orange)";
+          
+          xMin = 50;
+          xMax = 250;
+          yMin = 0.1;
+          yMax = 1000;
+          
+          const em = reliabilityState.em;
+          currentXVal = em.t;
+          const curTk = em.t + 273.15;
+          const curMttf = 1e-5 * Math.pow(em.j, -em.n) * Math.exp(em.ea / (KB * curTk));
+          currentYVal = curMttf / 8760;
+          
+          for (let xVal = xMin; xVal <= xMax; xVal += 2) {
+            const Tk = xVal + 273.15;
+            const mttf = 1e-5 * Math.pow(em.j, -em.n) * Math.exp(em.ea / (KB * Tk));
+            curvePoints.push({ x: xVal, y: mttf / 8760 });
+          }
+        } 
+        else if (model === "tddb") {
+          xAxisLabel = "運行時間 t (小時, Log)";
+          yAxisLabel = "累積失效概率 F(t) (%)";
+          isLogY = false;
+          activeColor = "var(--green)";
+          
+          xMin = 2; // log10(100)
+          xMax = 7; // log10(10000000)
+          yMin = 0;
+          yMax = 100;
+          
+          const tddb = reliabilityState.tddb;
+          currentXVal = Math.log10(tddb.time);
+          
+          const Eox = tddb.v / (tddb.tox * 0.1);
+          const Tk = tddb.t + 273.15;
+          const eta = 1e-6 * Math.exp(-tddb.gamma * Eox) * Math.exp(tddb.ea / (KB * Tk));
+          currentYVal = 100 * (1 - Math.exp(-Math.pow(tddb.time / eta, tddb.beta)));
+          
+          for (let logT = xMin; logT <= xMax; logT += 0.05) {
+            const timeVal = Math.pow(10, logT);
+            const Ft = 100 * (1 - Math.exp(-Math.pow(timeVal / eta, tddb.beta)));
+            curvePoints.push({ x: logT, y: Ft });
+          }
+        } 
+        else if (model === "cm") {
+          xAxisLabel = "溫周溫差範圍 ΔT (℃)";
+          yAxisLabel = "凸塊疲勞壽命 Nf (次, Log)";
+          isLogY = true;
+          activeColor = "var(--purple)";
+          
+          xMin = 20;
+          xMax = 200;
+          yMin = 100;
+          yMax = 500000;
+          
+          const cm = reliabilityState.cm;
+          currentXVal = cm.dt;
+          
+          const TmaxK = cm.tmax + 273.15;
+          const TmaxNomK = 60 + 273.15;
+          const Af = Math.pow(cm.dt / 40, cm.k) * Math.pow(cm.f / 2, cm.m) * Math.exp((cm.ea / KB) * (1 / TmaxNomK - 1 / TmaxK));
+          currentYVal = 10000 / Af;
+          
+          for (let dtVal = xMin; dtVal <= xMax; dtVal += 2) {
+            const localAf = Math.pow(dtVal / 40, cm.k) * Math.pow(cm.f / 2, cm.m) * Math.exp((cm.ea / KB) * (1 / TmaxNomK - 1 / TmaxK));
+            curvePoints.push({ x: dtVal, y: 10000 / localAf });
+          }
+        } 
+        else if (model === "peck") {
+          xAxisLabel = "環境相對濕度 RH (%)";
+          yAxisLabel = "腐蝕失效時間 TTF (年, Log)";
+          isLogY = true;
+          activeColor = "var(--blue)";
+          
+          xMin = 10;
+          xMax = 100;
+          yMin = 0.01;
+          yMax = 100;
+          
+          const peck = reliabilityState.peck;
+          currentXVal = peck.rh;
+          
+          const Tk = peck.t + 273.15;
+          const TnomK = 25 + 273.15;
+          const Af = Math.pow(peck.rh / 45, peck.n) * Math.exp((peck.ea / KB) * (1 / TnomK - 1 / Tk));
+          currentYVal = (100000 / Af) / 8760;
+          
+          for (let rhVal = xMin; rhVal <= xMax; rhVal += 1) {
+            const localAf = Math.pow(rhVal / 45, peck.n) * Math.exp((peck.ea / KB) * (1 / TnomK - 1 / Tk));
+            curvePoints.push({ x: rhVal, y: (100000 / localAf) / 8760 });
+          }
+        }
+        
+        function getXPix(val) {
+          return paddingLeft + ((val - xMin) / (xMax - xMin)) * graphWidth;
+        }
+        
+        function getYPix(val) {
+          if (isLogY) {
+            const safeVal = Math.max(val, yMin);
+            const logVal = Math.log10(safeVal);
+            const logMin = Math.log10(yMin);
+            const logMax = Math.log10(yMax);
+            return paddingTop + graphHeight - ((logVal - logMin) / (logMax - logMin)) * graphHeight;
+          } else {
+            return paddingTop + graphHeight - ((val - yMin) / (yMax - yMin)) * graphHeight;
+          }
+        }
+        
+        if (curvePoints.length > 0) {
+          ctx.beginPath();
+          let first = true;
+          for (let pt of curvePoints) {
+            const px = getXPix(pt.x);
+            const py = getYPix(pt.y);
+            
+            if (px >= paddingLeft && px <= paddingLeft + graphWidth && py >= paddingTop && py <= paddingTop + graphHeight) {
+              if (first) {
+                ctx.moveTo(px, py);
+                first = false;
+              } else {
+                ctx.lineTo(px, py);
+              }
+            }
+          }
+          ctx.strokeStyle = activeColor;
+          ctx.lineWidth = 3;
+          ctx.stroke();
+        }
+        
+        const curPx = getXPix(currentXVal);
+        const curPy = getYPix(currentYVal);
+        
+        if (curPx >= paddingLeft && curPx <= paddingLeft + graphWidth && curPy >= paddingTop && curPy <= paddingTop + graphHeight) {
+          ctx.setLineDash([3, 3]);
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.22)";
+          ctx.lineWidth = 1;
+          
+          ctx.beginPath();
+          ctx.moveTo(curPx, curPy);
+          ctx.lineTo(curPx, paddingTop + graphHeight);
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.moveTo(curPx, curPy);
+          ctx.lineTo(paddingLeft, curPy);
+          ctx.stroke();
+          
+          ctx.setLineDash([]);
+          
+          ctx.beginPath();
+          ctx.arc(curPx, curPy, 8, 0, 2 * Math.PI);
+          ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
+          ctx.fill();
+          
+          ctx.beginPath();
+          ctx.arc(curPx, curPy, 4.5, 0, 2 * Math.PI);
+          ctx.fillStyle = "#fff";
+          ctx.fill();
+          ctx.strokeStyle = activeColor;
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+        }
+        
+        ctx.fillStyle = "var(--text-muted)";
+        ctx.font = "11px 'Inter', sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "top";
+        
+        ctx.fillText(xAxisLabel, paddingLeft + graphWidth / 2, paddingTop + graphHeight + 22);
+        
+        ctx.save();
+        ctx.translate(14, paddingTop + graphHeight / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText(yAxisLabel, 0, 0);
+        ctx.restore();
+        
+        ctx.textAlign = "center";
+        if (model === "tddb") {
+          for (let i = xMin; i <= xMax; i++) {
+            let labelText = "";
+            if (i === 2) labelText = "10²";
+            else if (i === 3) labelText = "10³";
+            else if (i === 4) labelText = "10⁴";
+            else if (i === 5) labelText = "10⁵";
+            else if (i === 6) labelText = "10⁶";
+            else if (i === 7) labelText = "10⁷";
+            ctx.fillText(labelText + " h", getXPix(i), paddingTop + graphHeight + 6);
+          }
+        } else {
+          const ticks = 5;
+          for (let i = 0; i <= ticks; i++) {
+            const val = xMin + (i / ticks) * (xMax - xMin);
+            ctx.fillText(Math.round(val).toString(), getXPix(val), paddingTop + graphHeight + 6);
+          }
+        }
+        
+        ctx.textAlign = "right";
+        ctx.textBaseline = "middle";
+        if (isLogY) {
+          const logMin = Math.log10(yMin);
+          const logMax = Math.log10(yMax);
+          for (let i = Math.floor(logMin); i <= Math.ceil(logMax); i++) {
+            const val = Math.pow(10, i);
+            let label = val.toString();
+            if (val >= 1000) label = (val / 1000) + "k";
+            else if (val < 1) label = val.toFixed(2);
+            ctx.fillText(label, paddingLeft - 8, getYPix(val));
+          }
+        } else {
+          const ticks = 4;
+          for (let i = 0; i <= ticks; i++) {
+            const val = yMin + (i / ticks) * (yMax - yMin);
+            ctx.fillText(Math.round(val).toString(), paddingLeft - 8, getYPix(val));
+          }
+        }
+      };
+
+      window.addEventListener("resize", () => {
+        const tab = document.getElementById("reliability-tab");
+        if (tab && tab.classList.contains("active")) {
+          window.drawReliabilityChart();
+        }
+      });
+
+      renderReliabilityLiterature();
+      window.switchReliabilityModel("em");
 
       // 初始執行一次畫出 UI
       renderInputMetrics();
