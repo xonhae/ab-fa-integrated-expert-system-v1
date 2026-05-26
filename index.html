@@ -1350,6 +1350,544 @@
       height: 220px;
       display: block;
     }
+
+    /* ==========================================================================
+       14. GitHub Pages UI refresh override
+       ========================================================================== */
+    :root {
+      --bg-gradient:
+        radial-gradient(circle at 8% -10%, rgba(36, 115, 111, 0.16), transparent 30rem),
+        radial-gradient(circle at 96% -4%, rgba(89, 111, 214, 0.16), transparent 34rem),
+        linear-gradient(180deg, #f8fbfd 0%, #eef3f7 54%, #e8eef4 100%);
+      --bg-panel: rgba(255, 255, 255, 0.92);
+      --bg-panel-solid: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f8fbfd;
+      --border-color: #d9e3ec;
+      --border-color-hover: #b9c8d6;
+      --text: #162033;
+      --text-muted: #65758a;
+      --text-dark: #162033;
+      --orange: #24736f;
+      --orange-glow: rgba(36, 115, 111, 0.12);
+      --red: #d75f6a;
+      --red-glow: rgba(215, 95, 106, 0.12);
+      --purple: #596fd6;
+      --purple-glow: rgba(89, 111, 214, 0.12);
+      --blue: #24736f;
+      --blue-glow: rgba(36, 115, 111, 0.12);
+      --green: #2f9a66;
+      --green-glow: rgba(47, 154, 102, 0.12);
+      --yellow: #d88920;
+      --yellow-glow: rgba(216, 137, 32, 0.12);
+    }
+
+    body {
+      padding: 28px;
+      background: var(--bg-gradient);
+      color: var(--text);
+    }
+
+    .topbar {
+      padding: 18px 20px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.88);
+      border-color: rgba(191, 204, 216, 0.92);
+      box-shadow: 0 18px 45px rgba(31, 50, 70, 0.10);
+    }
+
+    .brand-logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #24736f, #596fd6);
+      box-shadow: 0 12px 26px rgba(36, 115, 111, 0.22);
+    }
+
+    .brand-title {
+      color: var(--text);
+      font-size: 28px;
+      letter-spacing: 0;
+    }
+
+    .brand-subtitle {
+      border-color: rgba(36, 115, 111, 0.23);
+      background: #e7f4f2;
+      color: #24736f;
+      border-radius: 6px;
+      font-weight: 800;
+    }
+
+    .status-pill {
+      background: #ffffff;
+      border-color: #c9d6e2;
+      color: #526176;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.55);
+    }
+
+    .dashboard-grid {
+      grid-template-columns: minmax(340px, 430px) minmax(0, 1fr);
+      gap: 18px;
+      max-width: 1680px;
+      margin: 0 auto;
+    }
+
+    .card,
+    .bars-section,
+    .reason-card,
+    .chart-container,
+    .legend-bar,
+    .literature-item,
+    .popover-card,
+    .param-card,
+    .reliability-hud {
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.94) !important;
+      border-color: var(--border-color);
+      box-shadow: 0 14px 34px rgba(31, 50, 70, 0.08);
+      backdrop-filter: none;
+    }
+
+    .card:hover,
+    .param-card:hover,
+    .monitor-card:hover,
+    .reason-card-header:hover {
+      border-color: var(--border-color-hover);
+      background: #fbfdfe !important;
+    }
+
+    .card-header {
+      min-height: 54px;
+      padding: 16px 20px !important;
+      border-bottom-color: #e7edf3;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdfe 100%);
+    }
+
+    .card-header h3,
+    .chart-container h4,
+    .report-card-title,
+    .top3-reasons h4,
+    .popover-section-title {
+      color: var(--text);
+      letter-spacing: 0;
+    }
+
+    .card-body {
+      padding: 18px 20px !important;
+    }
+
+    #case-settings-card .card-body {
+      padding-top: 16px !important;
+    }
+
+    .form-group-grid {
+      gap: 12px !important;
+    }
+
+    label {
+      color: #516173;
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea.report-textarea {
+      background: #f8fbfd !important;
+      border: 1px solid #cfdbe6 !important;
+      border-radius: 8px !important;
+      color: var(--text) !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus,
+    textarea.report-textarea:focus {
+      background: #ffffff !important;
+      border-color: #24736f !important;
+      box-shadow: 0 0 0 3px rgba(36, 115, 111, 0.12);
+    }
+
+    select option {
+      background: #ffffff;
+      color: var(--text);
+    }
+
+    .btn {
+      min-height: 40px;
+      border-radius: 8px;
+      border-color: #c7d4df;
+      background: #ffffff;
+      color: var(--text);
+      box-shadow: 0 8px 18px rgba(31, 50, 70, 0.05);
+    }
+
+    .btn:hover {
+      border-color: #24736f;
+      background: #edf8f6;
+      color: var(--text);
+    }
+
+    .btn-danger,
+    #download-report-btn,
+    #save-report-html-btn,
+    #print-report-btn {
+      background: #fff8ed !important;
+      border-color: rgba(216, 137, 32, 0.35) !important;
+      color: #9d5c08 !important;
+    }
+
+    .btn-danger:hover,
+    #download-report-btn:hover,
+    #save-report-html-btn:hover,
+    #print-report-btn:hover {
+      background: #fdf0d9 !important;
+      color: #733f00 !important;
+    }
+
+    details {
+      border-color: var(--border-color);
+      background: #ffffff;
+      border-radius: 8px;
+    }
+
+    summary {
+      color: var(--text);
+    }
+
+    summary:hover,
+    .reason-card-header {
+      background: #f8fbfd;
+    }
+
+    .details-content,
+    .reason-card-body,
+    .popover-card-header,
+    .param-footer {
+      border-color: #e7edf3;
+    }
+
+    .knowledge-table th {
+      color: #516173;
+      border-bottom-color: #d9e3ec;
+      background: #f8fbfd;
+      text-transform: none;
+    }
+
+    .knowledge-table td {
+      color: var(--text);
+      border-bottom-color: #e7edf3;
+    }
+
+    .knowledge-table tr:hover td {
+      background: #f8fbfd;
+    }
+
+    .metrics-container {
+      grid-template-columns: repeat(2, minmax(280px, 1fr));
+      gap: 14px;
+      max-height: 58vh;
+      padding: 2px 6px 2px 2px;
+    }
+
+    .param-card {
+      padding: 15px 16px;
+      overflow: visible;
+    }
+
+    .param-title {
+      color: var(--text);
+      font-size: 14px;
+      letter-spacing: 0;
+    }
+
+    .param-help,
+    .ref-intro,
+    .popover-section-text,
+    .trace-text,
+    .reliability-hud-unit,
+    .reliability-slider-header,
+    .param-footer {
+      color: var(--text-muted);
+    }
+
+    .popover-btn {
+      background: #eef6f7;
+      border-color: #b8c9d6;
+      color: #24736f;
+    }
+
+    .popover-btn:hover {
+      background: #dff0ee;
+      border-color: #24736f;
+      color: #164b4a;
+    }
+
+    input[type="range"],
+    .bar-track,
+    .monitor-bar-wrap {
+      background: #e3ebf2;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      background: #24736f;
+      border-color: #ffffff;
+      box-shadow: 0 4px 12px rgba(36, 115, 111, 0.24);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      background: #24736f;
+      border-color: #ffffff;
+      box-shadow: 0 4px 12px rgba(36, 115, 111, 0.24);
+    }
+
+    .monitor-grid {
+      gap: 8px;
+    }
+
+    .monitor-card {
+      min-height: 42px;
+      padding: 8px 10px;
+      background: #f8fbfd;
+      border-color: var(--border-color);
+    }
+
+    .monitor-card.has-color .monitor-label,
+    .monitor-value {
+      color: var(--text);
+    }
+
+    .monitor-label {
+      color: var(--text-muted);
+    }
+
+    .tabs-nav {
+      position: sticky;
+      top: 12px;
+      z-index: 20;
+      padding: 5px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.82);
+      border-color: var(--border-color);
+      box-shadow: 0 12px 28px rgba(31, 50, 70, 0.07);
+      backdrop-filter: blur(18px);
+    }
+
+    .tab-btn {
+      min-height: 38px;
+      border-radius: 6px;
+      color: #516173;
+      font-size: 13px;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+      background: #edf4f8;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, #24736f, #596fd6);
+      color: #ffffff;
+      box-shadow: 0 8px 20px rgba(36, 115, 111, 0.20);
+    }
+
+    .no-signal-info {
+      background: #f4fafb;
+      border-color: rgba(36, 115, 111, 0.28);
+      color: #24736f;
+      border-radius: 8px;
+    }
+
+    .result-hero {
+      background:
+        linear-gradient(135deg, rgba(36, 115, 111, 0.10), rgba(89, 111, 214, 0.07)),
+        #f9fcfc;
+      border-color: rgba(36, 115, 111, 0.22);
+      border-left-color: #24736f;
+      border-radius: 8px;
+      box-shadow: 0 14px 34px rgba(31, 50, 70, 0.08);
+    }
+
+    .result-hero-label,
+    .reason-field-label,
+    .bar-info span:last-child,
+    .evidence-badge,
+    .literature-item strong,
+    .reliability-menu-btn.active,
+    .reliability-slider-header span.val,
+    .trace-rule {
+      color: #24736f;
+    }
+
+    .result-hero-title,
+    .bar-info span:first-child,
+    .reason-field-text,
+    .result-hero-prob,
+    .report-card-title,
+    .math-formula {
+      color: var(--text);
+    }
+
+    .result-hero-prob span,
+    .reliability-hud-value {
+      color: #24736f;
+      text-shadow: none;
+    }
+
+    .bar-fill {
+      background: linear-gradient(90deg, #24736f, #596fd6);
+    }
+
+    .chart-container,
+    .report-preview-container,
+    .trace-container,
+    textarea.report-textarea,
+    .reliability-canvas-container,
+    .math-formula {
+      background: #fbfcfe !important;
+      border-color: var(--border-color);
+    }
+
+    .trace-rule {
+      background: #e4f3f1;
+      border-color: rgba(36, 115, 111, 0.24);
+    }
+
+    .trace-conclusion {
+      color: #24736f;
+      border-top-color: #d9e3ec;
+    }
+
+    .popover-overlay {
+      background: rgba(22, 32, 51, 0.28);
+    }
+
+    .popover-card {
+      max-width: 540px;
+    }
+
+    .popover-card-header h4,
+    .popover-card-body code {
+      color: #24736f;
+    }
+
+    .floating-hover-card {
+      background: rgba(255, 255, 255, 0.96);
+      color: var(--text);
+      border-color: var(--border-color);
+      box-shadow: 0 18px 45px rgba(31, 50, 70, 0.16);
+    }
+
+    .reliability-menu-btn {
+      background: #ffffff;
+      border-color: var(--border-color);
+      color: #516173;
+      border-radius: 8px;
+    }
+
+    .reliability-menu-btn:hover {
+      background: #edf4f8;
+      color: var(--text);
+    }
+
+    .reliability-menu-btn.active {
+      background: #e4f3f1;
+      border-color: rgba(36, 115, 111, 0.42);
+      box-shadow: none;
+    }
+
+    .reliability-grid {
+      gap: 18px;
+    }
+
+    .reliability-hud {
+      text-align: left;
+    }
+
+    .reliability-hud-title {
+      color: #65758a;
+      letter-spacing: 0.08em;
+    }
+
+    .reliability-canvas-container {
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.82);
+    }
+
+    .legend-bar {
+      justify-content: flex-start;
+      color: var(--text);
+    }
+
+    @media (max-width: 1200px) {
+      body {
+        padding: 18px;
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .left-column {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      .left-column .card {
+        margin-bottom: 0;
+      }
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 12px;
+      }
+
+      .topbar,
+      .card-header,
+      .result-hero,
+      .bars-section {
+        padding: 14px !important;
+      }
+
+      .topbar,
+      .brand,
+      .card-header,
+      .report-actions {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .brand-title {
+        font-size: 24px;
+      }
+
+      .brand-subtitle {
+        display: inline-flex;
+        width: fit-content;
+        margin: 6px 0 0;
+      }
+
+      .left-column,
+      .form-group-grid,
+      .metrics-container {
+        grid-template-columns: 1fr;
+      }
+
+      .metrics-container {
+        max-height: none;
+        overflow: visible;
+      }
+
+      .param-controls {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1537,7 +2075,9 @@
             <h4 class="report-card-title">診斷報告</h4>
             <div class="report-actions">
               <button class="btn" id="copy-report-btn">複製報告</button>
-              <button class="btn btn-danger" style="background:var(--orange-glow); border-color:var(--orange); color:#fff;" id="download-report-btn">匯出診斷報告</button>
+              <button class="btn btn-danger" id="download-report-btn">儲存TXT</button>
+              <button class="btn btn-danger" id="save-report-html-btn">儲存HTML</button>
+              <button class="btn btn-danger" id="print-report-btn">列印報告</button>
             </div>
             <textarea class="report-textarea" id="report-text-area" readonly></textarea>
           </div>
@@ -2670,6 +3210,7 @@
     // 全域變數以追蹤當前狀態
     let currentInputs = {};
     let loadedModelSignature = "None";
+    let latestReportHtml = "";
 
     // ==========================================================================
     // JS 2. 核心專家運算邏輯 (JS Expert Core Logic Engine)
@@ -2836,7 +3377,7 @@
           const pt = getPoint(i, scale);
           points.push(`${pt.x.toFixed(1)},${pt.y.toFixed(1)}`);
         }
-        ringsHtml += `<polygon points="${points.join(" ")}" fill="none" stroke="#2c303b" stroke-width="1" />\n`;
+        ringsHtml += `<polygon points="${points.join(" ")}" fill="none" stroke="#d9e3ec" stroke-width="1" />\n`;
       });
 
       let linesAndLabelsHtml = '';
@@ -2846,20 +3387,20 @@
         const ptLabel = getPoint(i, 1.22);
         
         // 畫中心輻射線
-        linesAndLabelsHtml += `<line x1="${cx}" y1="${cy}" x2="${ptOuter.x.toFixed(1)}" y2="${ptOuter.y.toFixed(1)}" stroke="#2c303b" stroke-width="1" />\n`;
+        linesAndLabelsHtml += `<line x1="${cx}" y1="${cy}" x2="${ptOuter.x.toFixed(1)}" y2="${ptOuter.y.toFixed(1)}" stroke="#d9e3ec" stroke-width="1" />\n`;
         // 畫標籤
         let anchor = "middle";
         if (Math.abs(ptLabel.x - cx) > 10) {
           anchor = ptLabel.x < cx ? "end" : "start";
         }
-        linesAndLabelsHtml += `<text x="${ptLabel.x.toFixed(1)}" y="${ptLabel.y + 4}" text-anchor="${anchor}" font-size="11" font-weight="700" fill="#8e98a8">${axis.label}</text>\n`;
+        linesAndLabelsHtml += `<text x="${ptLabel.x.toFixed(1)}" y="${ptLabel.y + 4}" text-anchor="${anchor}" font-size="11" font-weight="700" fill="#65758a">${axis.label}</text>\n`;
         
         const ptActive = getPoint(i, scaledValues[i]);
         activePoints.push(`${ptActive.x.toFixed(1)},${ptActive.y.toFixed(1)}`);
       });
 
       const polygonGlow = maxVal > 0 ? `filter="url(#radar-glow)"` : '';
-      const radarPolygon = `<polygon points="${activePoints.join(" ")}" fill="rgba(168, 111, 244, 0.25)" stroke="#a86ff4" stroke-width="3" ${polygonGlow} />`;
+      const radarPolygon = `<polygon points="${activePoints.join(" ")}" fill="rgba(89, 111, 214, 0.18)" stroke="#24736f" stroke-width="3" ${polygonGlow} />`;
 
       return `
         <svg viewBox="0 0 370 370" width="100%" height="100%">
@@ -2872,7 +3413,7 @@
               </feMerge>
             </filter>
           </defs>
-          <rect width="370" height="370" rx="14" fill="#0f1013" />
+          <rect width="370" height="370" rx="14" fill="#fbfcfe" />
           <g transform="translate(0, -6)">
             ${ringsHtml}
             ${linesAndLabelsHtml}
@@ -2886,37 +3427,37 @@
       let detail = '';
       if (defectId === "OPEN" || defectId === "BONDWIRE") {
         detail = `
-          <path d="M92 138 C160 142 170 214 244 214" fill="none" stroke="#a86ff4" stroke-width="5" filter="url(#topo-glow)" />
-          <circle cx="96" cy="138" r="11" fill="#e76872" opacity="0.8" />
-          <path d="M66 130 h28 m-28 10 h20 m-20 10 h34" stroke="#a86ff4" stroke-width="2" stroke-dasharray="4 4" />
-          <text x="75" y="295" font-size="11" font-weight="700" fill="#a86ff4">PHYSICAL FAULT: Bond-wire crack / open segment</text>
+          <path d="M92 138 C160 142 170 214 244 214" fill="none" stroke="#596fd6" stroke-width="5" filter="url(#topo-glow)" />
+          <circle cx="96" cy="138" r="11" fill="#d75f6a" opacity="0.82" />
+          <path d="M66 130 h28 m-28 10 h20 m-20 10 h34" stroke="#596fd6" stroke-width="2" stroke-dasharray="4 4" />
+          <text x="75" y="295" font-size="11" font-weight="700" fill="#596fd6">PHYSICAL FAULT: Bond-wire crack / open segment</text>
         `;
       } else if (defectId === "BRIDGE") {
         detail = `
-          <rect x="78" y="118" width="235" height="22" rx="6" fill="#4d5360" />
-          <rect x="78" y="190" width="235" height="22" rx="6" fill="#4d5360" />
-          <path d="M184 124 C220 138 200 180 232 196" fill="none" stroke="#f28a37" stroke-width="16" opacity="0.8" filter="url(#topo-glow)" />
-          <text x="75" y="295" font-size="11" font-weight="700" fill="#f28a37">PHYSICAL FAULT: conductive scum residue bridge</text>
+          <rect x="78" y="118" width="235" height="22" rx="6" fill="#8996a3" />
+          <rect x="78" y="190" width="235" height="22" rx="6" fill="#8996a3" />
+          <path d="M184 124 C220 138 200 180 232 196" fill="none" stroke="#d75f6a" stroke-width="16" opacity="0.72" filter="url(#topo-glow)" />
+          <text x="75" y="295" font-size="11" font-weight="700" fill="#d75f6a">PHYSICAL FAULT: conductive scum residue bridge</text>
         `;
       } else if (defectId === "OXIDE") {
         detail = `
-          <rect x="126" y="118" width="140" height="20" fill="#a86ff4" opacity="0.6" />
-          <rect x="126" y="144" width="140" height="10" fill="#64b5ee" />
-          <path d="M196 102 l-16 50 h20 l-18 64" fill="none" stroke="#f3c74f" stroke-width="5" filter="url(#topo-glow)" />
-          <text x="75" y="295" font-size="11" font-weight="700" fill="#f3c74f">PHYSICAL FAULT: gate oxide breakdown leakage path</text>
+          <rect x="126" y="118" width="140" height="20" fill="#596fd6" opacity="0.55" />
+          <rect x="126" y="144" width="140" height="10" fill="#24736f" />
+          <path d="M196 102 l-16 50 h20 l-18 64" fill="none" stroke="#d88920" stroke-width="5" filter="url(#topo-glow)" />
+          <text x="75" y="295" font-size="11" font-weight="700" fill="#d88920">PHYSICAL FAULT: gate oxide breakdown leakage path</text>
         `;
       } else if (defectId === "LATCHUP") {
         detail = `
-          <circle cx="196" cy="165" r="58" fill="rgba(231, 104, 114, 0.15)" stroke="#e76872" stroke-width="3" stroke-dasharray="5 5" />
-          <path d="M128 165 h136 M196 96 v138" stroke="#e76872" stroke-width="4" filter="url(#topo-glow)" />
-          <text x="75" y="295" font-size="11" font-weight="700" fill="#e76872">PHYSICAL FAULT: latch-up induced thermal hotspot</text>
+          <circle cx="196" cy="165" r="58" fill="rgba(215, 95, 106, 0.14)" stroke="#d75f6a" stroke-width="3" stroke-dasharray="5 5" />
+          <path d="M128 165 h136 M196 96 v138" stroke="#d75f6a" stroke-width="4" filter="url(#topo-glow)" />
+          <text x="75" y="295" font-size="11" font-weight="700" fill="#d75f6a">PHYSICAL FAULT: latch-up induced thermal hotspot</text>
         `;
       } else {
         detail = `
-          <circle cx="150" cy="143" r="14" fill="#42b883" opacity="0.75" />
-          <circle cx="215" cy="202" r="10" fill="#f3c74f" opacity="0.75" />
-          <path d="M76 172 h240" stroke="#4d5360" stroke-width="16" stroke-linecap="round" />
-          <text x="75" y="295" font-size="11" font-weight="700" fill="#42b883">PHYSICAL FAULT: wafer-level localized defect pattern</text>
+          <circle cx="150" cy="143" r="14" fill="#2f9a66" opacity="0.82" />
+          <circle cx="215" cy="202" r="10" fill="#d88920" opacity="0.82" />
+          <path d="M76 172 h240" stroke="#8996a3" stroke-width="16" stroke-linecap="round" />
+          <text x="75" y="295" font-size="11" font-weight="700" fill="#2f9a66">PHYSICAL FAULT: wafer-level localized defect pattern</text>
         `;
       }
 
@@ -2931,20 +3472,20 @@
               </feMerge>
             </filter>
           </defs>
-          <rect width="390" height="330" rx="14" fill="#0f1013" />
-          <rect x="58" y="58" width="274" height="210" rx="12" fill="#1b1c22" stroke="#2d303b" stroke-width="2" />
-          <rect x="112" y="95" width="168" height="142" rx="8" fill="#090b0d" stroke="#252831" />
-          <circle cx="196" cy="166" r="45" fill="none" stroke="#16181f" />
+          <rect width="390" height="330" rx="14" fill="#fbfcfe" />
+          <rect x="58" y="58" width="274" height="210" rx="12" fill="#ffffff" stroke="#d9e3ec" stroke-width="2" />
+          <rect x="112" y="95" width="168" height="142" rx="8" fill="#edf4f8" stroke="#b9c8d6" />
+          <circle cx="196" cy="166" r="45" fill="none" stroke="#d7e1ea" />
           
-          <line x1="28" y1="112" x2="58" y2="112" stroke="#4d5360" stroke-width="4" />
-          <line x1="332" y1="112" x2="362" y2="112" stroke="#4d5360" stroke-width="4" />
-          <line x1="28" y1="166" x2="58" y2="166" stroke="#4d5360" stroke-width="4" />
-          <line x1="332" y1="166" x2="362" y2="166" stroke="#4d5360" stroke-width="4" />
-          <line x1="28" y1="220" x2="58" y2="220" stroke="#4d5360" stroke-width="4" />
-          <line x1="332" y1="220" x2="362" y2="220" stroke="#4d5360" stroke-width="4" />
+          <line x1="28" y1="112" x2="58" y2="112" stroke="#8996a3" stroke-width="4" />
+          <line x1="332" y1="112" x2="362" y2="112" stroke="#8996a3" stroke-width="4" />
+          <line x1="28" y1="166" x2="58" y2="166" stroke="#8996a3" stroke-width="4" />
+          <line x1="332" y1="166" x2="362" y2="166" stroke="#8996a3" stroke-width="4" />
+          <line x1="28" y1="220" x2="58" y2="220" stroke="#8996a3" stroke-width="4" />
+          <line x1="332" y1="220" x2="362" y2="220" stroke="#8996a3" stroke-width="4" />
           
           ${detail}
-          <text x="20" y="32" font-size="15" font-family="'Outfit', sans-serif" font-weight="800" fill="#fff">${title}</text>
+          <text x="20" y="32" font-size="15" font-family="'Outfit', sans-serif" font-weight="800" fill="#162033">${title}</text>
         </svg>
       `;
     }
@@ -2953,88 +3494,286 @@
     // JS 4. 報告與推理文本產生器 (Report & Reasoning Text Generators)
     // ==========================================================================
     
-    function makeReport(caseId, stage, topResults, evidenceScores, values) {
-      if (topResults.length === 0) return "尚未觸發診斷報告";
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function formatReportTimestamp() {
+      const now = new Date();
+      return now.getFullYear() + "-" +
+        String(now.getMonth() + 1).padStart(2, "0") + "-" +
+        String(now.getDate()).padStart(2, "0") + " " +
+        String(now.getHours()).padStart(2, "0") + ":" +
+        String(now.getMinutes()).padStart(2, "0") + ":" +
+        String(now.getSeconds()).padStart(2, "0");
+    }
+
+    function reportFileStem(caseId) {
+      const safeCase = (caseId || "wafer_pro_case").replace(/[^\w\u4e00-\u9fa5-]+/g, "_");
+      const date = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+      return `${safeCase}_diagnosis_report_${date}`;
+    }
+
+    function buildReportModel(caseId, stage, topResults, evidenceScores, values) {
+      if (topResults.length === 0) return null;
       const top = topResults[0];
       const domain = STAGE_METRIC_DOMAIN[stage];
       const reportMetrics = METRICS.filter(m => m.domain === domain);
-      
+      const topDetails = STAGE_DEFECT_DETAILS[stage]?.[top.id] || top;
+
       const activeInputs = reportMetrics
         .filter(m => scoreFromThresholds(values[m.key] !== undefined ? values[m.key] : m.default, m) > 0)
         .map(m => {
           const val = values[m.key] !== undefined ? values[m.key] : m.default;
-          const score = scoreFromThresholds(val, m);
-          return `- ${m.label}: ${val} ${m.unit} (Evidence ${score}/5)`;
+          return {
+            label: m.label,
+            value: val,
+            unit: m.unit,
+            normal: m.normal,
+            abnormal: m.abnormal,
+            score: scoreFromThresholds(val, m)
+          };
         });
 
-      const today = new Date();
-      const formatTime = today.getFullYear() + "-" + 
-                         String(today.getMonth() + 1).padStart(2, '0') + "-" + 
-                         String(today.getDate()).padStart(2, '0') + " " + 
-                         String(today.getHours()).padStart(2, '0') + ":" + 
-                         String(today.getMinutes()).padStart(2, '0') + ":" + 
-                         String(today.getSeconds()).padStart(2, '0');
+      const completeParams = reportMetrics.map(m => {
+        const val = values[m.key] !== undefined ? values[m.key] : m.default;
+        return { label: m.label, value: val, unit: m.unit, score: scoreFromThresholds(val, m) };
+      });
 
-      let lines = [
-        "============================================================",
-        "          WAFER-PRO DEFECT DIAGNOSIS SYSTEM REPORT           ",
-        "============================================================",
-        `Generated: ${formatTime}`,
-        `Case ID: ${caseId || 'N/A'}`,
-        `Diagnosis Stage: ${stage}`,
-        "",
-        "------------------ EXECUTIVE SUMMARY ------------------",
-        `- Top Suspect: ${top.name} (${top.en})`,
-        `- Diagnosis Confidence: ${(top.probability * 100).toFixed(1)}%`,
-        `- Model Fit Score: ${(top.fit_score * 100).toFixed(1)}%`,
-        "- Disclaimer: Relative expert confidence score based on design weight parameters, not absolute fab yield statistics.",
-        `- Recommended 1st Step Actions: ${(STAGE_DEFECT_DETAILS[stage]?.[top.id]?.next || top.next).slice(0, 2).join(", ")}`,
-        "",
-        "------------------- TOP-3 CANDIDATES -------------------"
-      ];
+      return {
+        title: "Wafer-Pro Defect Diagnosis Report",
+        docNo: `WP-FA-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}`,
+        revision: "Rev. A",
+        reportType: "Preliminary Engineering / FA Screening Report",
+        status: "Preliminary",
+        generatedAt: formatReportTimestamp(),
+        caseId: caseId || "N/A",
+        stage,
+        model: loadedModelSignature,
+        waferMap: document.getElementById("wafer-map").value,
+        morphology: document.getElementById("morphology").value,
+        top,
+        topDetails,
+        topResults,
+        activeInputs,
+        completeParams,
+        evidenceScores,
+        immediateContainment: [
+          "Hold suspect lot / wafer / unit group until physical or electrical verification is complete.",
+          "Compare suspect population against golden lots by tool, chamber, recipe version, wafer position, and time window.",
+          "Preserve raw inspection images, electrical traces, FDC logs, WAT/PCM trend data, and sample chain-of-custody."
+        ],
+        verificationPlan: (topDetails.next || top.next || []).slice(0, 5),
+        correctiveActions: [
+          topDetails.solution,
+          "Review control plan limits against current SPC baseline and recent excursion history.",
+          "Confirm corrective action effectiveness using split-lot, golden-lot comparison, or targeted re-test."
+        ],
+        disclaimer: "This report is an expert-system preliminary screening output. Scores are relative confidence indicators based on configured evidence weights, not absolute fab-wide defect occurrence probability. Final disposition requires approved FA / process owner review."
+      };
+    }
 
-      topResults.forEach((item, index) => {
-        const details = STAGE_DEFECT_DETAILS[stage]?.[item.id] || item;
-        lines.push(
+    function makeReport(caseId, stage, topResults, evidenceScores, values) {
+      const model = buildReportModel(caseId, stage, topResults, evidenceScores, values);
+      if (!model) return "尚未觸發診斷報告";
+      const top = model.top;
+      const topCandidateLines = model.topResults.map((item, index) => {
+        const details = STAGE_DEFECT_DETAILS[model.stage]?.[item.id] || item;
+        return [
           `${index + 1}. ${item.name} (${item.en}) - ${(item.probability * 100).toFixed(1)}%`,
           `   Fit Score: ${(item.fit_score * 100).toFixed(1)}% | Raw Score: ${item.raw_score.toFixed(1)} | Max Score: ${item.max_score.toFixed(1)}`,
           `   Evidence Basis: ${details.evidence}`,
-          `   Physical Cause: ${details.cause}`,
-          `   Corrective Action: ${details.solution}`,
-          `   Verification Steps: ${details.next.join(" -> ")}`
-        );
+          `   Failure Mechanism: ${details.cause}`,
+          `   Corrective Direction: ${details.solution}`,
+          `   Verification Plan: ${(details.next || item.next || []).join(" -> ")}`
+        ].join("\n");
       });
+      const activeInputLines = model.activeInputs.length
+        ? model.activeInputs.map(item => `- ${item.label}: ${item.value} ${item.unit} | Evidence ${item.score}/5 | Normal ${item.normal} | Abnormal ${item.abnormal}`)
+        : ["- No abnormal measurement has reached a scoring threshold."];
+      const ruleLines = Object.entries(model.evidenceScores).map(([key, score]) => `- ${key}: ${score}/5`);
+      const parameterLines = model.completeParams.map(item => `- ${item.label}: ${item.value} ${item.unit} (Evidence ${item.score}/5)`);
 
-      lines.push(
+      const lines = [
+        "============================================================",
+        "             WAFER-PRO ENGINEERING DIAGNOSIS REPORT         ",
+        "============================================================",
+        `Document No.: ${model.docNo}`,
+        `Revision: ${model.revision}`,
+        `Report Type: ${model.reportType}`,
+        `Status: ${model.status}`,
+        `Generated: ${model.generatedAt}`,
+        `Case / Tool / Lot ID: ${model.caseId}`,
+        `Diagnosis Stage: ${model.stage}`,
+        `Loaded Model: ${model.model}`,
+        `Wafer Map Pattern: ${model.waferMap}`,
+        `SEM/AOI/PFA Morphology: ${model.morphology}`,
         "",
-        "------------------ HIGH EVIDENCE INPUTS ------------------",
-        activeInputs.length > 0 ? activeInputs.join("\n") : "- No abnormal measurement has reached a scoring threshold.",
+        "1. EXECUTIVE SUMMARY",
+        `Top Suspect: ${top.name} (${top.en})`,
+        `Diagnosis Confidence: ${(top.probability * 100).toFixed(1)}%`,
+        `Model Fit Score: ${(top.fit_score * 100).toFixed(1)}%`,
+        `Engineering Interpretation: ${model.topDetails.evidence}`,
         "",
-        "---------------- EVIDENCES BY RULE KEY -----------------"
-      );
-
-      Object.entries(evidenceScores).forEach(([key, score]) => {
-        lines.push(`- ${key}: ${score}/5`);
-      });
-
-      lines.push(
+        "2. TOP CANDIDATE FAILURE MODES",
+        ...topCandidateLines,
         "",
-        "------------------ COMPLETE PARAMETERS ------------------",
-        ...reportMetrics.map(m => {
-          const val = values[m.key] !== undefined ? values[m.key] : m.default;
-          return `- ${m.label}: ${val} ${m.unit}`;
-        }),
+        "3. HIGH-EVIDENCE INPUTS",
+        ...activeInputLines,
         "",
-        "--------------- IMMEDIATE CORRECTIVE ACTIONS ---------------",
-        "- Re-verify and isolate the lot by commonality tools and process chambers.",
-        "- Check the physical failure site immediately using the suggested verification techniques above.",
-        "- Sync this signature with recent WAT/PCM historical distribution limits.",
+        "4. RULE-BASED EVIDENCE SCORES",
+        ...ruleLines,
         "",
-        "-------------------- REFERENCES BASIS --------------------",
+        "5. COMPLETE PARAMETER SNAPSHOT",
+        ...parameterLines,
+        "",
+        "6. INITIAL CONTAINMENT",
+        ...model.immediateContainment.map(item => `- ${item}`),
+        "",
+        "7. RECOMMENDED VERIFICATION PLAN",
+        ...model.verificationPlan.map((item, index) => `${index + 1}. ${item}`),
+        "",
+        "8. CORRECTIVE ACTION DIRECTION",
+        ...model.correctiveActions.map(item => `- ${item}`),
+        "",
+        "9. LIMITATION / DISPOSITION NOTE",
+        model.disclaimer,
+        "",
+        "10. REFERENCE BASIS",
         ...REFERENCES.map(ref => `- ${ref.topic}: ${ref.source}`)
-      );
+      ];
 
+      latestReportHtml = makeReportHtml(model);
       return lines.join("\n");
+    }
+
+    function makeReportHtml(model) {
+      const row = (label, value) => `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(value)}</td></tr>`;
+      const topRows = model.topResults.map((item, index) => {
+        const details = STAGE_DEFECT_DETAILS[model.stage]?.[item.id] || item;
+        return `
+          <tr>
+            <td>${index + 1}</td>
+            <td><strong>${escapeHtml(item.name)}</strong><br><span>${escapeHtml(item.en)}</span></td>
+            <td>${(item.probability * 100).toFixed(1)}%</td>
+            <td>${(item.fit_score * 100).toFixed(1)}%</td>
+            <td>${escapeHtml(details.evidence)}</td>
+          </tr>`;
+      }).join("");
+      const activeRows = model.activeInputs.length ? model.activeInputs.map(item => `
+          <tr>
+            <td>${escapeHtml(item.label)}</td>
+            <td>${escapeHtml(item.value)} ${escapeHtml(item.unit)}</td>
+            <td>${item.score}/5</td>
+            <td>${escapeHtml(item.normal)}</td>
+            <td>${escapeHtml(item.abnormal)}</td>
+          </tr>`).join("") : `<tr><td colspan="5">No abnormal measurement has reached a scoring threshold.</td></tr>`;
+      const parameterRows = model.completeParams.map(item => `
+          <tr>
+            <td>${escapeHtml(item.label)}</td>
+            <td>${escapeHtml(item.value)} ${escapeHtml(item.unit)}</td>
+            <td>${item.score}/5</td>
+          </tr>`).join("");
+
+      return `<!doctype html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8">
+  <title>${escapeHtml(model.caseId)} - Wafer-Pro Diagnosis Report</title>
+  <style>
+    @page { size: A4; margin: 14mm; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #172033; font-family: Arial, "Noto Sans TC", sans-serif; font-size: 12px; line-height: 1.55; }
+    header { border-bottom: 3px solid #24736f; padding-bottom: 14px; margin-bottom: 18px; }
+    h1 { font-size: 22px; margin: 0 0 6px; }
+    h2 { font-size: 15px; margin: 20px 0 8px; color: #24736f; border-bottom: 1px solid #d9e3ec; padding-bottom: 5px; }
+    .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .box { border: 1px solid #d9e3ec; border-radius: 6px; padding: 10px; background: #fbfcfe; }
+    .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .kpi { border: 1px solid #d9e3ec; border-left: 4px solid #24736f; border-radius: 6px; padding: 10px; }
+    .kpi strong { display: block; font-size: 18px; color: #24736f; }
+    table { width: 100%; border-collapse: collapse; margin: 8px 0 12px; }
+    th, td { border: 1px solid #d9e3ec; padding: 7px; vertical-align: top; text-align: left; }
+    th { background: #edf4f8; color: #26384d; }
+    ul, ol { margin: 6px 0 10px 20px; padding: 0; }
+    .note { border-left: 4px solid #d88920; background: #fff8ed; padding: 10px; margin-top: 14px; }
+    footer { margin-top: 22px; color: #65758a; font-size: 10px; border-top: 1px solid #d9e3ec; padding-top: 8px; }
+    @media print { body { print-color-adjust: exact; -webkit-print-color-adjust: exact; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Wafer-Pro Engineering Diagnosis Report</h1>
+    <div>${escapeHtml(model.reportType)} | ${escapeHtml(model.status)}</div>
+    <div class="meta">
+      <table>${row("Document No.", model.docNo)}${row("Revision", model.revision)}${row("Generated", model.generatedAt)}${row("Case / Tool / Lot ID", model.caseId)}</table>
+      <table>${row("Diagnosis Stage", model.stage)}${row("Loaded Model", model.model)}${row("Wafer Map", model.waferMap)}${row("SEM/AOI/PFA Morphology", model.morphology)}</table>
+    </div>
+  </header>
+  <section class="summary">
+    <div class="kpi">Top Suspect<strong>${escapeHtml(model.top.name)}</strong><span>${escapeHtml(model.top.en)}</span></div>
+    <div class="kpi">Confidence<strong>${(model.top.probability * 100).toFixed(1)}%</strong><span>Relative expert score</span></div>
+    <div class="kpi">Fit Score<strong>${(model.top.fit_score * 100).toFixed(1)}%</strong><span>Rule-weight model fit</span></div>
+  </section>
+  <h2>1. Executive Summary</h2>
+  <div class="box">${escapeHtml(model.topDetails.evidence)}</div>
+  <h2>2. Top Candidate Failure Modes</h2>
+  <table><thead><tr><th>Rank</th><th>Candidate</th><th>Confidence</th><th>Fit</th><th>Evidence Basis</th></tr></thead><tbody>${topRows}</tbody></table>
+  <h2>3. High-Evidence Inputs</h2>
+  <table><thead><tr><th>Measurement</th><th>Value</th><th>Evidence</th><th>Normal</th><th>Abnormal</th></tr></thead><tbody>${activeRows}</tbody></table>
+  <h2>4. Preliminary Cause and Mechanism</h2>
+  <div class="box"><strong>Failure Mechanism:</strong> ${escapeHtml(model.topDetails.cause)}<br><strong>Corrective Direction:</strong> ${escapeHtml(model.topDetails.solution)}</div>
+  <h2>5. Recommended Verification Plan</h2>
+  <ol>${model.verificationPlan.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ol>
+  <h2>6. Initial Containment and Corrective Action</h2>
+  <ul>${model.immediateContainment.concat(model.correctiveActions).map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+  <h2>7. Complete Parameter Snapshot</h2>
+  <table><thead><tr><th>Parameter</th><th>Value</th><th>Evidence</th></tr></thead><tbody>${parameterRows}</tbody></table>
+  <h2>8. Limitation / Disposition Note</h2>
+  <div class="note">${escapeHtml(model.disclaimer)}</div>
+  <footer>Generated by Wafer-Pro. Final customer or production disposition requires authorized engineering review.</footer>
+</body>
+</html>`;
+    }
+
+    function getCurrentReportFilename(extension) {
+      return `${reportFileStem(document.getElementById("case-id").value)}.${extension}`;
+    }
+
+    function ensureLatestReportHtml() {
+      if (latestReportHtml) return latestReportHtml;
+      const text = document.getElementById("report-text-area").value;
+      return `<!doctype html><html><head><meta charset="utf-8"><title>Wafer-Pro Report</title><style>body{font-family:Arial,sans-serif;white-space:pre-wrap;padding:24px;line-height:1.5}</style></head><body>${escapeHtml(text)}</body></html>`;
+    }
+
+    function downloadBlob(content, filename, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function printLatestReport() {
+      const reportWindow = window.open("", "_blank");
+      if (!reportWindow) {
+        alert("瀏覽器阻擋了列印視窗，請允許彈出視窗後再試一次。");
+        return;
+      }
+      reportWindow.document.open();
+      reportWindow.document.write(ensureLatestReportHtml());
+      reportWindow.document.close();
+      reportWindow.focus();
+      reportWindow.setTimeout(() => reportWindow.print(), 250);
     }
 
     function reasoningTrace(top, evidenceScores, measurementStrength) {
@@ -3256,6 +3995,7 @@
         document.getElementById("radar-svg-container").innerHTML = drawRadarSvg([]);
         document.getElementById("reasoning-trace-box").innerHTML = reasoningTrace(null, evidenceScores, 0);
         document.getElementById("report-text-area").value = "請先輸入至少一個達到異常門檻的量測值。";
+        latestReportHtml = "";
         
         // 渲染空的排行表格
         renderRankingTable([], 0);
@@ -3624,7 +4364,7 @@
       // 動態更新下拉 Preset 模型選項
       document.getElementById("selected-stage").addEventListener("change", () => {
         updatePresetModelOptions();
-        renderInputMetrics();
+        loadPreset();
         renderReferenceTab();
       });
 
@@ -3680,18 +4420,16 @@
       // 下載報告按鈕
       document.getElementById("download-report-btn").addEventListener("click", () => {
         const text = document.getElementById("report-text-area").value;
-        const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "wafer_pro_diagnosis_report.txt";
-        document.body.appendChild(a);
-        a.click();
-        
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        downloadBlob(text, getCurrentReportFilename("txt"), "text/plain;charset=utf-8");
       });
+
+      // 儲存 HTML 報告
+      document.getElementById("save-report-html-btn").addEventListener("click", () => {
+        downloadBlob(ensureLatestReportHtml(), getCurrentReportFilename("html"), "text/html;charset=utf-8");
+      });
+
+      // 列印報告
+      document.getElementById("print-report-btn").addEventListener("click", printLatestReport);
 
       // 關閉提示泡泡
       document.getElementById("popover-close-btn").addEventListener("click", () => {
@@ -4262,7 +5000,7 @@
       window.switchReliabilityModel("em");
 
       // 初始執行一次畫出 UI
-      renderInputMetrics();
+      loadPreset();
       renderReferenceTab();
     });
   </script>
