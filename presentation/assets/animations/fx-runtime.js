@@ -29,7 +29,7 @@
     if (!total) return resolve();
     // Load util.js first to ensure it's executed before other modules try to access window.HPX._u
     const mainUtil = document.createElement('script');
-    mainUtil.src = base + 'util.js';
+    mainUtil.src = base + 'util.js?v=2';
     mainUtil.async = false;
     mainUtil.onload = () => {
       loaded = 1;
@@ -38,7 +38,7 @@
       const others = FX_LIST.filter(name => name !== 'util');
       others.forEach((name) => {
         const s = document.createElement('script');
-        s.src = base + name + '.js';
+        s.src = base + name + '.js?v=2';
         s.async = false;
         s.onload = s.onerror = () => { if (++loaded >= total) resolve(); };
         document.head.appendChild(s);
