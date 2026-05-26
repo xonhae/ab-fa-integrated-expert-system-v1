@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-themes="cyberpunk-neon,dracula,tokyo-night" data-theme-base="assets/themes/">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wafer-Pro 半導體缺陷整合專家診斷系統技術分享</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/base.css">
+<link rel="stylesheet" id="theme-link" href="assets/themes/pitch-deck-vc.css">
+<link rel="stylesheet" href="assets/animations/animations.css">
+<link rel="stylesheet" href="style.css">
+<style>
+  /* 全局放大字體 */
+  :root {
+    --step-0: 1.5rem !important;
+    --step-1: 1.8rem !important;
+  }
+  body, p, li, .dim {
+    font-size: 1.8rem !important;
+    line-height: 1.6 !important;
+  }
+  .h1 { font-size: 4.5rem !important; }
+  .h2 { font-size: 4rem !important; }
+  .h3 { font-size: 2.8rem !important; }
+  .lede { font-size: 2.2rem !important; }
+  .speaker b, .speaker span { font-size: 1.8rem !important; }
+  
+  /* 卡片對齊修正 */
+  .grid {
+    align-items: stretch !important;
+  }
+  .card {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    /* 移除強制的 justify-content: flex-start，讓個別卡片可自行決定對齊方式 */
+  }
+  
+  .card h4 {
+    font-size: 2.4rem !important;
+    margin-bottom: 0.8rem !important;
+  }
+  .card p.dim, .card .dim { font-size: 1.8rem !important; }
+  .rule-row b, .feature-row b { font-size: 2.4rem !important; }
+  .rule-row p.dim, .rule-row .dim, .feature-row p.dim, .feature-row .dim { font-size: 1.8rem !important; }
+  ul.stack.dim li, ul.stack li {
+    font-size: 1.8rem !important;
+    margin-bottom: 0.8rem !important;
+  }
+  /* 自訂公式區塊 */
+  .math-block {
+    background: var(--surface-2) !important;
+    padding: 1.2rem !important;
+    border-radius: 8px !important;
+    font-family: var(--font-mono) !important;
+    font-size: 2rem !important;
+    text-align: center !important;
+    border: 1px solid var(--border) !important;
+    /* 讓兩邊的公式框維持固定高度並置中，避免破版延展 */
+    min-height: 160px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-top: 2rem !important;
+  }
+</style>
+</head>
+<body class="tpl-presenter-mode-reveal">
+<div class="deck">
+
+  <!-- ============ 1. COVER ============ -->
+  <section class="slide" data-title="Cover">
+    <div data-fx="gradient-blob" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:0.6"></div>
+    <div style="position:absolute;top:56px;left:112px"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--grad);margin-right:10px;vertical-align:middle"></span><span style="font-weight:800;font-size:22px;letter-spacing:-.02em">Wafer-Pro</span></div>
+    
+    <p class="kicker anim-fade-up" data-anim="fade-up">TECHNICAL SHARING · 2026</p>
+    <h1 class="h1 anim-fade-up mt-s" data-anim="fade-up" style="animation-delay: 0.1s">
+      半導體缺陷<br><span class="gradient-text">整合專家診斷系統</span>
+    </h1>
+    <p class="lede mt-m">IC 故障診斷與高階可靠度建模深度解析</p>
+    <div class="speaker mt-l">
+      <div><b>分享人：</b><span>Wafer-Pro 開發團隊 · 15 min</span></div>
+    </div>
+    <div class="deck-footer">
+      <span class="mono">#wafer-pro #fault-diagnosis #reliability</span>
+      <span class="slide-number" data-current="1" data-total="10"></span>
+    </div>
+    <aside class="notes">
+      <p>各位業界先進大家好，我是 Wafer-Pro 開發團隊的代表。今天很高興能與各位深入探討我們全新打造的<strong>「Wafer-Pro 半導體缺陷整合專家診斷系統」</strong>。</p>
+      <p>過去在探討 FA (Failure Analysis) 系統時，大多只停留在數據收集與報表展示的層次。但今天，我們將直擊核心：<strong>如何將資深 FA 專家的物理直覺與判斷邏輯，轉化為嚴謹的數學模型與前端演算法？</strong></p>
+      <p>這份簡報預計進行 15 分鐘。我們將從 IC 故障診斷的底層物理挑戰出發，剖析 Wafer-Pro 的架構設計、機率推論引擎，直到高階的可靠度 (Reliability) 數學建模。各位在背景看到的程式碼瀑布特效，象徵我們用純粹的數位邏輯解構實體的物理缺陷。現在，讓我們開始。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 2. CHALLENGE ============ -->
+  <section class="slide" data-title="Challenge">
+    <div data-fx="magnetic-field" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:0.2"></div>
+    <p class="kicker" style="font-size: 1.4rem;">// part 01 · the true challenge</p>
+    <h2 class="h2">IC 故障診斷的底層挑戰</h2>
+    <div class="grid g2 mt-l">
+      <div class="card card-accent anim-parallax-tilt" data-anim="parallax-tilt">
+        <h4>🔌 電性表徵與物理失效的映射</h4>
+        <p class="dim mt-s">機台測試給出的是「症狀」(如漏電、電壓漂移)，但對應的「病因」(物理失效機制) 卻是高度非線性的。一個漏電特徵可能同時指向 金屬殘留微短路 或 閘極氧化層崩潰。</p>
+      </div>
+      <div class="card card-accent anim-parallax-tilt" data-anim="parallax-tilt" style="animation-delay: 0.1s">
+        <h4>📉 數據維度災難與雜訊干擾</h4>
+        <p class="dim mt-s">從晶圓尺寸量測、電漿機台狀態到可靠度數據，參數維度極高且伴隨製程變異雜訊。單憑人類大腦經驗，已經無法在幾分鐘內完成多維度交叉比對與機率收斂。</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>在先進節點製程中，IC 故障診斷的難度呈指數級上升。我們面臨的真正挑戰是什麼？背景的磁場擾動特效，正反映了這種混亂。</p>
+      <p>首先是<strong>電性表徵與物理失效的非線性映射</strong>。當 WAT 測試顯示 IDDQ 異常飆高時，它只是一個「症狀」。導致這個症狀的物理機制可能有很多：是金屬層的微粒殘留造成的微短路？還是離子植入異常？又或者是閘極氧化層的早期崩潰？傳統上，這極度仰賴資深工程師的「直覺」，容易產生誤判。</p>
+      <p>其次是<strong>數據維度的災難</strong>。我們需要同時檢視 CD 不均勻度、Overlay Error、蝕刻的 Plasma 偏差等十多項參數。這些參數本身還帶有正常的製程變異雜訊。要在龐大的數據矩陣中找出 Root Cause，單靠人工經驗已無法滿足高效率的量產需求，我們需要一套確定性的數學模型來輔助。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 3. ARCHITECTURE ============ -->
+  <section class="slide" data-title="Architecture">
+    <div data-fx="knowledge-graph" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:0.15"></div>
+    <p class="kicker" style="font-size: 1.4rem;">PART 02 · SYSTEM ARCHITECTURE</p>
+    <h2 class="h2">Browser-Native <span class="gradient-text">架構革新</span></h2>
+    <div class="stack mt-l">
+      <div class="rule-row anim-fade-up" data-anim="fade-up">
+        <span class="num blue">01</span>
+        <div>
+          <b>Serverless 純前端計算引擎</b>
+          <p class="dim">徹底捨棄後端伺服器。所有複雜的矩陣運算、貝氏推論與動態渲染，皆透過瀏覽器在本地端執行，完全支援晶圓廠無塵室的封閉網路環境。</p>
+        </div>
+      </div>
+      <div class="rule-row anim-fade-up" data-anim="fade-up" style="animation-delay: 0.1s">
+        <span class="num blue">02</span>
+        <div>
+          <b>UI/UX：雙向綁定與即時重繪</b>
+          <p class="dim">採用現代化的毛玻璃 (Glassmorphism) 設計。滑桿與數值框採零延遲雙向綁定，任何輸入狀態變更，都能在 10 毫秒內完成全局畫面與機率計算的瞬間重繪。</p>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>為了解決上述挑戰，我們在 Wafer-Pro 的架構上進行了根本性的重構。如同背景跳動的神經網路，我們的系統也充滿了即時的連結。</p>
+      <p>第一大亮點是 <strong>Serverless 純前端計算引擎</strong>。我們砍掉了原本笨重的 Python 後端，將所有的數學推論、可靠度公式與繪圖邏輯，全部濃縮為輕量級的 JavaScript 引擎。這不僅讓系統能在無塵室的嚴格內網甚至完全離線的狀態下運行，更消除了所有網路延遲。</p>
+      <p>第二大亮點是 <strong>UI 與 UX 的設計</strong>。我們採用了 Glassmorphism 毛玻璃特效與 Cyberpunk 高對比色系，呈現出極具科技感的專業儀表板。更重要的是，介面中的滑桿與輸入框採用了雙向資料綁定 (Two-way data binding)，任何微小的數值調整，都能在 10 毫秒內觸發底層引擎，瞬間重繪所有的機率條與視覺化圖表，達到「人機一體」的流暢感。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 4. EVIDENCE ============ -->
+  <section class="slide" data-title="Evidence">
+    <div data-fx="sparkle-trail" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:0.3"></div>
+    <p class="kicker" style="font-size: 1.4rem;">PART 03 · DYNAMIC FEATURE EXTRACTION</p>
+    <h2 class="h2">動態特徵擷取與<span class="gradient-text">證據綁定</span></h2>
+    <div class="grid g2 mt-l">
+      <div>
+        <h3 class="h3 accent mb-s">量化參數輸入</h3>
+        <ul class="stack dim">
+          <li><strong>線寬 3-Sigma:</strong> 評估曝光/蝕刻的均勻度</li>
+          <li><strong>層間對位誤差:</strong> 評估黃光微影的精準度</li>
+          <li><strong>靜態漏電流 (IDDQ):</strong> 判斷短路與漏電的核心</li>
+          <li><strong>電漿參數偏差:</strong> 監控乾蝕刻機台的穩定度</li>
+        </ul>
+      </div>
+      <div class="card anim-parallax-tilt" data-anim="parallax-tilt">
+        <h3 class="h3 mb-s">激發函數 (Activation Function)</h3>
+        <p class="dim mb-m">系統為每項證據定義了「正常區間」與「異常警戒線」。</p>
+        <p class="dim">當工程師輸入的數值越偏離正常區間，觸發該特徵的權重分數就會以非線性的方式急遽飆升，完美模擬資深工程師的危機意識與直覺反應。</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>接下來，我們深入探討系統如何處理源源不絕的數據流：也就是<strong>動態特徵擷取與證據綁定</strong>。</p>
+      <p>在我們的介面上，工程師可以輸入高達十幾項的關鍵參數，包含 CD 的 3-sigma 變異、黃光的 Overlay Error、WAT 的 IDDQ Ratio 漏電倍率等等。但這些數字不能只是被記錄下來，它們必須被「量化評估」。</p>
+      <p>我們在系統內部實作了類似神經網路的<strong>激發函數 (Activation Function)</strong>。我們為每一項參數定義了業界標準的「正常界線」與「強觸發異常界線」。當滑桿拉動時，系統並非線性地處理數據，而是當數值越逼近異常閾值時，該證據的權重分數會以非線性的方式飆升，這完美模擬了資深工程師在看到極端異常值時所產生的「強烈危機意識」。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 5. INFERENCE ============ -->
+  <section class="slide" data-title="Inference Engine">
+    <div data-fx="magnetic-field" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:0.1"></div>
+    <p class="kicker" style="font-size: 1.4rem;">PART 04 · INFERENCE ENGINE</p>
+    <h2 class="h2">貝氏推論決策引擎</h2>
+    <div class="grid g2 mt-l">
+      <div class="anim-fade-up" data-anim="fade-up">
+        <h3 class="h3 mb-s" style="color:var(--orange)">權重評分機制</h3>
+        <p class="dim mb-m">每種缺陷都有其敏感度權重。系統會將工程師輸入的證據強度，與該缺陷的敏感度相乘後加總，得出原始吻合度分數。</p>
+        <div class="math-block">
+          <span style="color:var(--blue)">原始吻合度</span> = 加總 ( 證據強度 &times; 缺陷敏感度 )
+        </div>
+      </div>
+      <div class="anim-fade-up" data-anim="fade-up" style="animation-delay: 0.1s">
+        <h3 class="h3 mb-s" style="color:var(--orange)">信心度正規化</h3>
+        <p class="dim mb-m">為了過濾雜訊並突顯最可能的根本原因，系統會將吻合度分數進行指數放大，並轉換為 100% 滿分的相對機率。</p>
+        <div class="math-block">
+          <span style="color:var(--purple)">最終機率</span> = (特定缺陷分數)^p / 總分數和
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>核心中的核心，是我們的<strong>推理引擎與機率正規化演算法</strong>。就像背景中的知識圖譜一樣，它將各種證據串聯起來。</p>
+      <p>首先是權重評分矩陣。我們將半導體常見的 10 多種缺陷模型（例如金屬微粒、氧化層崩潰等）建立了一個龐大的敏感度矩陣。當證據輸入時，系統會計算證據強度與該缺陷權重的內積，得出一個原始的吻合度分數。</p>
+      <p>但原始分數無法直觀比較。因此我們進行了第二步：<strong>信心度正規化</strong>。我們不僅將分數轉換為百分比，更引入了一個次方函數。這個演算法的作用在於「拉開差距」：當某個缺陷的吻合度微幅領先時，經過次方放大與歸一化處理，它的機率會被顯著放大，從而幫工程師過濾掉雜訊，強烈收斂並凸顯出真正的根本原因。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 6. TOPOLOGY ============ -->
+  <section class="slide" data-title="Topology">
+    <div data-fx="particle-burst" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:0.15"></div>
+    <p class="kicker" style="font-size: 1.4rem;">PART 05 · DYNAMIC SVG RENDER</p>
+    <h2 class="h2">SVG <span class="gradient-text">即時渲染晶片剖面圖</span></h2>
+    <div class="stack mt-l">
+      <div class="feature-row anim-fade-up" data-anim="fade-up">
+        <span class="num accent">SVG</span>
+        <div>
+          <b>即時渲染晶片剖面圖 (Cross-section)</b>
+          <p class="dim">不再依賴靜態圖片或文字報告！系統會根據運算出的最高機率缺陷，透過前端程式碼即時繪製微觀結構圖。</p>
+          <p class="dim mt-s">若判定為「金屬微短路」，系統會在兩條金屬線之間動態畫出殘留物；若判定為「斷路空洞」，則會在地層中呈現中斷的結構缺口。</p>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>有了精準的機率數字還不夠，我們必須將它「物理化」。這就是我們的 <strong>物理失效拓撲動態生成</strong> 功能。背景的星座連線特效象徵了我們勾勒出的晶片幾何輪廓。</p>
+      <p>過去的系統往往只能給出一段文字結論。但在 Wafer-Pro 中，我們利用純前端的 SVG 繪圖技術，即時渲染出晶片的剖面結構圖。當系統計算出最高機率的失效是金屬跨橋 (Bridging) 時，SVG 引擎會立刻在兩條金屬導線之間繪製出殘留的短路塊；如果是斷路 (Open)，則會畫出 Via 或金屬層的空洞。</p>
+      <p>這種透過數學機率直接驅動幾何圖形變形的技術，完美地在電性數據與物理結構之間搭起了一座橋樑，讓工程師能一眼看出失效的微觀樣貌。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 7. RADAR ============ -->
+  <section class="slide" data-title="Radar">
+    <div data-fx="orbit-ring" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:0.25"></div>
+    <p class="kicker" style="font-size: 1.4rem;">// part 06 · multi-dimensional distribution</p>
+    <h2 class="h2">六大物理分類動態雷達圖</h2>
+    <div class="grid g2 mt-l">
+      <div>
+        <h3 class="h3 accent mb-s">將複雜收斂為直觀</h3>
+        <ul class="stack dim">
+          <li><strong>短路 (Bridge):</strong> 金屬殘留、微粒跨橋</li>
+          <li><strong>斷路 (Open):</strong> 蝕刻不足、應力斷線</li>
+          <li><strong>對位 (Overlay):</strong> 曝光層嚴重偏移</li>
+          <li><strong>氧化層 (Oxide):</strong> 閘極擊穿、漏電</li>
+          <li><strong>熱效應 (Thermal):</strong> 局部融毀、熱點</li>
+          <li><strong>材料層 (Material):</strong> 介面剝離、水氣腐蝕</li>
+        </ul>
+      </div>
+      <div class="card anim-parallax-tilt" data-anim="parallax-tilt" style="display:flex; align-items:center; justify-content:center; text-align:center;">
+        <div>
+          <b class="gradient-text" style="font-size:2rem;">Hexagonal Radar Chart</b>
+          <p class="dim mt-m">將底層數十種細項缺陷機率，<br>自動聚合到這六大宏觀維度，<br>協助廠長或整合工程師 (PIE) 一秒看懂整批晶圓的異常偏誤方向。</p>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>在微觀拓撲之外，我們也提供了宏觀的視角：<strong>多維度缺陷物理分類雷達圖</strong>。如同背景的軌道光環，機率在不同維度間動態分佈。</p>
+      <p>晶片缺陷有成百上千種細項，但歸根究底，物理行為不外乎短路、斷路、對位異常、氧化層異常、熱效應以及材料異常等六大類。系統會將底層計算出的數十種缺陷機率，自動聚合到這六個維度，並繪製成動態的六邊形雷達圖。</p>
+      <p>這個功能對製程整合工程師 (PIE) 或廠長非常關鍵。當雷達圖的重心嚴重偏向「Oxide」與「Thermal」時，他們不需看密密麻麻的細節數據，就能立刻知道該去檢查擴散爐管 (Furnace) 的溫度曲線或是 CVD 機台的電漿狀態，大幅提升決策效率。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 8. RELIABILITY ============ -->
+  <section class="slide" data-title="Reliability">
+    <div data-fx="chain-react" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:0.2"></div>
+    <p class="kicker" style="font-size: 1.4rem;">// part 07 · reliability modeling</p>
+    <h2 class="h2">先進可靠度數學建模</h2>
+    <div class="grid g2 mt-l">
+      <div class="anim-fade-up" data-anim="fade-up">
+        <h3 class="h3 mb-s" style="color:var(--orange)">電遷移 (EM)</h3>
+        <p class="dim mb-m"><b>Black's Equation:</b> 透過「導線電流密度」與「金屬活化能」，即時推算金屬互連導線的平均故障時間 (MTTF)。</p>
+      </div>
+      <div class="anim-fade-up" data-anim="fade-up" style="animation-delay: 0.1s">
+        <h3 class="h3 mb-s" style="color:var(--orange)">介電層崩潰 (TDDB)</h3>
+        <p class="dim mb-m"><b>Weibull 分佈模型:</b> 計算晶片在特定「電場強度」與「溫度」下，其氧化層隨時間老化的累積失效機率。</p>
+      </div>
+      <div class="anim-fade-up" data-anim="fade-up" style="animation-delay: 0.2s">
+        <h3 class="h3 mb-s" style="color:var(--orange)">熱疲勞 (Thermal Fatigue)</h3>
+        <p class="dim"><b>Coffin-Manson 模型:</b> 評估封裝凸塊 (Bump) 在嚴苛熱循環試驗中的彈塑性應變壽命。</p>
+      </div>
+      <div class="anim-fade-up" data-anim="fade-up" style="animation-delay: 0.3s">
+        <h3 class="h3 mb-s" style="color:var(--orange)">水氣腐蝕 (Moisture Corrosion)</h3>
+        <p class="dim"><b>Peck's Law:</b> 分析在溫濕度偏壓試驗中，水氣滲透對金屬層造成的腐蝕加速影響。</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>除了早期的良率失效診斷，Wafer-Pro 更進一步整合了<strong>先進可靠度數學建模</strong>板塊。這也是系統深度的體現，如同背景的連鎖反應，可靠度失效是隨著時間慢慢推進的。</p>
+      <p>我們將業界標準的 JEDEC 可靠度模型全部以 JavaScript 實作寫入系統中。舉例來說，針對導線的電遷移 (EM)，我們實作了 Black's Equation，工程師只要拉動電流密度或溫度的滑桿，系統就能即時繪製出對數座標下的 MTTF 壽命衰減曲線。</p>
+      <p>針對閘極氧化層崩潰 (TDDB)，我們使用了 Weibull 分佈模型；針對熱疲勞與濕度腐蝕，我們分別內建了 Coffin-Manson 模型與 Peck's Law。這不僅是一個靜態的參考書，而是一個強大的「互動式可靠度模擬器」，能在前端 Canvas 上即時畫出隨時間衰退的機率圖表。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 9. REPORT ============ -->
+  <section class="slide" data-title="Report">
+    <div data-fx="typewriter-multi" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:0.25"></div>
+    <p class="kicker" style="font-size: 1.4rem;">// part 08 · auto disposition</p>
+    <h2 class="h2">自動化專家分析報告與文獻庫</h2>
+    <div class="stack mt-l">
+      <div class="rule-row anim-fade-up" data-anim="fade-up">
+        <span class="num blue">01</span>
+        <div>
+          <b>報告自動撰寫與工程系統整合</b>
+          <p class="dim">系統會將診斷機率、觸發異常的原因 (Reasoning Trace) 以及後續的 FA 檢測實體建議，自動匯整為純文字報告，可一鍵無縫貼入公司的 Lot Log 系統中。</p>
+        </div>
+      </div>
+      <div class="rule-row anim-fade-up" data-anim="fade-up" style="animation-delay: 0.1s">
+        <span class="num blue">02</span>
+        <div>
+          <b>內建國際可靠度規範檢索</b>
+          <p class="dim">系統內建了標準的 JEDEC/IEEE 可靠度規範文獻連結（如熱循環測試標準），確保所有的參數設定與診斷建議，都有最高標準的工業界權威背書。</p>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>再強大的推理引擎，最終都要落地到工程師的日常作業中。所以我們實作了<strong>自動化專家分析報告功能</strong>。大家看背景打字機的特效，象徵著這一切自動化生成的過程。</p>
+      <p>當工程師確認診斷結果後，只需點擊一個按鈕，系統就會自動將候選缺陷的機率、推理鏈的邏輯，以及下一步的實體檢驗建議（例如是否要進行 FIB 截面分析或 EMMI 漏電定位），匯整成排版精美的 Markdown 報告。這份報告可以直接複製貼入公司的 Lot Log 系統中，大幅節省打字時間，並統一了 FA 的報告格式。</p>
+      <p>同時，系統還內建了詳盡的 JEDEC 與 IEEE 規範文獻庫，無論是引用模型還是制定實驗計畫，都能在系統內找到權威背書。這真正實現了作業流程的閉環。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 10. SUMMARY ============ -->
+  <section class="slide" data-title="Summary">
+    <div data-fx="firework" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:0.4"></div>
+    <p class="kicker" style="font-size: 1.4rem;">// part 09 · conclusion</p>
+    <h2 class="h2">總結：引領分析流程的典範轉移</h2>
+    <div class="grid g2 mt-l">
+      <div>
+        <h3 class="h3 accent mb-s">邏輯的進化</h3>
+        <ul class="stack dim">
+          <li><strong>從「憑經驗」到「算機率」:</strong> 確保每次診斷分析的一致性與數學嚴謹性。</li>
+          <li><strong>從「看數字」到「看物理」:</strong> 透過動態幾何圖形讓微觀缺陷具象化。</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="h3 accent mb-s">商業核心價值</h3>
+        <ul class="stack dim">
+          <li><strong>極速決策:</strong> 將過去需要數小時的跨部門數據分析，縮短為秒級的互動運算。</li>
+          <li><strong>知識傳承:</strong> 把資深專家的 Domain Know-how，永久且標準化地沉澱在程式碼中。</li>
+        </ul>
+      </div>
+    </div>
+    <p class="lede mt-l tc" style="font-weight:600; color:var(--text-1)">感謝您的聆聽！接下來開放技術問答</p>
+    <div class="deck-footer">
+      <span class="mono">#end #q-and-a #expert-system</span>
+      <span class="slide-number" data-current="10" data-total="10"></span>
+    </div>
+    <aside class="notes">
+      <p>最後，為今天的分享做個總結。Wafer-Pro 帶來的，不僅是一個工具的升級，而是一場 FA 分析流程的典範轉移 (Paradigm Shift)。</p>
+      <p>我們將過去高度仰賴「資深經驗」的猜測過程，轉變為嚴謹的「數學機率」計算；將冰冷的報表數字，轉化為直觀的 SVG 物理拓撲圖形。</p>
+      <p>在商業價值上，這套 Serverless 系統將漫長的數據比對縮短到毫秒之間，大幅提升了晶圓廠的除錯效率；更重要的是，它將資深專家的 Domain Know-how 永久地沉澱在程式碼之中，解決了人才斷層的隱憂。</p>
+      <p>以上就是今天對 Wafer-Pro 專家診斷系統的深度技術剖析。感謝各位的時間，現在開放技術問答，歡迎大家提出問題！</p>
+    </aside>
+  </section>
+
+</div>
+
+<div style="position:fixed;bottom:12px;left:12px;font-size:11px;color:#484f5866;z-index:100;pointer-events:none">
+  S 演讲者视图 · T 切换主题 · ← → 翻页 · F 全屏 · O 总览 · R 重置计时
+</div>
+
+<script src="assets/runtime.js"></script>
+<script src="assets/animations/fx-runtime.js"></script>
+</body>
+</html>
