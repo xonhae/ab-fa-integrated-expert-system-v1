@@ -28,31 +28,3 @@
 ├── README.md         # 專案說明文件
 └── .gitignore        # Git 忽略檔案清單
 ```
-
----
-
-## 🚀 如何運行與部署
-
-### 本地運行 (Local Run)
-- 直接雙擊 [index.html](index.html) 檔案，即可在您的預設瀏覽器（如 Chrome, Safari, Edge 等）中開啟並直接操作，完全**不需要安裝任何依賴與套件**！
-
-### 部署到 GitHub Pages (Free Hosting)
-因為本專案是純靜態網頁，您可以直接將它部署在 GitHub Pages 上進行免費託管，步驟非常簡單：
-
-1. **建立 GitHub 倉庫**：
-   在 GitHub 上建立一個新的公開資源庫（Public Repository）。
-2. **推送到 GitHub**：
-   將專案檔案推送上去：
-   ```bash
-   git init
-   git add .
-   git commit -m "feat: initial release of static Wafer-Pro system"
-   git branch -M main
-   git remote add origin <您的 GitHub 倉庫 URL>
-   git push -u origin main
-   ```
-3. **啟用 GitHub Pages 服務**：
-   - 進入該 GitHub 倉庫的 **Settings** -> **Pages**。
-   - 在 **Build and deployment** 下的 Source 選擇 **Deploy from a branch**。
-   - Branch 選擇 `main`，目錄選擇 `/ (root)`，點擊 **Save**。
-   - 等待約 1 分鐘，GitHub 會自動產生一個綠色的網址（例如 `https://<您的帳號>.github.io/<倉庫名稱>/`），點擊即可隨時隨地開啟您的診斷系統！
