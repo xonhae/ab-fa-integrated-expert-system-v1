@@ -1,0 +1,3162 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wafer-Pro 半導體缺陷整合專家診斷系統</title>
+  <!-- 載入極具科技感與現代專業感的 Google 系統字型 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ==========================================================================
+       1. 設計系統變數與全域樣式 (CSS Variables & Reset)
+       ========================================================================== */
+    :root {
+      /* 優雅且富有科技感的暗色系調和 HSL 色彩 */
+      --bg-gradient: radial-gradient(circle at 12% 0%, #1c1e24 0%, #0f1013 40%, #0a0b0d 100%);
+      --bg-panel: rgba(20, 22, 27, 0.78);
+      --bg-panel-solid: #15171c;
+      --bg-card: rgba(27, 30, 38, 0.65);
+      --bg-card-hover: rgba(36, 40, 51, 0.85);
+      --border-color: rgba(255, 255, 255, 0.06);
+      --border-color-hover: rgba(255, 255, 255, 0.12);
+      
+      --text: #f3f5f9;
+      --text-muted: #8e98a8;
+      --text-dark: #0f1013;
+      
+      /* 功能性配色 */
+      --orange: #f28a37;
+      --orange-glow: rgba(242, 138, 55, 0.15);
+      --red: #e76872;
+      --red-glow: rgba(231, 104, 114, 0.15);
+      --purple: #a86ff4;
+      --purple-glow: rgba(168, 111, 244, 0.15);
+      --blue: #64b5ee;
+      --blue-glow: rgba(100, 181, 238, 0.15);
+      --green: #42b883;
+      --green-glow: rgba(66, 184, 131, 0.15);
+      --yellow: #f3c74f;
+      --yellow-glow: rgba(243, 199, 79, 0.15);
+      
+      --transition-fast: 0.15s ease;
+      --transition-smooth: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      line-height: 1.5;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    /* 捲軸美化 */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0d0f12;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #252831;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #363b49;
+    }
+
+    /* ==========================================================================
+       2. 頂部狀態列 (Topbar Style)
+       ========================================================================== */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      background: var(--bg-panel);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--orange), var(--purple));
+      font-family: 'Outfit', sans-serif;
+      font-weight: 900;
+      font-size: 22px;
+      color: #fff;
+      box-shadow: 0 0 20px rgba(242, 138, 55, 0.35);
+    }
+
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-subtitle {
+      font-size: 13px;
+      color: var(--orange);
+      border: 1px solid rgba(242, 138, 55, 0.3);
+      background: var(--orange-glow);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-weight: 600;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(66, 184, 131, 0.08);
+      border: 1px solid rgba(66, 184, 131, 0.2);
+      border-radius: 999px;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--green);
+      transition: var(--transition-smooth);
+    }
+    
+    .status-pill.active {
+      color: var(--orange);
+      background: rgba(242, 138, 55, 0.08);
+      border-color: rgba(242, 138, 55, 0.2);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: currentColor;
+      border-radius: 50%;
+      box-shadow: 0 0 10px currentColor;
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.4; }
+      50% { opacity: 1; }
+      100% { opacity: 0.4; }
+    }
+
+    /* ==========================================================================
+       3. 儀表板版面配置 (Dashboard Grid Layout)
+       ========================================================================== */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 1200px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* 卡片磨砂玻璃底座 */
+    .card {
+      background: var(--bg-panel);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+      margin-bottom: 20px;
+      overflow: hidden;
+      transition: border-color var(--transition-fast);
+    }
+    
+    .card:hover {
+      border-color: var(--border-color-hover);
+    }
+
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-header h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-body {
+      padding: 20px;
+    }
+
+    /* ==========================================================================
+       4. 輸入控制器與表單 (Input Form Styling)
+       ========================================================================== */
+    .form-group-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.full-width {
+      grid-column: span 2;
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input[type="text"], select {
+      background: rgba(15, 16, 19, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      width: 100%;
+      outline: none;
+      transition: all var(--transition-fast);
+    }
+
+    input[type="text"]:focus, select:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 10px rgba(242, 138, 55, 0.15);
+      background: rgba(15, 16, 19, 0.85);
+    }
+
+    select option {
+      background-color: var(--bg-panel-solid);
+      color: var(--text);
+    }
+
+    /* 按鈕樣式 */
+    .btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all var(--transition-fast);
+      width: 100%;
+    }
+
+    .btn:hover {
+      background: rgba(242, 138, 55, 0.1);
+      border-color: var(--orange);
+      color: #fff;
+    }
+    
+    .btn-danger {
+      background: rgba(231, 104, 114, 0.05);
+      border-color: rgba(231, 104, 114, 0.15);
+      color: var(--red);
+    }
+
+    .btn-danger:hover {
+      background: rgba(231, 104, 114, 0.15);
+      border-color: var(--red);
+      color: #fff;
+    }
+
+    /* HTML5 折疊面板 */
+    details {
+      background: rgba(15, 16, 19, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      margin-top: 14px;
+      overflow: hidden;
+      transition: border-color var(--transition-fast);
+    }
+
+    details[open] {
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    summary {
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+      outline: none;
+      transition: background var(--transition-fast);
+    }
+
+    summary:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .details-content {
+      padding: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    /* 數據網格 */
+    .knowledge-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    .knowledge-table th {
+      color: var(--text-muted);
+      padding: 8px;
+      border-bottom: 2px solid rgba(255,255,255,0.08);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .knowledge-table td {
+      padding: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      color: var(--text);
+    }
+
+    .knowledge-table tr:hover td {
+      background: rgba(255,255,255,0.02);
+    }
+
+    /* ==========================================================================
+       5. 參數輸入卡片系統 (Metric Cards - Sliders & Inputs)
+       ========================================================================== */
+    .metrics-section-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--orange);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      padding-bottom: 6px;
+      border-bottom: 1px dashed rgba(242, 138, 55, 0.2);
+    }
+
+    .metrics-container {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .param-card {
+      background: rgba(15, 16, 19, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 14px 16px;
+      transition: all var(--transition-fast);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .param-card:hover {
+      border-color: rgba(255, 255, 255, 0.1);
+      background: rgba(15, 16, 19, 0.7);
+    }
+
+    .param-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .param-title {
+      font-size: 14px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .param-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    /* 提示氣球 */
+    .popover-btn {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-family: Georgia, serif;
+      font-style: italic;
+      font-weight: 800;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: all var(--transition-fast);
+    }
+
+    .popover-btn:hover {
+      background: var(--orange-glow);
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+
+    .param-help {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .param-controls {
+      display: grid;
+      grid-template-columns: 1fr 100px;
+      gap: 14px;
+      align-items: center;
+    }
+
+    /* 自定義滑動條樣式 */
+    .slider-wrapper {
+      position: relative;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 99px;
+      background: #252831;
+      outline: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--text);
+      border: 3px solid var(--bg-panel-solid);
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      transition: transform 0.1s, background-color var(--transition-fast);
+    }
+
+    input[type="range"]:focus::-webkit-slider-thumb {
+      transform: scale(1.2);
+    }
+    
+    /* 數值輸入框樣式 */
+    .number-input-wrapper {
+      position: relative;
+    }
+
+    input[type="number"] {
+      background: #0f1013;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 6px 10px;
+      width: 100%;
+      text-align: right;
+      outline: none;
+      transition: border-color var(--transition-fast);
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--orange);
+    }
+
+    .param-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
+      padding-top: 8px;
+    }
+
+    .evidence-badge {
+      font-weight: 800;
+      color: var(--orange);
+    }
+
+    /* ==========================================================================
+       6. 即時監控看板 (Monitor Dashboard Cards)
+       ========================================================================== */
+    .monitor-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 1400px) {
+      .monitor-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    @media (max-width: 768px) {
+      .monitor-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .monitor-card {
+      background: rgba(22, 24, 30, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+      overflow: hidden;
+      transition: all var(--transition-fast);
+    }
+
+    .monitor-card:hover {
+      border-color: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .monitor-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .monitor-value {
+      font-size: 20px;
+      font-weight: 900;
+      font-family: 'Outfit', sans-serif;
+      color: #fff;
+    }
+
+    .monitor-score {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 4px;
+      margin-top: 4px;
+    }
+
+    /* 指標左側彩色呼吸燈條 */
+    .monitor-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--text-muted);
+    }
+
+    .monitor-card.has-color::before {
+      background: var(--card-accent-color);
+    }
+
+    /* ==========================================================================
+       7. 頁籤切換系統 (Tabs Component)
+       ========================================================================== */
+    .tabs-nav {
+      display: flex;
+      gap: 8px;
+      background: rgba(15, 16, 19, 0.5);
+      padding: 6px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 20px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 8px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--transition-fast);
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .tab-btn.active {
+      background: var(--orange);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(242, 138, 55, 0.25);
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       8. 頁籤 1：診斷結果與機率條 (Tab 1: Diagnosis Hero & Bars)
+       ========================================================================== */
+    .no-signal-info {
+      background: rgba(100, 181, 238, 0.05);
+      border: 1px dashed rgba(100, 181, 238, 0.25);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    .results-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .results-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .result-hero {
+      background: radial-gradient(135deg, rgba(231, 104, 114, 0.12) 0%, rgba(20, 22, 27, 0.9) 100%);
+      border: 1px solid var(--border-color);
+      border-left: 6px solid var(--red);
+      border-radius: 14px;
+      padding: 30px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .result-hero-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--red);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .result-hero-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.3;
+      margin-bottom: 16px;
+    }
+
+    .result-hero-prob {
+      font-size: 15px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .result-hero-prob span {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--red);
+      font-family: 'Outfit', sans-serif;
+      vertical-align: middle;
+      margin-left: 6px;
+    }
+
+    /* 機率條列 */
+    .bars-section {
+      background: rgba(15, 16, 19, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .bars-section h4 {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+
+    .bar-row {
+      margin-bottom: 14px;
+    }
+
+    .bar-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .bar-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .bar-info span:first-child {
+      color: var(--text);
+    }
+
+    .bar-info span:last-child {
+      color: var(--orange);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+    }
+
+    .bar-track {
+      height: 8px;
+      border-radius: 99px;
+      background: #252831;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--purple), var(--blue));
+      width: 0%;
+      transition: width 0.6s cubic-bezier(0.1, 0.8, 0.25, 1);
+    }
+
+    /* 原因細節折疊卡 */
+    .top3-reasons h4 {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 16px;
+      letter-spacing: 0.3px;
+    }
+
+    .reason-card {
+      background: rgba(15, 16, 19, 0.5);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .reason-card-header {
+      padding: 14px 20px;
+      background: rgba(255, 255, 255, 0.02);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 800;
+      font-size: 14px;
+      transition: background var(--transition-fast);
+    }
+
+    .reason-card-header:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .reason-card-header .prob {
+      color: var(--orange);
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .reason-card-body {
+      padding: 18px 20px;
+      border-top: 1px solid var(--border-color);
+      display: none;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    
+    .reason-card.open .reason-card-body {
+      display: block;
+    }
+
+    .reason-field {
+      margin-bottom: 10px;
+    }
+
+    .reason-field:last-child {
+      margin-bottom: 0;
+    }
+
+    .reason-field-label {
+      font-weight: 800;
+      color: var(--orange);
+      margin-bottom: 2px;
+    }
+    
+    .reason-field-text {
+      color: var(--text);
+    }
+
+    /* ==========================================================================
+       9. 頁籤 2：標準參考文獻 (Tab 2: Standard Reference Table)
+       ========================================================================== */
+    .ref-intro {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+      line-height: 1.6;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding-bottom: 12px;
+    }
+
+    .literature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .literature-item {
+      background: rgba(15,16,19,0.3);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+    }
+
+    .literature-item strong {
+      color: var(--orange);
+      display: block;
+      margin-bottom: 4px;
+    }
+    
+    .literature-item a {
+      color: var(--blue);
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .literature-item a:hover {
+      text-decoration: underline;
+    }
+
+    /* ==========================================================================
+       10. 頁籤 3：視覺化模組 (Tab 3: SVG Topology & Radar Chart)
+       ========================================================================== */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-container {
+      background: rgba(15, 16, 19, 0.5);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .chart-container h4 {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      align-self: flex-start;
+      margin-bottom: 16px;
+      letter-spacing: 0.3px;
+    }
+
+    .svg-wrapper {
+      width: 100%;
+      max-width: 380px;
+      aspect-ratio: 1.15;
+    }
+
+    /* 圖例 (Legends) */
+    .legend-bar {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      background: rgba(15, 16, 19, 0.3);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-box {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+
+    /* ==========================================================================
+       11. 頁籤 4：推理鏈與報告預覽 (Tab 4: Reasoning & Report)
+       ========================================================================== */
+    .report-layout {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .report-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .report-card-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .trace-container {
+      background: #0f1013;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 16px 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      line-height: 1.7;
+      overflow-y: auto;
+      max-height: 380px;
+    }
+
+    .trace-rule {
+      display: inline-block;
+      color: var(--orange);
+      background: var(--orange-glow);
+      border: 1px solid rgba(242, 138, 55, 0.3);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-weight: 700;
+      margin-right: 8px;
+      margin-bottom: 4px;
+    }
+
+    .trace-text {
+      color: var(--text-muted);
+    }
+    
+    .trace-conclusion {
+      color: var(--green);
+      font-weight: 700;
+      border-top: 1px dashed rgba(255, 255, 255, 0.1);
+      margin-top: 12px;
+      padding-top: 12px;
+    }
+
+    .report-preview-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .report-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    textarea.report-textarea {
+      width: 100%;
+      height: 330px;
+      background: #0f1013;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      line-height: 1.6;
+      padding: 14px;
+      resize: none;
+      outline: none;
+    }
+
+    /* ==========================================================================
+       12. 彈出提示泡泡全域樣式 (Global Popover Tooltip)
+       ========================================================================== */
+    .popover-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      place-items: center;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .popover-card {
+      background: var(--bg-panel-solid);
+      border: 1px solid var(--border-color-hover);
+      border-radius: 16px;
+      width: 90%;
+      max-width: 480px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      overflow: hidden;
+      animation: scaleUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes scaleUp {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .popover-card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .popover-card-header h4 {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--orange);
+    }
+
+    .popover-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+      outline: none;
+    }
+    
+    .popover-close-btn:hover {
+      color: var(--red);
+    }
+
+    .popover-card-body {
+      padding: 20px;
+      font-size: 13px;
+      line-height: 1.6;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .popover-section-title {
+      font-weight: 800;
+      color: var(--text);
+      margin-top: 12px;
+      margin-bottom: 4px;
+    }
+    
+    .popover-section-text {
+      color: var(--text-muted);
+    }
+    
+    .popover-card-body code {
+      font-family: 'JetBrains Mono', monospace;
+      background: #0f1013;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--orange);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. 頂部狀態列 -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo">W</div>
+      <div>
+        <span class="brand-title">Wafer-Pro</span>
+        <span class="brand-subtitle">半導體缺陷整合專家診斷系統</span>
+      </div>
+    </div>
+    <div class="status-pill" id="status-pill">
+      <div class="status-dot"></div>
+      <span id="loaded-model-txt">已載入故障模型：None</span>
+    </div>
+  </header>
+
+  <!-- 2. 主版面 -->
+  <main class="dashboard-grid">
+    
+    <!-- ================== 左側控制面板列 ================== -->
+    <section class="left-column">
+      
+      <!-- 案例設定卡片 -->
+      <article class="card">
+        <div class="card-header">
+          <h3>
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--orange);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            案例設定與故障模組
+          </h3>
+        </div>
+        <div class="card-body">
+          <div class="form-group-grid">
+            <div class="form-group">
+              <label for="case-id">Case / Tool / Lot ID</label>
+              <input type="text" id="case-id" placeholder="例如 Etcher B / Lot 26A">
+            </div>
+            <div class="form-group">
+              <label for="wafer-map">Wafer Map 分佈</label>
+              <select id="wafer-map">
+                <!-- 由 JS 動態生成 -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="morphology">SEM/AOI 型貌補充</label>
+              <select id="morphology">
+                <!-- 由 JS 動態生成 -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="selected-stage">診斷階段</label>
+              <select id="selected-stage">
+                <!-- 由 JS 動態生成 -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="selected-model">缺陷模型 Preset</label>
+              <select id="selected-model">
+                <!-- 由 JS 動態生成 -->
+              </select>
+            </div>
+            <div class="form-group" style="justify-content: flex-end;">
+              <button class="btn btn-danger" id="clear-btn">清除輸入</button>
+            </div>
+          </div>
+          <p class="param-help" style="margin-bottom:0;">
+            *選擇缺陷模型後，系統會自動填入該缺陷典型的特徵數據；您依然可以在下方拉動滑桿或手動數值框進行微調。
+          </p>
+
+          <!-- 故障模組知識庫 -->
+          <details id="knowledge-base-expander">
+            <summary>查看故障模組知識庫</summary>
+            <div class="details-content">
+              <table class="knowledge-table" id="knowledge-table">
+                <thead>
+                  <tr>
+                    <th>故障模組</th>
+                    <th>英文</th>
+                    <th>主要依據</th>
+                    <th>改善方法</th>
+                  </tr>
+                </thead>
+                <tbody id="knowledge-table-body">
+                  <!-- JS 動態插入 -->
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </div>
+      </article>
+
+      <!-- 量測數據輸入卡片 -->
+      <article class="card">
+        <div class="card-header">
+          <h3 id="inputs-header-title">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--orange);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            量測數據輸入
+          </h3>
+          <span class="brand-subtitle" style="margin-left:0; font-size:11px;">滑桿 + 手動輸入雙向同步</span>
+        </div>
+        <div class="card-body">
+          <div class="metrics-container" id="metrics-input-list">
+            <!-- JS 動態根據所選 Stage 生成這部分的參數控制卡片 -->
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- ================== 右側視覺看板與頁籤結果列 ================== -->
+    <section class="right-column">
+      
+      <!-- 參數監控看板 -->
+      <article class="card" style="margin-bottom:16px;">
+        <div class="card-header" style="padding:12px 20px;">
+          <h3>
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--green);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            主要製程 / 電性參數即時監控
+          </h3>
+        </div>
+        <div class="card-body" style="padding:14px 20px;">
+          <div class="monitor-grid" id="monitor-grid">
+            <!-- 由 JS 動態生成 6 個看板指標 -->
+          </div>
+        </div>
+      </article>
+
+      <!-- 功能頁籤 -->
+      <nav class="tabs-nav">
+        <button class="tab-btn active" data-tab="result-tab">診斷結果</button>
+        <button class="tab-btn" data-tab="reference-tab">標準數據參考</button>
+        <button class="tab-btn" data-tab="visual-tab">視覺化模組</button>
+        <button class="tab-btn" data-tab="trace-tab">推理鏈與報告</button>
+        <button class="tab-btn" data-tab="ranking-tab">完整排序與權重</button>
+      </nav>
+
+      <!-- 頁籤 1: 診斷結果 -->
+      <div class="tab-content active" id="result-tab">
+        <div id="no-signal-alert" class="no-signal-info">
+          請先輸入至少一個達到異常門檻的量測值。Wafer map 與 SEM/AOI 型貌不會單獨觸發診斷。
+        </div>
+        <div id="diagnosis-results-area" style="display:none;">
+          <div class="results-layout">
+            <div class="result-hero" id="result-hero-card">
+              <div class="result-hero-label">檢測到失效機制</div>
+              <div class="result-hero-title" id="top-defect-name">圖形橋接 / 跨橋短路<br>(Fabrication Bridging / Short)</div>
+              <div class="result-hero-prob">診斷可信度 <span id="top-defect-prob">99.8%</span></div>
+            </div>
+            
+            <div class="bars-section">
+              <h4>候選缺陷機率分佈</h4>
+              <div id="prob-bars-container">
+                <!-- JS 動態生成機率條 -->
+              </div>
+            </div>
+          </div>
+          
+          <div class="top3-reasons">
+            <h4>Top-3 原因、形成機制與改善方法</h4>
+            <div id="top3-expander-list">
+              <!-- JS 動態生成展開卡片 -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 頁籤 2: 標準參考資料 -->
+      <div class="tab-content" id="reference-tab">
+        <div class="ref-intro">
+          <h4>各缺陷標準數據參考模組</h4>
+          <p style="margin-top:4px;">這些數據範圍用來做專家系統初判與教學展示。實際量產門檻需依製程節點、layer、產品規格、測試條件與廠內 SPC baseline 重新校正。</p>
+          <p style="margin-top:2px;">欄位說明：正常參考代表低風險 baseline；警戒範圍代表需追蹤或補量測；強觸發範圍代表會明顯提高該缺陷權重；建議檢測方法用於實體驗證。</p>
+        </div>
+        
+        <div style="margin-bottom: 24px;">
+          <h4 style="font-size:14px; margin-bottom:10px;">階段缺陷數據參考總覽</h4>
+          <div style="overflow-x:auto;">
+            <table class="knowledge-table" style="font-size:13px;">
+              <thead>
+                <tr>
+                  <th>缺陷模組</th>
+                  <th>主要強觸發數據</th>
+                  <th>建議驗證方法</th>
+                </tr>
+              </thead>
+              <tbody id="ref-summary-body">
+                <!-- 由 JS 動態生成 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="ref-defect-expander-list">
+          <!-- 由 JS 動態生成每個缺陷的詳細數據卡片 -->
+        </div>
+
+        <div class="literature-list">
+          <h4 style="font-size:14px; margin-top:14px; color:var(--text)">文獻與標準參考</h4>
+          <p style="font-size:12px; color:var(--text-muted)">以下資料用於建立診斷項目、測試方法與失效機制分類；實際製程門檻仍需依廠內 SPC / WAT / PCM / FA database 校正。</p>
+          <div id="literature-container">
+            <!-- 由 JS 動態生成 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 頁籤 3: 視覺化模組 -->
+      <div class="tab-content" id="visual-tab">
+        <div class="charts-grid">
+          <div class="chart-container">
+            <h4>晶片物理失效拓撲圖</h4>
+            <div class="svg-wrapper" id="topology-svg-container">
+              <!-- JS 動態渲染 SVG -->
+            </div>
+          </div>
+          <div class="chart-container">
+            <h4>失效機制機率模型分佈 (Radar)</h4>
+            <div class="svg-wrapper" id="radar-svg-container">
+              <!-- JS 動態渲染 SVG -->
+            </div>
+          </div>
+        </div>
+        <div class="legend-bar">
+          <div class="legend-item"><span class="legend-box" style="background:#e76872;"></span> Short / Leakage</div>
+          <div class="legend-item"><span class="legend-box" style="background:#a86ff4;"></span> Open / Bridge</div>
+          <div class="legend-item"><span class="legend-box" style="background:#f3c74f;"></span> Thermal / Latch-up</div>
+          <div class="legend-item"><span class="legend-box" style="background:#64b5ee;"></span> Oxide / Plasma</div>
+        </div>
+      </div>
+
+      <!-- 頁籤 4: 推理與報告 -->
+      <div class="tab-content" id="trace-tab">
+        <div class="report-layout">
+          <div>
+            <h4 class="report-card-title">專家推理決策路徑 (Reasoning Trace)</h4>
+            <div class="trace-container" id="reasoning-trace-box">
+              <!-- JS 即時渲染推理明細 -->
+            </div>
+          </div>
+          <div class="report-preview-container">
+            <h4 class="report-card-title">診斷報告</h4>
+            <div class="report-actions">
+              <button class="btn" id="copy-report-btn">複製報告</button>
+              <button class="btn btn-danger" style="background:var(--orange-glow); border-color:var(--orange); color:#fff;" id="download-report-btn">匯出診斷報告</button>
+            </div>
+            <textarea class="report-textarea" id="report-text-area" readonly></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- 頁籤 5: 完整排序 -->
+      <div class="tab-content" id="ranking-tab">
+        <div style="overflow-x:auto; margin-bottom: 20px;">
+          <table class="knowledge-table" style="font-size:13px;">
+            <thead>
+              <tr>
+                <th>排名</th>
+                <th>候選缺陷</th>
+                <th>分類</th>
+                <th>診斷可信度</th>
+                <th>Fit Score</th>
+                <th>Raw Score</th>
+                <th>Max Score</th>
+              </tr>
+            </thead>
+            <tbody id="ranking-table-body">
+              <!-- 由 JS 動態生成 -->
+            </tbody>
+          </table>
+        </div>
+        
+        <details open>
+          <summary>推論與加權規則說明</summary>
+          <div class="details-content" style="font-size:13px; line-height:1.7; color:var(--text-muted)">
+            <p>1. 每個輸入數值先依門檻轉為 <strong>Evidence Score 0-5</strong>。</p>
+            <p>2. 每種缺陷有自己的 <strong>evidence 權重矩陣</strong>；Fab 模型主要看 CD、overlay、etch、residue、particle、plasma 與 profile signature，FA 模型主要看 IDDQ、pin leakage、rail resistance、thermal、chain resistance 與失效 signature。</p>
+            <p>3. <strong>Raw Score</strong> = sum(Evidence Score x defect weight)。</p>
+            <p>4. <strong>Max Score</strong> = 5 x sum(positive weights for that defect)。</p>
+            <p>5. <strong>Fit Score</strong> = Raw Score / Max Score。</p>
+            <p>6. 最後診斷可信度（機率）由全部缺陷的 Fit Score 正規化得來（機率公式：<code>fit^30 / sum(fit^30)</code>），大幅拉開強信號與弱信號的差距，使不同總權重的缺陷可以公平比較，為工程師鎖定最精確的根本原因。</p>
+          </div>
+        </details>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- 3. 彈出提示泡泡遮罩 -->
+  <div class="popover-overlay" id="popover-overlay">
+    <div class="popover-card">
+      <div class="popover-card-header">
+        <h4 id="popover-title">量測參數資訊</h4>
+        <button class="popover-close-btn" id="popover-close-btn">&times;</button>
+      </div>
+      <div class="popover-card-body" id="popover-body">
+        <!-- JS 動態填充 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       13. 核心 JavaScript 引擎 (Rules, Math, Controls & SVG Drawer)
+       ========================================================================== */ -->
+  <script>
+    // 1. 核心資料集
+    const METRICS = [
+      {
+        "key": "cd_3sigma",
+        "domain": "Fab",
+        "evidence": "cd",
+        "label": "CD 3 sigma",
+        "unit": "nm",
+        "min": 0.0,
+        "max": 10.0,
+        "default": 0.0,
+        "step": 0.1,
+        "thresholds": [1, 2, 3, 5, 8],
+        "normal": "< 1 nm",
+        "abnormal": "> 3 nm",
+        "color": "#e76872",
+        "help": "關鍵尺寸變異度。生產中真正的限制必須根據製程節點、層別和產品規格來決定。"
+      },
+      {
+        "key": "overlay_error",
+        "domain": "Fab",
+        "evidence": "overlay",
+        "label": "Overlay total error",
+        "unit": "nm",
+        "min": 0.0,
+        "max": 20.0,
+        "default": 0.0,
+        "step": 0.5,
+        "thresholds": [2, 4, 8, 12, 15],
+        "normal": "< 2 nm",
+        "abnormal": "> 8 nm",
+        "color": "#64b5ee",
+        "help": "層對層套對疊對誤差。量產時應比對該層套對 overlay 的總預算範圍。"
+      },
+      {
+        "key": "thickness_nu",
+        "domain": "Fab",
+        "evidence": "thickness",
+        "label": "Film Thickness NU",
+        "unit": "%",
+        "min": 0.0,
+        "max": 10.0,
+        "default": 0.0,
+        "step": 0.1,
+        "thresholds": [1, 2, 3, 5, 8],
+        "normal": "< 1%",
+        "abnormal": "> 3%",
+        "color": "#f3c74f",
+        "help": "薄膜厚度不均勻度：NU% = (Max - Min) / (2 x Mean) x 100。例如：104/96/100 nm 給出 NU = 4%。"
+      },
+      {
+        "key": "etch_error",
+        "domain": "Fab",
+        "evidence": "etch",
+        "label": "Etch depth error",
+        "unit": "nm",
+        "min": -20.0,
+        "max": 20.0,
+        "default": 0.0,
+        "step": 0.5,
+        "thresholds": [2, 5, 8, 12, 16],
+        "absolute": true,
+        "normal": "0 +/- 2 nm",
+        "abnormal": "|error| > 8 nm",
+        "color": "#a86ff4",
+        "help": "相對 target etch depth 的偏差值。正負偏移都以絕對值扣分給出 Evidence 得分。"
+      },
+      {
+        "key": "particle_count",
+        "domain": "Fab",
+        "evidence": "particle",
+        "label": "Particle count",
+        "unit": "ea/wafer",
+        "min": 0.0,
+        "max": 100.0,
+        "default": 0.0,
+        "step": 1.0,
+        "thresholds": [5, 10, 20, 50, 80],
+        "normal": "< 5 ea/wafer",
+        "abnormal": "> 20 ea/wafer",
+        "color": "#42b883",
+        "help": "單片新增微粒數。正式生產時應定義微粒大小分類（Size Bin）與機台檢測食譜。"
+      },
+      {
+        "key": "residue_nm",
+        "domain": "Fab",
+        "evidence": "residue",
+        "label": "Residue / scum thickness",
+        "unit": "nm",
+        "min": 0.0,
+        "max": 15.0,
+        "default": 0.0,
+        "step": 0.1,
+        "thresholds": [0.5, 1, 2, 5, 10],
+        "normal": "< 0.5 nm",
+        "abnormal": "> 2 nm",
+        "color": "#f28a37",
+        "help": "顯影後殘膠（scum）、聚合物殘留（polymer residue）或光阻去膠不完全殘渣。"
+      },
+      {
+        "key": "plasma_delta",
+        "domain": "Fab",
+        "evidence": "plasma",
+        "label": "RF power / bias deviation",
+        "unit": "%",
+        "min": -25.0,
+        "max": 25.0,
+        "default": 0.0,
+        "step": 0.5,
+        "thresholds": [2, 5, 8, 12, 20],
+        "absolute": true,
+        "normal": "0 +/- 2%",
+        "abnormal": "|delta| > 8%",
+        "color": "#64b5ee",
+        "help": "電漿射頻功率或偏壓偏離食譜基線的百分比。用於判定電漿充電損害與氧化層疲勞。"
+      },
+      {
+        "key": "scratch_signature",
+        "domain": "Fab",
+        "evidence": "scratch",
+        "label": "Scratch / linear signature",
+        "unit": "score",
+        "min": 0.0,
+        "max": 5.0,
+        "default": 0.0,
+        "step": 1.0,
+        "thresholds": [1, 2, 3, 4, 5],
+        "normal": "0",
+        "abnormal": "> 3",
+        "color": "#42b883",
+        "help": "SEM/AOI 或 wafer map 上線狀刮傷特徵的工程分級。"
+      },
+      {
+        "key": "cmp_signature",
+        "domain": "Fab",
+        "evidence": "cmp_signature",
+        "label": "CMP profile signature",
+        "unit": "score",
+        "min": 0.0,
+        "max": 5.0,
+        "default": 0.0,
+        "step": 1.0,
+        "thresholds": [1, 2, 3, 4, 5],
+        "normal": "0",
+        "abnormal": "> 3",
+        "color": "#5b7cfa",
+        "help": "由 thickness/profile map 或截面判斷 CMP dishing/erosion 圖案化特徵強度。"
+      },
+      {
+        "key": "collapse_signature",
+        "domain": "Fab",
+        "evidence": "collapse_signature",
+        "label": "Pattern collapse signature",
+        "unit": "score",
+        "min": 0.0,
+        "max": 5.0,
+        "default": 0.0,
+        "step": 1.0,
+        "thresholds": [1, 2, 3, 4, 5],
+        "normal": "0",
+        "abnormal": "> 3",
+        "color": "#e76872",
+        "help": "由 top-down SEM 或截面 SEM 判定高深寬比細線倒塌特徵工程強度。"
+      },
+      {
+        "key": "iddq_ratio",
+        "domain": "FA",
+        "evidence": "iddq",
+        "label": "IDDQ vs baseline",
+        "unit": "x",
+        "min": 1.0,
+        "max": 20.0,
+        "default": 1.0,
+        "step": 0.1,
+        "thresholds": [1.5, 2, 3, 8, 15],
+        "normal": "1.0x baseline",
+        "abnormal": "> 3x baseline",
+        "color": "#e76872",
+        "help": "待機電流相較於正常 golden 晶圓的倍率。1.0x 代表無額外漏電。"
+      },
+      {
+        "key": "pin_leakage",
+        "domain": "FA",
+        "evidence": "pin_leakage",
+        "label": "Pin reverse leakage",
+        "unit": "uA",
+        "min": 0.0,
+        "max": 100.0,
+        "default": 0.0,
+        "step": 1.0,
+        "thresholds": [1, 5, 10, 30, 80],
+        "normal": "< 1 uA",
+        "abnormal": "> 10 uA",
+        "color": "#a86ff4",
+        "help": "在特定偏壓下量測到的接腳反向漏電。需要搭配產品測試規範判讀。"
+      },
+      {
+        "key": "rvcc_gnd",
+        "domain": "FA",
+        "evidence": "rail_short",
+        "label": "VCC-GND resistance",
+        "unit": "ohm",
+        "min": 0.0,
+        "max": 200.0,
+        "default": 200.0,
+        "step": 1.0,
+        "thresholds_low": [100, 50, 20, 10, 5],
+        "normal": "> 100 ohm",
+        "abnormal": "< 20 ohm",
+        "color": "#64b5ee",
+        "help": "電源與接地軌之間的 DC 阻抗。阻抗值越低代表硬性短路機率越高。"
+      },
+      {
+        "key": "chain_delta",
+        "domain": "FA",
+        "evidence": "resistance_drift",
+        "label": "Chain resistance drift",
+        "unit": "%",
+        "min": 0.0,
+        "max": 50.0,
+        "default": 0.0,
+        "step": 0.5,
+        "thresholds": [2, 5, 10, 20, 40],
+        "normal": "< 2%",
+        "abnormal": "> 10%",
+        "color": "#f3c74f",
+        "help": "Via/Contact 鏈或金屬互連鏈結構之電阻漂移百分比。"
+      },
+      {
+        "key": "hotspot_delta",
+        "domain": "FA",
+        "evidence": "thermal",
+        "label": "Thermal hotspot delta",
+        "unit": "degC",
+        "min": 0.0,
+        "max": 80.0,
+        "default": 0.0,
+        "step": 1.0,
+        "thresholds": [5, 10, 15, 30, 60],
+        "normal": "< 5 degC",
+        "abnormal": "> 15 degC",
+        "color": "#f28a37",
+        "help": "電性操作下，熱成像測得之局部熱點相對基線溫差。"
+      },
+      {
+        "key": "functional_fail",
+        "domain": "FA",
+        "evidence": "logic_fail",
+        "label": "Functional fail severity",
+        "unit": "score",
+        "min": 0.0,
+        "max": 5.0,
+        "default": 0.0,
+        "step": 1.0,
+        "thresholds": [1, 2, 3, 4, 5],
+        "normal": "0",
+        "abnormal": "> 3",
+        "color": "#a86ff4",
+        "help": "功能測試中邏輯鏈固定故障（Stuck-at）、時序錯誤或掃描鏈故障的嚴重度分級。"
+      },
+      {
+        "key": "esd_signature",
+        "domain": "FA",
+        "evidence": "esd_signature",
+        "label": "ESD damaged I/O signature",
+        "unit": "score",
+        "min": 0.0,
+        "max": 5.0,
+        "default": 0.0,
+        "step": 1.0,
+        "thresholds": [1, 2, 3, 4, 5],
+        "normal": "0",
+        "abnormal": "> 3",
+        "color": "#e76872",
+        "help": "I/O 靜電二極體、保護夾軌元件或特殊腳位漏電曲線（Curve trace）異常嚴重度。"
+      },
+      {
+        "key": "eos_signature",
+        "domain": "FA",
+        "evidence": "eos_signature",
+        "label": "EOS burnt / overstress signature",
+        "unit": "score",
+        "min": 0.0,
+        "max": 5.0,
+        "default": 0.0,
+        "step": 1.0,
+        "thresholds": [1, 2, 3, 4, 5],
+        "normal": "0",
+        "abnormal": "> 3",
+        "color": "#f28a37",
+        "help": "晶片物理開蓋或光學檢測時，局部燒毀、融化或金屬過載痕跡嚴重度。"
+      },
+      {
+        "key": "bondwire_signature",
+        "domain": "FA",
+        "evidence": "bondwire_signature",
+        "label": "Bond-wire continuity signature",
+        "unit": "score",
+        "min": 0.0,
+        "max": 5.0,
+        "default": 0.0,
+        "step": 1.0,
+        "thresholds": [1, 2, 3, 4, 5],
+        "normal": "0",
+        "abnormal": "> 3",
+        "color": "#a86ff4",
+        "help": "X-ray、打線拉力測試、封裝連續性量測中打線開路特徵強度分級。"
+      }
+    ];
+
+    const MORPHOLOGY_BOOSTS = {
+      "Unknown / not reviewed": {},
+      "Bridge-like": {"pattern": 5, "residue": 2, "rail_short": 2},
+      "Open-like": {"pattern": 4, "resistance_drift": 2},
+      "Residue-like": {"residue": 5, "pattern": 3},
+      "Melted / Burnt": {"thermal": 4, "rail_short": 3},
+      "Corrosion-like": {"environment": 4, "residue": 2, "resistance_drift": 2},
+      "Scratch-like": {"particle": 3, "pattern": 4}
+    };
+
+    const WAFER_MAP_BOOSTS = {
+      "Unknown": {},
+      "Random": {"particle": 2},
+      "Ring": {"thickness": 3},
+      "Edge": {"thickness": 2, "environment": 2},
+      "Streak": {"particle": 2, "pattern": 3},
+      "Center-edge": {"cd": 2, "thickness": 2},
+      "Die-to-die": {"overlay": 2},
+      "Wafer-to-wafer": {"thickness": 2, "plasma": 1}
+    };
+
+    const DEFECTS = [
+      {
+        "id": "BRIDGE",
+        "name": "圖形橋接 / 跨橋短路",
+        "en": "Fabrication Bridging / Short",
+        "tag": "短路",
+        "group": "Fab + FA",
+        "evidence": "Short fail, IDDQ increase, low VCC-GND resistance, residue, or under-etch evidence.",
+        "cause": "曝光不足、顯影不完全、底部殘渣、polymer residue 或金屬蝕刻不足，使相鄰圖形形成物理連接。",
+        "solution": "調整 exposure/focus、developer/rinse、descum 與 over-etch margin，並比對 CD 與 residue map。",
+        "next": ["FIB cross-section", "In-lens SEM", "IDDQ / VCC-GND resistance confirmation"],
+        "weights": {"cd": 10, "etch": 15, "residue": 25, "iddq": 25, "rail_short": 30, "logic_fail": 10, "pattern": 20}
+      },
+      {
+        "id": "OPEN",
+        "name": "線路斷路 / 接合開路",
+        "en": "Open / Bond-wire Defect",
+        "tag": "開路",
+        "group": "Fab + FA",
+        "evidence": "Open fail, high chain resistance, contact/via not open, bond-wire crack, or particle masking.",
+        "cause": "過蝕刻、particle mask、金屬不連續、CMP erosion、via/contact 未開，或後段打線接合裂縫造成開路。",
+        "solution": "檢查 etch endpoint、pre-clean、deposition coverage、via/contact etch window、wire bond pull/shear 與 continuity map。",
+        "next": ["Continuity map", "Cross-section SEM", "Wire pull/shear or via/contact resistance map"],
+        "weights": {"etch": 20, "particle": 15, "resistance_drift": 30, "logic_fail": 10, "pattern": 15}
+      },
+      {
+        "id": "MISALIGN",
+        "name": "層間偏移",
+        "en": "Misalignment",
+        "tag": "對位",
+        "group": "Fab",
+        "evidence": "Overlay error, via miss, contact resistance increase, or die-to-die wafer signature.",
+        "cause": "Alignment mark 污染、stage drift、thermal expansion、chucking error 或 scanner matching 問題導致 overlay 偏移。",
+        "solution": "清潔 alignment mark、檢查 scanner matching、stage calibration、chuck condition 與 overlay APC。",
+        "next": ["Overlay X/Y/rotation", "Alignment mark review", "Tool matching check"],
+        "weights": {"overlay": 40, "residue": 5, "logic_fail": 5, "pattern": 10}
+      },
+      {
+        "id": "CDU",
+        "name": "關鍵尺寸不均",
+        "en": "CD Uniformity",
+        "tag": "CDU",
+        "group": "Fab",
+        "evidence": "High CD 3 sigma, center-edge wafer signature, or process window instability.",
+        "cause": "Coat、PEB、dose/focus、develop、etch loading 或 across-wafer uniformity 異常造成 CD 分佈變寬。",
+        "solution": "檢查 coater、hot plate、scanner dose/focus map、develop uniformity 與 etch uniformity。",
+        "next": ["CD-SEM map", "PEB temperature map", "Scanner focus/dose trend"],
+        "weights": {"cd": 40, "etch": 10, "thickness": 5, "pattern": 10}
+      },
+      {
+        "id": "OXIDE",
+        "name": "電漿損傷 / 閘極氧化層擊穿",
+        "en": "Plasma Damage / Gate Oxide Breakdown",
+        "tag": "漏電",
+        "group": "Fab + FA",
+        "evidence": "RF deviation, pin leakage, gate leakage, oxide breakdown, or antenna-effect signature.",
+        "cause": "Plasma charging、RF instability、grounding issue 或 antenna effect 造成 gate oxide fatigue 與漏電通道。",
+        "solution": "檢查 Etch/CVD grounding、RF stability，並 review antenna diode 與 antenna ratio design rule。",
+        "next": ["EMMI / OBIRCH", "Gate leakage I-V", "Antenna ratio review"],
+        "weights": {"plasma": 30, "pin_leakage": 35, "thermal": 10, "iddq": 10}
+      },
+      {
+        "id": "LATCHUP",
+        "name": "Latch-up 鎖定效應",
+        "en": "Latch-up Triggered Failure",
+        "tag": "鎖定",
+        "group": "FA + Process",
+        "evidence": "Thermal hotspot, current snapback, persistent high current, and low rail resistance.",
+        "cause": "寄生 PNPN thyristor 受過壓、雜訊、well resistance 或 guard ring 不足觸發，導致大電流短路。",
+        "solution": "改善 guard ring 與 substrate contact，檢查 well implant dose/energy uniformity 與 latch-up rule。",
+        "next": ["Latch-up test", "Thermal imaging", "OBIRCH / EMMI"],
+        "weights": {"thermal": 35, "rail_short": 25, "iddq": 25, "logic_fail": 10}
+      },
+      {
+        "id": "PARTICLE",
+        "name": "顆粒污染",
+        "en": "Particle Contamination",
+        "tag": "污染",
+        "group": "Fab",
+        "evidence": "Random defects, particle count increase, or tool/chamber commonality.",
+        "cause": "Chamber flaking、FOUP、robot、filter、CMP slurry、brush clean 或環境微粒造成 random killer defect。",
+        "solution": "執行 tool commonality、chamber clean、filter/FOUP/robot blade review 與 particle source tracing。",
+        "next": ["Defect review", "TEM-EDS", "Tool commonality"],
+        "weights": {"particle": 40, "pattern": 10, "logic_fail": 5}
+      },
+      {
+        "id": "EM",
+        "name": "金屬空洞 / 電遷移劣化",
+        "en": "Metal Void / Electromigration",
+        "tag": "可靠度",
+        "group": "Fab + Reliability",
+        "evidence": "Chain resistance drift, open behavior, local heating, or interconnect void signature.",
+        "cause": "Seed/liner coverage、electrofill chemistry、stress migration 或 high current density 造成 void 與高阻。",
+        "solution": "檢查 seed/liner coverage、electrofill chemistry、current density、anneal condition 與 stress migration risk。",
+        "next": ["Resistance drift trend", "Cross-section SEM/TEM", "Current density review"],
+        "weights": {"thickness": 15, "resistance_drift": 40, "thermal": 10, "particle": 5}
+      },
+      {
+        "id": "CORROSION",
+        "name": "金屬電化學腐蝕",
+        "en": "Corrosion",
+        "tag": "腐蝕",
+        "group": "Fab + FA",
+        "evidence": "Humidity or queue-time sensitivity, metal pitting, residue, leakage, or resistance drift.",
+        "cause": "Cl/F residue、水氣、wet chemistry residue 與長 queue time 會造成 electrochemical corrosion。",
+        "solution": "縮短 queue time、加強 rinse/dry、檢查 wet chemistry 並改善 humidity control。",
+        "next": ["Ion chromatography", "TOF-SIMS", "Surface SEM"],
+        "weights": {"residue": 35, "resistance_drift": 30, "pin_leakage": 20}
+      },
+      {
+        "id": "PEEL",
+        "name": "剝離 / 薄膜脫層",
+        "en": "Peeling / Delamination",
+        "tag": "剝離",
+        "group": "Fab",
+        "evidence": "Film delamination, edge peel, particle burst, or adhesion failure.",
+        "cause": "Film stress、pre-clean 不足、水氣吸附、adhesion layer 不良或 thermal mismatch 造成 delamination。",
+        "solution": "調整 film stress、pre-clean/dehydration bake、adhesion layer 與 thermal budget。",
+        "next": ["Film stress measurement", "Tape test", "Edge review"],
+        "weights": {"thickness": 40, "particle": 10}
+      },
+      {
+        "id": "CMP",
+        "name": "CMP 凹陷 / 侵蝕",
+        "en": "CMP Dishing / Erosion",
+        "tag": "CMP",
+        "group": "Fab",
+        "evidence": "Film thickness non-uniformity, local thickness loss, or center/edge CMP signature.",
+        "cause": "CMP over-polish、pattern density 差異、slurry selectivity 或 pad wear 造成局部凹陷與侵蝕。",
+        "solution": "調整 polish time、downforce、slurry selectivity、dummy fill 與 pad conditioning。",
+        "next": ["CMP profile map", "Film thickness map", "Pattern density review"],
+        "weights": {"thickness": 45, "particle": 5, "pattern": 10}
+      },
+      {
+        "id": "SCRATCH",
+        "name": "微刮傷",
+        "en": "Micro-scratch",
+        "tag": "刮傷",
+        "group": "Fab",
+        "evidence": "Streak wafer map, particle burst, or linear defect review signature.",
+        "cause": "CMP pad debris、slurry agglomeration、brush clean 或 handling 接觸造成線狀刮傷。",
+        "solution": "檢查 CMP pad/slurry、brush clean condition、robot handling 與 wafer backside particles。",
+        "next": ["Defect review SEM", "Tool commonality", "Scratch direction analysis"],
+        "weights": {"particle": 50, "pattern": 25}
+      },
+      {
+        "id": "COLLAPSE",
+        "name": "圖形倒塌",
+        "en": "Pattern Collapse",
+        "tag": "倒塌",
+        "group": "Fab",
+        "evidence": "High CD variation, residue/bridge-like review, or wet clean/rinse sensitivity.",
+        "cause": "高 aspect ratio photoresist 或細線圖形在 rinse/dry 表面張力下機械強度不足而倒塌。",
+        "solution": "調整 resist thickness、drying method、rinse recipe、CD target 與 pattern support。",
+        "next": ["Top-down SEM", "Cross-section SEM", "Rinse/dry recipe split"],
+        "weights": {"cd": 40, "residue": 25, "pattern": 15}
+      },
+      {
+        "id": "ESD",
+        "name": "ESD 靜電放電損傷",
+        "en": "ESD Damage",
+        "tag": "ESD",
+        "group": "FA",
+        "evidence": "Pin leakage, localized damage, or I/O protection failure signature.",
+        "cause": "人體、機台或操作流程中的靜電放電使 I/O ESD diode 或 gate oxide 局部受損。",
+        "solution": "檢查 ESD handling、device curve trace、leakage I-V 與受損 pin 對應保護結構。",
+        "next": ["Pin leakage map", "Curve trace", "Optical/SEM damage review"],
+        "weights": {"pin_leakage": 55, "logic_fail": 15, "iddq": 10}
+      },
+      {
+        "id": "EOS",
+        "name": "EOS 電性過載損傷",
+        "en": "Electrical Overstress",
+        "tag": "EOS",
+        "group": "FA",
+        "evidence": "High IDDQ, thermal hotspot, low rail resistance, or burnt/melted signature.",
+        "cause": "超出額定電壓、電流或功率造成金屬熔融、junction damage 或 power rail short。",
+        "solution": "回查測試條件、電源序列、socket/handler、curve trace 與熱點定位。",
+        "next": ["Curve trace", "Thermal imaging", "Decap + optical/SEM review"],
+        "weights": {"iddq": 35, "thermal": 35, "rail_short": 25, "logic_fail": 10}
+      },
+      {
+        "id": "BONDWIRE",
+        "name": "打線斷裂 / 接合缺陷",
+        "en": "Bond-wire Defect",
+        "tag": "打線",
+        "group": "FA",
+        "evidence": "Continuity fail, high resistance, intermittent open, or bond pull/shear abnormality.",
+        "cause": "打線接合能量不足、焊點疲勞、封裝應力或 EOS 熔斷導致 wire/bond open。",
+        "solution": "檢查 bond pull/shear、X-ray、decap optical review 與 package stress history。",
+        "next": ["X-ray inspection", "Wire pull/shear", "Decap optical review"],
+        "weights": {"resistance_drift": 55, "logic_fail": 35}
+      }
+    ];
+
+    const PRESETS = {
+      "BRIDGE": {"residue_nm": 4.0, "etch_error": -8.0, "iddq_ratio": 6.0, "rvcc_gnd": 8.0, "functional_fail": 3.0},
+      "OPEN": {"etch_error": 10.0, "chain_delta": 18.0, "functional_fail": 4.0, "particle_count": 18.0},
+      "MISALIGN": {"overlay_error": 12.0, "functional_fail": 2.0},
+      "CDU": {"cd_3sigma": 5.5, "thickness_nu": 3.5, "etch_error": 4.0},
+      "OXIDE": {"plasma_delta": 12.0, "pin_leakage": 18.0, "iddq_ratio": 3.5, "hotspot_delta": 12.0},
+      "LATCHUP": {"iddq_ratio": 10.0, "rvcc_gnd": 9.0, "hotspot_delta": 35.0, "functional_fail": 4.0},
+      "PARTICLE": {"particle_count": 55.0, "functional_fail": 2.0},
+      "EM": {"chain_delta": 26.0, "hotspot_delta": 18.0, "thickness_nu": 4.0},
+      "CORROSION": {"residue_nm": 3.0, "chain_delta": 14.0, "pin_leakage": 8.0},
+      "PEEL": {"thickness_nu": 6.0, "particle_count": 28.0}
+    };
+
+    const STAGE_DEFECT_IDS = {
+      "前段 Fab 製程/良率端": ["BRIDGE", "OPEN", "MISALIGN", "CDU", "OXIDE", "PARTICLE", "CMP", "SCRATCH", "COLLAPSE"],
+      "後段 FA 電性/失效分析端": ["OXIDE", "LATCHUP", "EM", "CORROSION", "ESD", "EOS", "BONDWIRE"]
+    };
+
+    const STAGE_PRESETS = {
+      "前段 Fab 製程/良率端": {
+        "BRIDGE": {"residue_nm": 10.0, "etch_error": -16.0, "cd_3sigma": 8.0},
+        "OPEN": {"etch_error": 14.0, "particle_count": 35.0},
+        "MISALIGN": {"overlay_error": 15.0},
+        "CDU": {"cd_3sigma": 7.0, "thickness_nu": 5.0, "etch_error": 7.0},
+        "OXIDE": {"plasma_delta": 18.0},
+        "PARTICLE": {"particle_count": 80.0},
+        "CMP": {"thickness_nu": 8.0, "cmp_signature": 5.0},
+        "SCRATCH": {"particle_count": 45.0, "scratch_signature": 5.0},
+        "COLLAPSE": {"cd_3sigma": 8.0, "collapse_signature": 5.0}
+      },
+      "後段 FA 電性/失效分析端": {
+        "OXIDE": {"pin_leakage": 55.0, "iddq_ratio": 8.0, "hotspot_delta": 18.0},
+        "LATCHUP": {"iddq_ratio": 16.0, "rvcc_gnd": 4.0, "hotspot_delta": 55.0, "functional_fail": 5.0},
+        "EM": {"chain_delta": 42.0, "hotspot_delta": 34.0},
+        "CORROSION": {"pin_leakage": 35.0, "chain_delta": 24.0},
+        "ESD": {"pin_leakage": 80.0, "functional_fail": 3.0, "esd_signature": 5.0},
+        "EOS": {"iddq_ratio": 18.0, "hotspot_delta": 60.0, "eos_signature": 5.0},
+        "BONDWIRE": {"chain_delta": 45.0, "functional_fail": 5.0, "bondwire_signature": 5.0}
+      }
+    };
+
+    const STAGE_METRIC_DOMAIN = {
+      "前段 Fab 製程/良率端": "Fab",
+      "後段 FA 電性/失效分析端": "FA"
+    };
+
+    const STAGE_WEIGHTS = {
+      "前段 Fab 製程/良率端": {
+        "BRIDGE": {"residue": 45, "etch": 30, "cd": 15, "pattern": 10},
+        "OPEN": {"etch": 45, "particle": 25, "pattern": 10},
+        "MISALIGN": {"overlay": 60, "pattern": 10},
+        "CDU": {"cd": 55, "thickness": 25, "etch": 15, "pattern": 10},
+        "OXIDE": {"plasma": 65, "etch": 5},
+        "PARTICLE": {"particle": 65, "pattern": 15},
+        "CORROSION": {"residue": 60, "environment": 10},
+        "CMP": {"cmp_signature": 70, "thickness": 25, "pattern": 10},
+        "SCRATCH": {"scratch": 70, "particle": 20, "pattern": 10},
+        "COLLAPSE": {"collapse_signature": 70, "cd": 25, "pattern": 10}
+      },
+      "後段 FA 電性/失效分析端": {
+        "OXIDE": {"pin_leakage": 60, "iddq": 15, "thermal": 10},
+        "LATCHUP": {"thermal": 50, "rail_short": 40, "iddq": 25, "logic_fail": 10},
+        "EM": {"resistance_drift": 60, "thermal": 25},
+        "CORROSION": {"pin_leakage": 60, "resistance_drift": 15},
+        "ESD": {"esd_signature": 70, "pin_leakage": 35, "logic_fail": 10},
+        "EOS": {"eos_signature": 90, "iddq": 25, "thermal": 30, "rail_short": 5},
+        "BONDWIRE": {"bondwire_signature": 70, "resistance_drift": 35, "logic_fail": 25}
+      }
+    };
+
+    const STAGE_DEFECT_DETAILS = {
+      "前段 Fab 製程/良率端": {
+        "BRIDGE": {"evidence": "Residue/scum、under-etch、CD 偏移或 wafer map pattern 支援圖形橋接。", "cause": "曝光、顯影、descum 或蝕刻不足，使相鄰圖形在製程端形成物理連接。", "solution": "調整 exposure/focus、developer/rinse、descum 與 over-etch margin。", "next": ["Post-etch SEM", "FIB cross-section", "CD-SEM / residue map"]},
+        "OPEN": {"evidence": "Etch error、particle mask 或 metal discontinuity 支援前段線路斷路。", "cause": "過蝕刻、particle 遮蔽、金屬覆蓋不足或 via/contact 未開造成導線中斷。", "solution": "檢查 etch endpoint、pre-clean、deposition coverage 與 via/contact etch window。", "next": ["Cross-section SEM", "Via/contact profile", "Defect review"]},
+        "MISALIGN": {"evidence": "Overlay total error、via/contact miss 或晶片疊對偏差結構判定層間偏移。", "cause": "Alignment mark 污染、stage drift、scanner matching 不良或 chucking 誤差導致套對偏移。", "solution": "清潔 alignment mark、執行 scanner matching 校正與 stage chuck 平整度保養。", "next": ["Overlay XY map", "Alignment mark review", "Tool matching check"]},
+        "CDU": {"evidence": "High CD 3 sigma、center-edge profile 或厚度分佈支援關鍵尺寸不均。", "cause": "Coater 均勻性、PEB 溫度不均、曝光量漂移或蝕刻 loading 效應造成 CD 分佈展寬。", "solution": "檢查 coater、 PEB hot plate 溫度分佈、曝光量與 etch loading 補償方案。", "next": ["CD-SEM map", "PEB temperature grid", "Scanner dose trend"]},
+        "OXIDE": {"evidence": "RF power/bias deviation 支援 plasma charging 或 antenna damage 風險。", "cause": "Etch/CVD plasma 不穩、接地不良或 antenna effect 造成氧化層預損傷。", "solution": "檢查 RF stability、chamber grounding 與 plasma recipe window。", "next": ["FDC trace review", "Antenna ratio review", "Plasma recipe comparison"]},
+        "PARTICLE": {"evidence": "Random defects, particle count 激增或 wafer map 呈現隨機/線狀污染特徵。", "cause": "腔體 flaking、FOUP 污染、傳送手臂擦碰、CMP 研磨液結晶或環境微塵。", "solution": "執行 Tool commonality 分析、Chamber 濕式清潔、傳送機構與過濾器 review。", "next": ["Defect review SEM", "TEM-EDS 元素成分分析", "Tool commonality 分析"]},
+        "CMP": {"evidence": "CMP profile signature、Film Thickness NU 或局部厚度損失支援 CMP dishing/erosion。", "cause": "CMP over-polish、pattern density 差異或 pad/slurry 條件造成局部凹陷。", "solution": "調整 CMP time、downforce、slurry selectivity、dummy fill 與 pad conditioning。", "next": ["CMP profile map", "Film thickness map", "Pattern density review"]},
+        "SCRATCH": {"evidence": "Particle count 與 streak/scratch defect review 支援微刮傷。", "cause": "Pad debris、slurry agglomeration、brush clean 或 handling 接觸造成線狀刮傷。", "solution": "檢查 CMP pad/slurry、brush clean、robot handling 與 backside particles。", "next": ["Defect review SEM", "Tool commonality", "Scratch direction analysis"]},
+        "COLLAPSE": {"evidence": "Pattern collapse signature 與 CD variation 支援 pattern collapse。", "cause": "高 aspect ratio resist 在 rinse/dry 表面張力下倒塌。", "solution": "調整 resist thickness、drying method、rinse recipe 與 pattern support。", "next": ["Top-down SEM", "Cross-section SEM", "Rinse/dry recipe split"]}
+      },
+      "後段 FA 電性/失效分析端": {
+        "OPEN": {"evidence": "Chain resistance drift、functional fail 或 continuity fail 支援接合/互連開路。", "cause": "Bond-wire crack、接合點疲勞、package interconnect open 或晶片內高阻互連造成開路。", "solution": "進行 continuity map、wire pull/shear 與局部截面確認。", "next": ["Continuity map", "Wire pull/shear", "Cross-section SEM"]},
+        "OXIDE": {"evidence": "Pin leakage、IDDQ increase 或 thermal hotspot 支援氧化層擊穿。", "cause": "氧化層弱點或前期損傷在電性測試中形成漏電通道。", "solution": "用 leakage I-V、EMMI/OBIRCH 定位漏電點，並回溯 stress condition。", "next": ["Gate leakage I-V", "EMMI / OBIRCH", "Curve trace"]},
+        "CORROSION": {"evidence": "Pin leakage 與 resistance drift 支援後段金屬腐蝕或 pad/interconnect 劣化。", "cause": "水氣、離子污染或封裝/儲存條件造成金屬腐蝕與漏電。", "solution": "執行表面分析、離子污染檢測與封裝環境回溯。", "next": ["Surface SEM", "Ion chromatography", "TOF-SIMS"]},
+        "ESD": {"evidence": "Pin leakage 與 I/O 相關 functional fail 支援 ESD damage。", "cause": "靜電放電造成 ESD diode、I/O clamp 或 gate oxide 局部損傷。", "solution": "檢查 ESD handling、curve trace 與受損 pin 的保護結構。", "next": ["Pin leakage map", "Curve trace", "Optical/SEM damage review"]},
+        "EOS": {"evidence": "高 IDDQ、低 rail resistance 與熱點支援 EOS damage。", "cause": "超出額定電壓、電流或功率造成 junction/metal 熔融與短路。", "solution": "回查測試條件、電源序列、socket/handler 與熱點位置。", "next": ["Curve trace", "Thermal imaging", "Decap + optical/SEM review"]},
+        "BONDWIRE": {"evidence": "Chain resistance drift 與 continuity/functional fail 支援打線或接合開路。", "cause": "打線接合能量不足、焊點疲勞、封裝應力或 EOS 熔斷。", "solution": "執行 X-ray、wire pull/shear 與 decap optical review。", "next": ["X-ray inspection", "Wire pull/shear", "Decap optical review"]},
+        "LATCHUP": {"evidence": "Thermal hotspot、current snapback、持續高待機電流與極低阻抗支援 Latch-up 觸發。", "cause": "寄生 PNPN 元件受過壓、突波或雜訊觸發，形成電源至地的低阻大電流通道。", "solution": "改善 Guard Ring 與 Substrate contact，Review Well doping 均勻度與鎖定規則。", "next": ["Latch-up 觸發測試", "Thermal Hotspot Lock-in", "OBIRCH 元件定位"]}
+      }
+    };
+
+    const DEFECT_REFERENCE_MODULES = {
+      "BRIDGE": [
+        {"metric": "Residue / scum thickness", "normal": "< 0.5 nm", "watch": "1-2 nm", "strong": "> 2 nm", "method": "Post-develop / post-etch SEM, residue review", "meaning": "底部殘膜或 polymer residue 可能導致相鄰線路橋接。"},
+        {"metric": "Etch depth error", "normal": "0 +/- 2 nm", "watch": "|error| 5-8 nm", "strong": "|error| > 8 nm", "method": "Etch depth metrology, cross-section SEM", "meaning": "蝕刻不足時容易留下導電殘留，蝕刻過度則需同步檢查 open。"},
+        {"metric": "IDDQ vs baseline", "normal": "1.0-1.5x", "watch": "2-3x", "strong": "> 3x", "method": "IDDQ / standby leakage test", "meaning": "橋接短路常使待機電流高於 golden baseline。"},
+        {"metric": "VCC-GND resistance", "normal": "> 100 ohm", "watch": "20-50 ohm", "strong": "< 20 ohm", "method": "DC resistance, curve trace", "meaning": "低阻值支援 hard short 或 bridging 判斷。"}
+      ],
+      "OPEN": [
+        {"metric": "Chain resistance drift", "normal": "< 2%", "watch": "5-10%", "strong": "> 10%", "method": "Via/contact chain, Kelvin structure", "meaning": "高阻或漂移常對應 open、void、via not open。"},
+        {"metric": "Etch depth error", "normal": "0 +/- 2 nm", "watch": "|error| 5-8 nm", "strong": "|error| > 8 nm", "method": "Cross-section SEM, endpoint trend", "meaning": "過蝕刻可能造成導線斷裂，蝕刻不足可能造成 via/contact 未開。"},
+        {"metric": "Functional fail severity", "normal": "0", "watch": "2-3", "strong": "> 3", "method": "Scan chain, continuity map", "meaning": "固定開路或連續性失效會反映在功能測試。"},
+        {"metric": "Particle count", "normal": "< 5 ea/wafer", "watch": "10-20 ea/wafer", "strong": "> 20 ea/wafer", "method": "Defect inspection, SEM review", "meaning": "Particle mask 可能造成局部未蝕刻或開口不完全。"}
+      ],
+      "MISALIGN": [
+        {"metric": "Overlay total error", "normal": "< 2 nm", "watch": "4-8 nm", "strong": "> 8 nm", "method": "Overlay metrology X/Y/rotation", "meaning": "疊對誤差直接支援 misalignment、via miss、contact miss。"},
+        {"metric": "Wafer map pattern", "normal": "No systematic pattern", "watch": "Die-to-die", "strong": "Repeated layer-pair shift", "method": "Overlay map, scanner matching", "meaning": "Die-to-die 或 scanner signature 可提示 stage / matching 問題。"},
+        {"metric": "Functional fail severity", "normal": "0", "watch": "1-2", "strong": "> 3", "method": "Bitmap fail map, electrical fail map", "meaning": "局部 via/contact miss 可能造成功能錯誤或高阻。"}
+      ],
+      "CDU": [
+        {"metric": "CD 3 sigma", "normal": "< 1 nm", "watch": "2-3 nm", "strong": "> 3 nm", "method": "CD-SEM map, across-wafer CD trend", "meaning": "CD 分佈變寬是 CDU 異常的主要證據。"},
+        {"metric": "Film Thickness NU", "normal": "< 1%", "watch": "2-3%", "strong": "> 3%", "method": "Ellipsometry / thickness map", "meaning": "薄膜不均會改變曝光、蝕刻或 CMP window。"},
+        {"metric": "Etch depth error", "normal": "0 +/- 2 nm", "watch": "|error| 5-8 nm", "strong": "|error| > 8 nm", "method": "Etch uniformity map", "meaning": "Etch loading 或 chamber uniformity 會放大 CD variation。"},
+        {"metric": "Wafer map pattern", "normal": "Random / flat", "watch": "Center-edge", "strong": "Ring / center-edge repeated", "method": "CD map, focus/dose map", "meaning": "Center-edge pattern 常提示 coat、PEB、focus/dose 或 etch uniformity。"}
+      ],
+      "OXIDE": [
+        {"metric": "RF power / bias deviation", "normal": "0 +/- 2%", "watch": "|delta| 5-8%", "strong": "|delta| > 8%", "method": "FDC trace, plasma recipe comparison", "meaning": "RF 或 bias 偏移會提高 charging damage 與 antenna effect 風險。"},
+        {"metric": "Pin reverse leakage", "normal": "< 1 uA", "watch": "5-10 uA", "strong": "> 10 uA", "method": "Pin leakage, gate leakage I-V", "meaning": "氧化層弱點或 plasma damage 常表現為漏電上升。"},
+        {"metric": "Thermal hotspot delta", "normal": "< 5 degC", "watch": "10-15 degC", "strong": "> 15 degC", "method": "EMMI / OBIRCH / lock-in thermography", "meaning": "局部漏電通道可能形成熱點，但需與 latch-up 區分。"}
+      ],
+      "LATCHUP": [
+        {"metric": "IDDQ vs baseline", "normal": "1.0-1.5x", "watch": "3-8x", "strong": "> 8x", "method": "Current trigger / holding current test", "meaning": "Latch-up 常伴隨大電流且觸發後不易自行恢復。"},
+        {"metric": "VCC-GND resistance", "normal": "> 100 ohm", "watch": "10-20 ohm", "strong": "< 10 ohm", "method": "Curve trace, power rail resistance", "meaning": "低阻與高電流一起出現時支援 latch-up 或 hard short。"},
+        {"metric": "Thermal hotspot delta", "normal": "< 5 degC", "watch": "15-30 degC", "strong": "> 30 degC", "method": "Thermal imaging, EMMI, OBIRCH", "meaning": "寄生 PNPN 導通會形成明顯局部發熱。"}
+      ],
+      "PARTICLE": [
+        {"metric": "Particle count", "normal": "< 5 ea/wafer", "watch": "10-20 ea/wafer", "strong": "> 20 ea/wafer", "method": "Defect inspection, defect review SEM", "meaning": "Random killer defect 最直接的統計證據。"},
+        {"metric": "Wafer map pattern", "normal": "No cluster", "watch": "Random / streak", "strong": "Tool-correlated random burst", "method": "Tool commonality, wafer map clustering", "meaning": "Random 分佈常指向 particle，streak 則可能來自 handling 或 brush clean。"},
+        {"metric": "Material analysis", "normal": "No foreign material", "watch": "Unknown residue", "strong": "Al/Si/CMP slurry/metal particle identified", "method": "TEM-EDS, SEM-EDS, TOF-SIMS", "meaning": "元素成分可回溯污染源。"}
+      ],
+      "EM": [
+        {"metric": "Chain resistance drift", "normal": "< 2%", "watch": "10-20%", "strong": "> 20%", "method": "Resistance trend, via chain, interconnect chain", "meaning": "金屬空洞、stress migration 或 electromigration 會造成阻值上升。"},
+        {"metric": "Thermal hotspot delta", "normal": "< 5 degC", "watch": "10-15 degC", "strong": "> 15 degC", "method": "Thermal map, EMMI / OBIRCH", "meaning": "局部高阻會造成 joule heating。"},
+        {"metric": "Film Thickness NU", "normal": "< 1%", "watch": "2-3%", "strong": "> 3%", "method": "Metal thickness map, CMP profile", "meaning": "厚度與覆蓋不足會提高 void / EM 風險。"}
+      ],
+      "CORROSION": [
+        {"metric": "Residue / scum thickness", "normal": "< 0.5 nm", "watch": "1-2 nm", "strong": "> 2 nm", "method": "Surface SEM, ion chromatography", "meaning": "Cl/F 或濕製程殘留可促進金屬電化學腐蝕。"},
+        {"metric": "Pin reverse leakage", "normal": "< 1 uA", "watch": "5-10 uA", "strong": "> 10 uA", "method": "Leakage test, corrosion site isolation", "meaning": "腐蝕造成金屬 pitting 或 dendrite 時可能帶來漏電。"},
+        {"metric": "Chain resistance drift", "normal": "< 2%", "watch": "5-10%", "strong": "> 10%", "method": "Resistance drift trend", "meaning": "金屬腐蝕會讓 interconnect 或 pad resistance 漂移。"}
+      ],
+      "PEEL": [
+        {"metric": "Film Thickness NU", "normal": "< 1%", "watch": "3-5%", "strong": "> 5%", "method": "Thickness map, stress wafer bow", "meaning": "薄膜不均與 film stress 常與 delamination 相關。"},
+        {"metric": "Particle count", "normal": "< 5 ea/wafer", "watch": "10-20 ea/wafer", "strong": "> 20 ea/wafer", "method": "Edge inspection, defect review", "meaning": "Peeling 可能造成 particle burst 或 edge defect。"},
+        {"metric": "Adhesion / stress", "normal": "Pass", "watch": "Marginal", "strong": "Tape test fail / high stress", "method": "Tape test, scratch test, wafer bow", "meaning": "黏著力不足與應力過高是剝離的核心驗證項。"}
+      ],
+      "CMP": [
+        {"metric": "Film Thickness NU", "normal": "< 1%", "watch": "3-5%", "strong": "> 5%", "method": "Film thickness / CMP profile map", "meaning": "CMP dishing/erosion 常反映為局部厚度損失與不均。"},
+        {"metric": "CMP profile signature", "normal": "0", "watch": "2-3", "strong": "> 3", "method": "Profile map, cross-section SEM, pattern density review", "meaning": "若 dishing/erosion profile 與 pattern density 高度相關，會強烈支持 CMP 類缺陷。"},
+        {"metric": "Wafer map pattern", "normal": "Flat", "watch": "Center / edge trend", "strong": "Repeatable CMP signature", "method": "Wafer map clustering", "meaning": "CMP 或 planarization 問題常出現區域性圖形。"}
+      ],
+      "SCRATCH": [
+        {"metric": "Particle count", "normal": "< 5 ea/wafer", "watch": "10-20 ea/wafer", "strong": "> 20 ea/wafer", "method": "Defect inspection / SEM review", "meaning": "刮傷常伴隨線狀缺陷與 particle burst。"},
+        {"metric": "Wafer map pattern", "normal": "No line pattern", "watch": "Streak", "strong": "Repeatable scratch direction", "method": "Scratch direction analysis", "meaning": "線狀分佈可回推 handling 或 clean path。"}
+      ],
+      "COLLAPSE": [
+        {"metric": "CD 3 sigma", "normal": "< 1 nm", "watch": "2-3 nm", "strong": "> 3 nm", "method": "Top-down CD-SEM", "meaning": "細線圖形倒塌會放大 CD variation 或造成局部 bridging-like 形貌。"},
+        {"metric": "Pattern collapse signature", "normal": "0", "watch": "2-3", "strong": "> 3", "method": "Top-down SEM, cross-section SEM", "meaning": "直接觀察到高 aspect ratio resist 或細線倒塌時，應作為 pattern collapse 的主證據。"},
+        {"metric": "Residue / scum thickness", "normal": "< 0.5 nm", "watch": "1-2 nm", "strong": "> 2 nm", "method": "SEM profile / cross-section", "meaning": "倒塌與殘留、濕式乾燥條件常需一起檢查。"}
+      ],
+      "ESD": [
+        {"metric": "Pin reverse leakage", "normal": "< 1 uA", "watch": "5-10 uA", "strong": "> 10 uA", "method": "Pin leakage / curve trace", "meaning": "ESD diode 或 I/O 保護結構損傷會造成特定 pin 漏電。"},
+        {"metric": "Functional fail severity", "normal": "0", "watch": "1-3", "strong": "> 3", "method": "Functional / scan test", "meaning": "I/O 或保護結構失效可能造成邏輯或介面失效。"}
+      ],
+      "EOS": [
+        {"metric": "IDDQ vs baseline", "normal": "1.0-1.5x", "watch": "3-8x", "strong": "> 8x", "method": "IDDQ / curve trace", "meaning": "EOS 常造成高電流或短路型失效。"},
+        {"metric": "Thermal hotspot delta", "normal": "< 5 degC", "watch": "15-30 degC", "strong": "> 30 degC", "method": "Thermal imaging", "meaning": "過載損傷可能出現明顯熱點或熔融點。"},
+        {"metric": "VCC-GND resistance", "normal": "> 100 ohm", "watch": "10-20 ohm", "strong": "< 10 ohm", "method": "Rail resistance", "meaning": "低 rail resistance 支援 power short 或熔融短路。"}
+      ],
+      "BONDWIRE": [
+        {"metric": "Chain resistance drift", "normal": "< 2%", "watch": "10-20%", "strong": "> 20%", "method": "Continuity / resistance map", "meaning": "打線或接合開路常表現為高阻或不連續。"},
+        {"metric": "Functional fail severity", "normal": "0", "watch": "2-3", "strong": "> 3", "method": "Functional test / continuity test", "meaning": "接合開路會造成 pin/function 無法正常導通。"}
+      ]
+    };
+
+    const RULE_NAMES = {
+      "cd": "RULE_CD_VARIATION",
+      "overlay": "RULE_OVERLAY_SHIFT",
+      "thickness": "RULE_FILM_NU",
+      "etch": "RULE_ETCH_ERROR",
+      "particle": "RULE_PARTICLE_COUNT",
+      "residue": "RULE_RESIDUE_SCUM",
+      "plasma": "RULE_PLASMA_CHARGE",
+      "scratch": "RULE_SCRATCH_SIGNATURE",
+      "cmp_signature": "RULE_CMP_PROFILE_SIGNATURE",
+      "collapse_signature": "RULE_PATTERN_COLLAPSE_SIGNATURE",
+      "environment": "RULE_ENVIRONMENT",
+      "pattern": "RULE_MAP_PATTERN",
+      "iddq": "RULE_IDDQ_HIGH",
+      "pin_leakage": "RULE_PIN_LEAKAGE",
+      "rail_short": "RULE_RES_SHORT",
+      "resistance_drift": "RULE_CHAIN_DRIFT",
+      "thermal": "RULE_THERMAL_HOTSPOT",
+      "logic_fail": "RULE_FUNCTION_FAIL",
+      "esd_signature": "RULE_ESD_IO_SIGNATURE",
+      "eos_signature": "RULE_EOS_OVERSTRESS_SIGNATURE",
+      "bondwire_signature": "RULE_BONDWIRE_CONTINUITY"
+    };
+
+    const REFERENCES = [
+      {"topic": "ESD / HBM", "source": "ANSI/ESDA/JEDEC JS-001 and legacy JEDEC JESD22-A114 HBM component-level ESD testing", "url": "https://www.jedec.org/standards-documents/results/js001"},
+      {"topic": "Latch-up", "source": "JEDEC JESD78 IC Latch-Up Test standard", "url": "https://www.jedec.org/standards-documents/docs/jesd78"},
+      {"topic": "Wafer map patterns", "source": "Jeong et al., Scientific Reports 2023, wafer map defect pattern classes including center, ring, edge, scratch, random", "url": "https://www.nature.com/articles/s41598-023-34147-2"},
+      {"topic": "Wafer defect pattern classification", "source": "A voting-based ensemble feature network for semiconductor wafer defect classification, PMC", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9519991/"},
+      {"topic": "Line edge / linewidth roughness", "source": "NIST, Issues in Line Edge and Linewidth Roughness Metrology", "url": "https://www.nist.gov/publications/issues-line-edge-and-linewidth-roughness-metrology"},
+      {"topic": "Electromigration", "source": "NIST, Techniques and Characterization of Pulsed Electromigration at the Wafer Level", "url": "https://www.nist.gov/publications/techniques-and-characterization-pulsed-electromigration-wafer-level-0"}
+    ];
+
+    // 全域變數以追蹤當前狀態
+    let currentInputs = {};
+    let loadedModelSignature = "None";
+
+    // ==========================================================================
+    // JS 2. 核心專家運算邏輯 (JS Expert Core Logic Engine)
+    // ==========================================================================
+    
+    function scoreFromThresholds(value, metric) {
+      const valToScore = metric.absolute ? Math.abs(value) : value;
+      if ("thresholds_low" in metric) {
+        return Math.min(metric.thresholds_low.reduce((acc, th) => acc + (valToScore <= th ? 1 : 0), 0), 5);
+      }
+      return Math.min(metric.thresholds.reduce((acc, th) => acc + (valToScore >= th ? 1 : 0), 0), 5);
+    }
+
+    function thresholdCaption(metric) {
+      if ("thresholds_low" in metric) {
+        return metric.thresholds_low.map((v, i) => `${i + 1}: &le; ${v}${metric.unit}`).join(" / ");
+      }
+      return metric.thresholds.map((v, i) => `${i + 1}: &ge; ${v}${metric.unit}`).join(" / ");
+    }
+
+    function stageEvidenceKeys(stage) {
+      const domain = STAGE_METRIC_DOMAIN[stage];
+      const keys = new Set(METRICS.filter(m => m.domain === domain).map(m => m.evidence));
+      if (domain === "Fab") {
+        keys.add("pattern");
+        keys.add("environment");
+      } else {
+        keys.add("pattern");
+        keys.add("residue");
+        keys.add("environment");
+      }
+      return keys;
+    }
+
+    function buildEvidenceScores(values, waferMap, morphology, allowContextBoost, metricDomain) {
+      const keys = [
+        "cd", "overlay", "thickness", "etch", "particle", "residue", "plasma",
+        "scratch", "cmp_signature", "collapse_signature", "environment", "pattern",
+        "iddq", "pin_leakage", "rail_short", "resistance_drift", "thermal",
+        "logic_fail", "esd_signature", "eos_signature", "bondwire_signature"
+      ];
+      
+      const scores = {};
+      keys.forEach(k => scores[k] = 0);
+
+      METRICS.forEach(metric => {
+        if (metricDomain && metric.domain !== metricDomain) return;
+        const val = values[metric.key] !== undefined ? values[metric.key] : metric.default;
+        scores[metric.evidence] = Math.max(scores[metric.evidence], scoreFromThresholds(val, metric));
+      });
+
+      if (allowContextBoost) {
+        const mapBoosts = WAFER_MAP_BOOSTS[waferMap] || {};
+        const morphBoosts = MORPHOLOGY_BOOSTS[morphology] || {};
+        
+        for (const [key, val] of Object.entries(mapBoosts)) {
+          scores[key] = Math.max(scores[key] || 0, val);
+        }
+        for (const [key, val] of Object.entries(morphBoosts)) {
+          scores[key] = Math.max(scores[key] || 0, val);
+        }
+      }
+      
+      return scores;
+    }
+
+    function diagnose(evidenceScores, allowedIds, allowedEvidence, stageWeights) {
+      const results = [];
+      
+      DEFECTS.forEach(defect => {
+        if (allowedIds && !allowedIds.includes(defect.id)) return;
+        const weights = stageWeights && stageWeights[defect.id] ? stageWeights[defect.id] : defect.weights;
+        const usableKeys = allowedEvidence || new Set(Object.keys(evidenceScores));
+        
+        let rawScore = 0;
+        let sumWeights = 0;
+        
+        Object.entries(weights).forEach(([key, weight]) => {
+          if (usableKeys.has(key)) {
+            rawScore += (evidenceScores[key] || 0) * weight;
+            if (weight > 0) sumWeights += weight;
+          }
+        });
+        
+        const maxScore = 5 * sumWeights;
+        const fitScore = maxScore > 0 ? rawScore / maxScore : 0;
+        
+        results.append = results.push({
+          ...defect,
+          raw_score: rawScore,
+          max_score: maxScore,
+          fit_score: fitScore
+        });
+      });
+
+      // 機率正規化計算 (基於 fit_score 的 30 次方以拉開信噪比差距)
+      const confidencePower = 30;
+      const fitTotal = results.reduce((acc, item) => acc + Math.pow(item.fit_score, confidencePower), 0);
+      
+      results.forEach(item => {
+        item.probability = fitTotal > 0 ? Math.pow(item.fit_score, confidencePower) / fitTotal : 0;
+      });
+
+      return results.sort((a, b) => b.probability - a.probability);
+    }
+
+    // ==========================================================================
+    // JS 3. 視覺化模組繪製 (SVG Radar & Chip Failure Topology Renderers)
+    // ==========================================================================
+    
+    function drawRadarSvg(results) {
+      const axes = [
+        { label: "Bridge", ids: ["BRIDGE"] },
+        { label: "Open", ids: ["OPEN"] },
+        { label: "Overlay", ids: ["MISALIGN", "CDU"] },
+        { label: "Oxide", ids: ["OXIDE"] },
+        { label: "Thermal", ids: ["LATCHUP"] },
+        { label: "Material", ids: ["PARTICLE", "EM", "CORROSION", "PEEL"] }
+      ];
+
+      // 計算各分類下的機率加總
+      const values = axes.map(axis => {
+        return results.reduce((acc, item) => axis.ids.includes(item.id) ? acc + item.probability : acc, 0);
+      });
+
+      const maxVal = Math.max(...values);
+      const scaledValues = maxVal > 0 ? values.map(v => v / maxVal) : values.map(() => 0);
+
+      const cx = 185;
+      const cy = 185;
+      const radius = 120;
+      const count = axes.length;
+
+      // 取得特定角度與比例之 X, Y 座標
+      function getPoint(index, scale) {
+        const angle = -Math.PI / 2 + (2 * Math.PI * index / count);
+        return {
+          x: cx + Math.cos(angle) * radius * scale,
+          y: cy + Math.sin(angle) * radius * scale
+        };
+      }
+
+      let ringsHtml = '';
+      [0.25, 0.5, 0.75, 1.0].forEach(scale => {
+        const points = [];
+        for (let i = 0; i < count; i++) {
+          const pt = getPoint(i, scale);
+          points.push(`${pt.x.toFixed(1)},${pt.y.toFixed(1)}`);
+        }
+        ringsHtml += `<polygon points="${points.join(" ")}" fill="none" stroke="#2c303b" stroke-width="1" />\n`;
+      });
+
+      let linesAndLabelsHtml = '';
+      let activePoints = [];
+      axes.forEach((axis, i) => {
+        const ptOuter = getPoint(i, 1.0);
+        const ptLabel = getPoint(i, 1.22);
+        
+        // 畫中心輻射線
+        linesAndLabelsHtml += `<line x1="${cx}" y1="${cy}" x2="${ptOuter.x.toFixed(1)}" y2="${ptOuter.y.toFixed(1)}" stroke="#2c303b" stroke-width="1" />\n`;
+        // 畫標籤
+        let anchor = "middle";
+        if (Math.abs(ptLabel.x - cx) > 10) {
+          anchor = ptLabel.x < cx ? "end" : "start";
+        }
+        linesAndLabelsHtml += `<text x="${ptLabel.x.toFixed(1)}" y="${ptLabel.y + 4}" text-anchor="${anchor}" font-size="11" font-weight="700" fill="#8e98a8">${axis.label}</text>\n`;
+        
+        const ptActive = getPoint(i, scaledValues[i]);
+        activePoints.push(`${ptActive.x.toFixed(1)},${ptActive.y.toFixed(1)}`);
+      });
+
+      const polygonGlow = maxVal > 0 ? `filter="url(#radar-glow)"` : '';
+      const radarPolygon = `<polygon points="${activePoints.join(" ")}" fill="rgba(168, 111, 244, 0.25)" stroke="#a86ff4" stroke-width="3" ${polygonGlow} />`;
+
+      return `
+        <svg viewBox="0 0 370 370" width="100%" height="100%">
+          <defs>
+            <filter id="radar-glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="6" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <rect width="370" height="370" rx="14" fill="#0f1013" />
+          <g transform="translate(0, -6)">
+            ${ringsHtml}
+            ${linesAndLabelsHtml}
+            ${radarPolygon}
+          </g>
+        </svg>
+      `;
+    }
+
+    function drawTopologySvg(defectId, title) {
+      let detail = '';
+      if (defectId === "OPEN" || defectId === "BONDWIRE") {
+        detail = `
+          <path d="M92 138 C160 142 170 214 244 214" fill="none" stroke="#a86ff4" stroke-width="5" filter="url(#topo-glow)" />
+          <circle cx="96" cy="138" r="11" fill="#e76872" opacity="0.8" />
+          <path d="M66 130 h28 m-28 10 h20 m-20 10 h34" stroke="#a86ff4" stroke-width="2" stroke-dasharray="4 4" />
+          <text x="75" y="295" font-size="11" font-weight="700" fill="#a86ff4">PHYSICAL FAULT: Bond-wire crack / open segment</text>
+        `;
+      } else if (defectId === "BRIDGE") {
+        detail = `
+          <rect x="78" y="118" width="235" height="22" rx="6" fill="#4d5360" />
+          <rect x="78" y="190" width="235" height="22" rx="6" fill="#4d5360" />
+          <path d="M184 124 C220 138 200 180 232 196" fill="none" stroke="#f28a37" stroke-width="16" opacity="0.8" filter="url(#topo-glow)" />
+          <text x="75" y="295" font-size="11" font-weight="700" fill="#f28a37">PHYSICAL FAULT: conductive scum residue bridge</text>
+        `;
+      } else if (defectId === "OXIDE") {
+        detail = `
+          <rect x="126" y="118" width="140" height="20" fill="#a86ff4" opacity="0.6" />
+          <rect x="126" y="144" width="140" height="10" fill="#64b5ee" />
+          <path d="M196 102 l-16 50 h20 l-18 64" fill="none" stroke="#f3c74f" stroke-width="5" filter="url(#topo-glow)" />
+          <text x="75" y="295" font-size="11" font-weight="700" fill="#f3c74f">PHYSICAL FAULT: gate oxide breakdown leakage path</text>
+        `;
+      } else if (defectId === "LATCHUP") {
+        detail = `
+          <circle cx="196" cy="165" r="58" fill="rgba(231, 104, 114, 0.15)" stroke="#e76872" stroke-width="3" stroke-dasharray="5 5" />
+          <path d="M128 165 h136 M196 96 v138" stroke="#e76872" stroke-width="4" filter="url(#topo-glow)" />
+          <text x="75" y="295" font-size="11" font-weight="700" fill="#e76872">PHYSICAL FAULT: latch-up induced thermal hotspot</text>
+        `;
+      } else {
+        detail = `
+          <circle cx="150" cy="143" r="14" fill="#42b883" opacity="0.75" />
+          <circle cx="215" cy="202" r="10" fill="#f3c74f" opacity="0.75" />
+          <path d="M76 172 h240" stroke="#4d5360" stroke-width="16" stroke-linecap="round" />
+          <text x="75" y="295" font-size="11" font-weight="700" fill="#42b883">PHYSICAL FAULT: wafer-level localized defect pattern</text>
+        `;
+      }
+
+      return `
+        <svg viewBox="0 0 390 330" width="100%" height="100%">
+          <defs>
+            <filter id="topo-glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="5" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <rect width="390" height="330" rx="14" fill="#0f1013" />
+          <rect x="58" y="58" width="274" height="210" rx="12" fill="#1b1c22" stroke="#2d303b" stroke-width="2" />
+          <rect x="112" y="95" width="168" height="142" rx="8" fill="#090b0d" stroke="#252831" />
+          <circle cx="196" cy="166" r="45" fill="none" stroke="#16181f" />
+          
+          <line x1="28" y1="112" x2="58" y2="112" stroke="#4d5360" stroke-width="4" />
+          <line x1="332" y1="112" x2="362" y2="112" stroke="#4d5360" stroke-width="4" />
+          <line x1="28" y1="166" x2="58" y2="166" stroke="#4d5360" stroke-width="4" />
+          <line x1="332" y1="166" x2="362" y2="166" stroke="#4d5360" stroke-width="4" />
+          <line x1="28" y1="220" x2="58" y2="220" stroke="#4d5360" stroke-width="4" />
+          <line x1="332" y1="220" x2="362" y2="220" stroke="#4d5360" stroke-width="4" />
+          
+          ${detail}
+          <text x="20" y="32" font-size="15" font-family="'Outfit', sans-serif" font-weight="800" fill="#fff">${title}</text>
+        </svg>
+      `;
+    }
+
+    // ==========================================================================
+    // JS 4. 報告與推理文本產生器 (Report & Reasoning Text Generators)
+    // ==========================================================================
+    
+    function makeReport(caseId, stage, topResults, evidenceScores, values) {
+      if (topResults.length === 0) return "尚未觸發診斷報告";
+      const top = topResults[0];
+      const domain = STAGE_METRIC_DOMAIN[stage];
+      const reportMetrics = METRICS.filter(m => m.domain === domain);
+      
+      const activeInputs = reportMetrics
+        .filter(m => scoreFromThresholds(values[m.key] !== undefined ? values[m.key] : m.default, m) > 0)
+        .map(m => {
+          const val = values[m.key] !== undefined ? values[m.key] : m.default;
+          const score = scoreFromThresholds(val, m);
+          return `- ${m.label}: ${val} ${m.unit} (Evidence ${score}/5)`;
+        });
+
+      const today = new Date();
+      const formatTime = today.getFullYear() + "-" + 
+                         String(today.getMonth() + 1).padStart(2, '0') + "-" + 
+                         String(today.getDate()).padStart(2, '0') + " " + 
+                         String(today.getHours()).padStart(2, '0') + ":" + 
+                         String(today.getMinutes()).padStart(2, '0') + ":" + 
+                         String(today.getSeconds()).padStart(2, '0');
+
+      let lines = [
+        "============================================================",
+        "          WAFER-PRO DEFECT DIAGNOSIS SYSTEM REPORT           ",
+        "============================================================",
+        `Generated: ${formatTime}`,
+        `Case ID: ${caseId || 'N/A'}`,
+        `Diagnosis Stage: ${stage}`,
+        "",
+        "------------------ EXECUTIVE SUMMARY ------------------",
+        `- Top Suspect: ${top.name} (${top.en})`,
+        `- Diagnosis Confidence: ${(top.probability * 100).toFixed(1)}%`,
+        `- Model Fit Score: ${(top.fit_score * 100).toFixed(1)}%`,
+        "- Disclaimer: Relative expert confidence score based on design weight parameters, not absolute fab yield statistics.",
+        `- Recommended 1st Step Actions: ${(STAGE_DEFECT_DETAILS[stage]?.[top.id]?.next || top.next).slice(0, 2).join(", ")}`,
+        "",
+        "------------------- TOP-3 CANDIDATES -------------------"
+      ];
+
+      topResults.forEach((item, index) => {
+        const details = STAGE_DEFECT_DETAILS[stage]?.[item.id] || item;
+        lines.push(
+          `${index + 1}. ${item.name} (${item.en}) - ${(item.probability * 100).toFixed(1)}%`,
+          `   Fit Score: ${(item.fit_score * 100).toFixed(1)}% | Raw Score: ${item.raw_score.toFixed(1)} | Max Score: ${item.max_score.toFixed(1)}`,
+          `   Evidence Basis: ${details.evidence}`,
+          `   Physical Cause: ${details.cause}`,
+          `   Corrective Action: ${details.solution}`,
+          `   Verification Steps: ${details.next.join(" -> ")}`
+        );
+      });
+
+      lines.push(
+        "",
+        "------------------ HIGH EVIDENCE INPUTS ------------------",
+        activeInputs.length > 0 ? activeInputs.join("\n") : "- No abnormal measurement has reached a scoring threshold.",
+        "",
+        "---------------- EVIDENCES BY RULE KEY -----------------"
+      );
+
+      Object.entries(evidenceScores).forEach(([key, score]) => {
+        lines.push(`- ${key}: ${score}/5`);
+      });
+
+      lines.push(
+        "",
+        "------------------ COMPLETE PARAMETERS ------------------",
+        ...reportMetrics.map(m => {
+          const val = values[m.key] !== undefined ? values[m.key] : m.default;
+          return `- ${m.label}: ${val} ${m.unit}`;
+        }),
+        "",
+        "--------------- IMMEDIATE CORRECTIVE ACTIONS ---------------",
+        "- Re-verify and isolate the lot by commonality tools and process chambers.",
+        "- Check the physical failure site immediately using the suggested verification techniques above.",
+        "- Sync this signature with recent WAT/PCM historical distribution limits.",
+        "",
+        "-------------------- REFERENCES BASIS --------------------",
+        ...REFERENCES.map(ref => `- ${ref.topic}: ${ref.source}`)
+      );
+
+      return lines.join("\n");
+    }
+
+    function reasoningTrace(top, evidenceScores, measurementStrength) {
+      if (measurementStrength === 0) {
+        return "<span class='trace-text'>尚未達異常門檻，因此不產生推理鏈。</span>";
+      }
+
+      const rulesHtml = [];
+      const sortedWeights = Object.entries(top.weights).sort((a, b) => b[1] - a[1]);
+      
+      sortedWeights.forEach(([key, weight]) => {
+        const score = evidenceScores[key] || 0;
+        if (score > 0) {
+          rulesHtml.push(`
+            <div>
+              <span class="trace-rule">${RULE_NAMES[key] || key}</span>
+              <span class="trace-text">Evidence=${score}/5, Weight=${weight}, Contribution=${score * weight}</span>
+            </div>
+          `);
+        }
+      });
+
+      if (rulesHtml.length === 0) {
+        rulesHtml.push(`
+          <div>
+            <span class="trace-rule" style="background:var(--red-glow); border-color:var(--red); color:var(--red);">RULE_LOW_SIGNAL</span>
+            <span class="trace-text">目前僅有弱訊號，需補充主動量測參數。</span>
+          </div>
+        `);
+      }
+
+      return `
+        ${rulesHtml.join("")}
+        <div style="text-align:center; color:var(--text-muted); margin:10px 0;">&darr;</div>
+        <div class="trace-conclusion">
+          CONCLUSION: ${top.name} (${top.en}), Fit score = ${(top.fit_score * 100).toFixed(1)}%
+        </div>
+      `;
+    }
+
+    // ==========================================================================
+    // JS 5. DOM 互動處理器 (UI Render, Events & Dynamic Binding)
+    // ==========================================================================
+    
+    // 初始化下拉選單
+    function initDropdowns() {
+      const waferSelect = document.getElementById("wafer-map");
+      const morphSelect = document.getElementById("morphology");
+      const stageSelect = document.getElementById("selected-stage");
+
+      waferSelect.innerHTML = Object.keys(WAFER_MAP_BOOSTS).map(k => `<option value="${k}">${k}</option>`).join("");
+      morphSelect.innerHTML = Object.keys(MORPHOLOGY_BOOSTS).map(k => `<option value="${k}">${k}</option>`).join("");
+      stageSelect.innerHTML = Object.keys(STAGE_DEFECT_IDS).map(k => `<option value="${k}">${k}</option>`).join("");
+      
+      updatePresetModelOptions();
+    }
+
+    // 根據 Stage 動態過濾與載入模型 Presets
+    function updatePresetModelOptions() {
+      const stage = document.getElementById("selected-stage").value;
+      const modelSelect = document.getElementById("selected-model");
+      
+      const defectIds = STAGE_DEFECT_IDS[stage];
+      const modelDefects = DEFECTS.filter(d => defectIds.includes(d.id));
+      
+      modelSelect.innerHTML = modelDefects.map(d => `<option value="${d.id}">${d.name} (${d.id})</option>`).join("");
+    }
+
+    // 根據 Stage 動態生成下方參數輸入控制框
+    function renderInputMetrics() {
+      const stage = document.getElementById("selected-stage").value;
+      const domain = STAGE_METRIC_DOMAIN[stage];
+      const container = document.getElementById("metrics-input-list");
+      document.getElementById("inputs-header-title").innerHTML = `
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--orange);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        ${stage}量測數據輸入
+      `;
+
+      const stageMetrics = METRICS.filter(m => m.domain === domain);
+      
+      container.innerHTML = stageMetrics.map(m => {
+        const val = currentInputs[m.key] !== undefined ? currentInputs[m.key] : m.default;
+        const score = scoreFromThresholds(val, m);
+        const caption = thresholdCaption(m);
+
+        return `
+          <div class="param-card">
+            <div class="param-card-header">
+              <div class="param-title">
+                <span class="param-dot" style="background:${m.color};"></span>
+                <span>${m.label}</span>
+              </div>
+              <button class="popover-btn" onclick="showPopover('${m.key}')">i</button>
+            </div>
+            <div class="param-help">正常範圍：${m.normal} | 異常範圍：${m.abnormal}</div>
+            <div class="param-controls">
+              <div class="slider-wrapper">
+                <input type="range" 
+                       id="${m.key}-slider" 
+                       min="${m.min}" 
+                       max="${m.max}" 
+                       step="${m.step}" 
+                       value="${val}" 
+                       oninput="syncVal('${m.key}', 'slider')">
+              </div>
+              <div class="number-input-wrapper">
+                <input type="number" 
+                       id="${m.key}-number" 
+                       min="${m.min}" 
+                       max="${m.max}" 
+                       step="${m.step}" 
+                       value="${val}" 
+                       oninput="syncVal('${m.key}', 'number')">
+              </div>
+            </div>
+            <div class="param-footer">
+              <span id="${m.key}-caption-desc">${caption}</span>
+              <span>Evidence Score: <strong class="evidence-badge" id="${m.key}-score-badge">${score}/5</strong></span>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      // 即時重新計算看板與結果
+      updateDiagnosis();
+    }
+
+    // 雙向數值綁定與同步同步
+    function syncVal(key, type) {
+      const slider = document.getElementById(`${key}-slider`);
+      const number = document.getElementById(`${key}-number`);
+      let val = 0;
+      
+      if (type === 'slider') {
+        val = parseFloat(slider.value);
+        number.value = val;
+      } else {
+        val = parseFloat(number.value);
+        if (isNaN(val)) val = 0;
+        slider.value = val;
+      }
+
+      currentInputs[key] = val;
+      
+      // 更新對應卡片下方的 Evidence 得分與 UI
+      const metric = METRICS.find(m => m.key === key);
+      const score = scoreFromThresholds(val, metric);
+      
+      const badge = document.getElementById(`${key}-score-badge`);
+      if (badge) badge.innerText = `${score}/5`;
+
+      updateDiagnosis();
+    }
+
+    // 更新即時監控面板上的 6 個指標
+    function renderMonitorGrid() {
+      const stage = document.getElementById("selected-stage").value;
+      const domain = STAGE_METRIC_DOMAIN[stage];
+      const stageMetrics = METRICS.filter(m => m.domain === domain).slice(0, 6);
+      const monitor = document.getElementById("monitor-grid");
+
+      monitor.innerHTML = stageMetrics.map(m => {
+        const val = currentInputs[m.key] !== undefined ? currentInputs[m.key] : m.default;
+        const score = scoreFromThresholds(val, m);
+        const hasColor = score > 0 ? 'has-color' : '';
+        const colorAccent = m.color;
+
+        return `
+          <div class="monitor-card ${hasColor}" style="--card-accent-color: ${colorAccent};">
+            <span class="monitor-label" title="${m.label}">${m.label}</span>
+            <span class="monitor-value">${val} <span style="font-size:12px; font-weight:600; color:var(--text-muted);">${m.unit}</span></span>
+            <span class="monitor-score">Score ${score}/5</span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // 主動計算專家診斷演算法並渲染全部頁籤的展示資料
+    function updateDiagnosis() {
+      const stage = document.getElementById("selected-stage").value;
+      const domain = STAGE_METRIC_DOMAIN[stage];
+      const waferMap = document.getElementById("wafer-map").value;
+      const morphology = document.getElementById("morphology").value;
+      
+      // 計算基本量測總訊號強度
+      const baseEvidenceScores = buildEvidenceScores(currentInputs, "Unknown", "Unknown / not reviewed", false, domain);
+      const measurementStrength = Object.values(baseEvidenceScores).reduce((acc, score) => acc + score, 0);
+
+      const allowContextBoost = measurementStrength > 0;
+      const effectiveWaferMap = (allowContextBoost && domain === "Fab") ? waferMap : "Unknown";
+      const effectiveMorphology = (allowContextBoost && domain === "FA") ? morphology : "Unknown / not reviewed";
+
+      // 取得考慮 Wafer map 與型貌 Boost 後的決策分數
+      const evidenceScores = buildEvidenceScores(currentInputs, effectiveWaferMap, effectiveMorphology, allowContextBoost, domain);
+      const allowedIds = STAGE_DEFECT_IDS[stage];
+      const allowedEvidence = stageEvidenceKeys(stage);
+      
+      const results = diagnose(evidenceScores, allowedIds, allowedEvidence, STAGE_WEIGHTS[stage]);
+      
+      // 控制診斷結果的開關
+      const noSignal = document.getElementById("no-signal-alert");
+      const resultsArea = document.getElementById("diagnosis-results-area");
+
+      if (measurementStrength === 0) {
+        noSignal.style.display = "block";
+        resultsArea.style.display = "none";
+        
+        // 渲染空白拓撲圖與 Radar 圖
+        document.getElementById("topology-svg-container").innerHTML = drawTopologySvg("None", "等待量測輸入");
+        document.getElementById("radar-svg-container").innerHTML = drawRadarSvg([]);
+        document.getElementById("reasoning-trace-box").innerHTML = reasoningTrace(null, evidenceScores, 0);
+        document.getElementById("report-text-area").value = "請先輸入至少一個達到異常門檻的量測值。";
+        
+        // 渲染空的排行表格
+        renderRankingTable([], 0);
+      } else {
+        noSignal.style.display = "none";
+        resultsArea.style.display = "block";
+
+        const top = results[0];
+        const pct = (top.probability * 100).toFixed(1);
+
+        // 1. 渲染 Hero 卡片
+        document.getElementById("top-defect-name").innerHTML = `${top.name}<br>(${top.en})`;
+        document.getElementById("top-defect-prob").innerText = `${pct}%`;
+        
+        const heroCard = document.getElementById("result-hero-card");
+        heroCard.style.borderLeftColor = top.weights.iddq || top.weights.rail_short ? 'var(--red)' : 
+                                         top.weights.etch || top.weights.residue ? 'var(--orange)' : 
+                                         top.weights.overlay ? 'var(--blue)' : 'var(--purple)';
+
+        // 2. 渲染候選缺陷機率分佈條
+        const barsContainer = document.getElementById("prob-bars-container");
+        barsContainer.innerHTML = results.map(item => {
+          const itemPct = (item.probability * 100).toFixed(1);
+          return `
+            <div class="bar-row">
+              <div class="bar-info">
+                <span>${item.name} (${item.en})</span>
+                <span>${itemPct}%</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill" style="width: ${itemPct}%;"></div>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        // 3. 渲染 Top-3 原因、形成機制展開列表
+        const top3 = results.slice(0, 3);
+        const top3Container = document.getElementById("top3-expander-list");
+        top3Container.innerHTML = top3.map((item, idx) => {
+          const details = STAGE_DEFECT_DETAILS[stage]?.[item.id] || item;
+          const openClass = idx === 0 ? 'open' : '';
+          const itemPct = (item.probability * 100).toFixed(1);
+          
+          return `
+            <div class="reason-card ${openClass}" id="reason-card-${item.id}">
+              <div class="reason-card-header" onclick="toggleReasonCard('${item.id}')">
+                <span>${item.name} (${item.en})</span>
+                <span class="prob">${itemPct}%</span>
+              </div>
+              <div class="reason-card-body">
+                <div class="reason-field">
+                  <div class="reason-field-label">主要依據：</div>
+                  <div class="reason-field-text">${details.evidence}</div>
+                </div>
+                <div class="reason-field">
+                  <div class="reason-field-label">形成原因：</div>
+                  <div class="reason-field-text">${details.cause}</div>
+                </div>
+                <div class="reason-field">
+                  <div class="reason-field-label">改善方法：</div>
+                  <div class="reason-field-text">${details.solution}</div>
+                </div>
+                <div class="reason-field">
+                  <div class="reason-field-label">進階檢測驗證建議：</div>
+                  <div class="reason-field-text">
+                    ${details.next.map(step => `&bull; ${step}`).join("<br>")}
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        // 4. 渲染 SVG 失效拓撲圖與 Radar 網格圖
+        document.getElementById("topology-svg-container").innerHTML = drawTopologySvg(top.id, top.name);
+        document.getElementById("radar-svg-container").innerHTML = drawRadarSvg(results);
+
+        // 5. 渲染專家推理鏈與報告
+        document.getElementById("reasoning-trace-box").innerHTML = reasoningTrace(top, evidenceScores, measurementStrength);
+        
+        const reportTxt = makeReport(document.getElementById("case-id").value, stage, top3, evidenceScores, currentInputs);
+        document.getElementById("report-text-area").value = reportTxt;
+
+        // 6. 渲染排序與權重明細表
+        renderRankingTable(results, measurementStrength);
+      }
+
+      // 同步渲染即時監控板
+      renderMonitorGrid();
+    }
+
+    // 展開收合原因卡片
+    function toggleReasonCard(id) {
+      const card = document.getElementById(`reason-card-${id}`);
+      if (card) {
+        card.classList.toggle('open');
+      }
+    }
+
+    // 渲染最後的權重明細表格
+    function renderRankingTable(results, strength) {
+      const body = document.getElementById("ranking-table-body");
+      if (results.length === 0) {
+        body.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted)">無診斷數據，請先輸入量測異常值</td></tr>`;
+        return;
+      }
+
+      body.innerHTML = results.map((item, idx) => {
+        const probTxt = strength > 0 ? `${(item.probability * 100).toFixed(1)}%` : '0.0%';
+        return `
+          <tr>
+            <td><strong>${idx + 1}</strong></td>
+            <td><strong>${item.name}</strong><br><span style="font-size:11px; color:var(--text-muted);">${item.en}</span></td>
+            <td>${item.group || 'N/A'}</td>
+            <td><strong style="color:var(--orange)">${probTxt}</strong></td>
+            <td>${(item.fit_score * 100).toFixed(1)}%</td>
+            <td>${item.raw_score.toFixed(1)}</td>
+            <td>${item.max_score.toFixed(1)}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    // 載入預設模型 Presets
+    function loadPreset() {
+      const stage = document.getElementById("selected-stage").value;
+      const defectId = document.getElementById("selected-model").value;
+
+      // 清空目前輸入為預設底噪
+      METRICS.forEach(m => currentInputs[m.key] = m.default);
+
+      // 載入 Preset 數值
+      const stagePreset = STAGE_PRESETS[stage]?.[defectId] || PRESETS[defectId] || {};
+      for (const [key, val] of Object.entries(stagePreset)) {
+        currentInputs[key] = val;
+      }
+
+      // 同步輸入狀態與 loaded_model banner
+      loadedModelSignature = `${defectId} / ${stage}典型數據`;
+      
+      const banner = document.getElementById("loaded-model-txt");
+      banner.innerText = `已載入故障模型：${loadedModelSignature}`;
+      
+      const pill = document.getElementById("status-pill");
+      pill.classList.add("active");
+
+      // 重新渲染輸入卡片與看板
+      renderInputMetrics();
+    }
+
+    // 清除與重置數值
+    function resetValues() {
+      METRICS.forEach(m => currentInputs[m.key] = m.default);
+      
+      loadedModelSignature = "None";
+      const banner = document.getElementById("loaded-model-txt");
+      banner.innerText = `已載入故障模型：${loadedModelSignature}`;
+      
+      const pill = document.getElementById("status-pill");
+      pill.classList.remove("active");
+
+      document.getElementById("case-id").value = "";
+      document.getElementById("wafer-map").value = "Unknown";
+      document.getElementById("morphology").value = "Unknown / not reviewed";
+
+      renderInputMetrics();
+    }
+
+    // ==========================================================================
+    // JS 6. 標準參考資料庫動態列表渲染
+    // ==========================================================================
+    
+    function renderReferenceTab() {
+      const stage = document.getElementById("selected-stage").value;
+      const defectIds = STAGE_DEFECT_IDS[stage];
+      const stageDefects = DEFECTS.filter(d => defectIds.includes(d.id));
+
+      // 1. 渲染階段參考總覽表格
+      const summaryBody = document.getElementById("ref-summary-body");
+      summaryBody.innerHTML = stageDefects.map(d => {
+        const strongRules = (DEFECT_REFERENCE_MODULES[d.id] || [])
+          .slice(0, 3)
+          .map(item => `${item.metric}: ${item.strong}`)
+          .join("; ");
+          
+        const nextSteps = (STAGE_DEFECT_DETAILS[stage]?.[d.id]?.next || d.next)
+          .slice(0, 2)
+          .join(" / ");
+
+        return `
+          <tr>
+            <td><strong>${d.name} (${d.en})</strong></td>
+            <td><span style="color:var(--orange)">${strongRules}</span></td>
+            <td>${nextSteps}</td>
+          </tr>
+        `;
+      }).join("");
+
+      // 2. 渲染缺陷細節摺疊面板
+      const detailContainer = document.getElementById("ref-defect-expander-list");
+      detailContainer.innerHTML = stageDefects.map((d, index) => {
+        const details = STAGE_DEFECT_DETAILS[stage]?.[d.id] || d;
+        const refRows = DEFECT_REFERENCE_MODULES[d.id] || [];
+        const tableRowsHtml = refRows.map(row => `
+          <tr>
+            <td><strong>${row.metric}</strong></td>
+            <td>${row.normal}</td>
+            <td>${row.watch}</td>
+            <td style="color:var(--red)">${row.strong}</td>
+            <td>${row.method}</td>
+            <td style="color:var(--text-muted)">${row.meaning}</td>
+          </tr>
+        `).join("");
+
+        return `
+          <details ${index === 0 ? 'open' : ''} style="margin-bottom: 12px;">
+            <summary style="font-size:14px; font-weight:800;">${d.name} (${d.id}) 的細部強觸發參考指標</summary>
+            <div class="details-content">
+              <div style="font-size:13px; line-height:1.6; margin-bottom:14px;">
+                <p><strong>形成原因：</strong> ${details.cause}</p>
+                <p><strong>改善措施：</strong> ${details.solution}</p>
+              </div>
+              <div style="overflow-x:auto;">
+                <table class="knowledge-table" style="font-size:12px;">
+                  <thead>
+                    <tr>
+                      <th>量測項目</th>
+                      <th>正常參考</th>
+                      <th>警戒範圍</th>
+                      <th>強觸發範圍</th>
+                      <th>建議檢測方法</th>
+                      <th>判讀意義</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${tableRowsHtml || '<tr><td colspan="6" style="text-align:center;">無此缺陷的細部數據範圍</td></tr>'}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+        `;
+      }).join("");
+
+      // 3. 渲染文獻超連結清單
+      const litContainer = document.getElementById("literature-container");
+      litContainer.innerHTML = REFERENCES.map(ref => `
+        <div class="literature-item">
+          <strong>${ref.topic}</strong>
+          <span>${ref.source}</span>
+          <div style="margin-top:4px;">連結：<a href="${ref.url}" target="_blank">${ref.url}</a></div>
+        </div>
+      `).join("");
+    }
+
+    // ==========================================================================
+    // JS 7. 彈出輔助提示框 (Popover Handler)
+    // ==========================================================================
+    
+    const extraNotes = {
+      "cd_3sigma": "用 CD-SEM 或 CD metrology 的 across-wafer 統計值填入。數值越大，代表圖形尺寸越不均。",
+      "overlay_error": "填入兩層圖形之間的總 overlay error。數值越大，越可能造成 via miss 或 contact miss。",
+      "thickness_nu": "Film Thickness NU 使用不均勻度百分比表示。<br><br><strong>計算公式：</strong><br><code>NU% = (Max - Min) / (2 x Mean) x 100</code><br><br>例如：Max=104 nm、Min=96 nm、Mean=100 nm，則 NU = 4%。",
+      "etch_error": "填入相對 target etch depth 的偏差。正值代表過蝕刻，負值代表蝕刻不足；系統會自動取絕對值來判斷異常程度分級。",
+      "particle_count": "填入每片 wafer 的新增 particle 數量。正式使用時要先定義 particle size bin 與 inspection recipe。",
+      "residue_nm": "填入 scum、polymer residue 或 bottom residue 的厚度。殘留越厚，越容易推高 bridging、corrosion 或 via/contact 開路阻抗的異常權重。",
+      "plasma_delta": "填入 RF power 或 bias 相對 recipe baseline 的偏移百分比。正負偏移均反映電漿疲勞、充電或 profile 異常強度。",
+      "iddq_ratio": "填入待機電流相對 golden baseline 的倍率。1.0x 代表無漏電，數值越高代表短路與漏電風險越高。",
+      "pin_leakage": "填入指定偏壓條件下的接腳反向漏電。正式規格應依產品 datasheet 與 WAT baseline 定義。",
+      "rvcc_gnd": "填入 VCC 與 GND 之間的直流阻抗。阻值低於 20 ohm 反映強硬短路或 Latchup 失效。",
+      "chain_delta": "填入 via/contact chain 或 interconnect chain 的阻值漂移百分比。阻值漂移偏高強烈支援 open 斷路與電遷移空洞判定。",
+      "hotspot_delta": "填入熱點相對背景或環境的溫度差值。差值高代表局部阻抗發熱、氧化層漏電或 PN 接合鎖定漏電發熱。",
+      "functional_fail": "以 0 到 5 表示功能失效嚴重度。0 代表未觀察到功能失效，5 代表嚴重且可完全重現的功能開路/短路錯誤。",
+      "scratch_signature": "以 0 到 5 表示 SEM/AOI 或 wafer map 是否出現線狀刮傷特徵。0 代表沒有，5 代表非常明顯的微刮傷軌跡。",
+      "cmp_signature": "以 0 到 5 表示 CMP profile map、厚度分佈或截面是否呈現凹陷與侵蝕（dishing/erosion）特徵。0 代表沒有，5 代表特徵極其明顯。",
+      "collapse_signature": "以 0 到 5 表示 top-down SEM 或 cross-section SEM 是否直接看到高深寬比圖形倒塌。0 代表沒有，5 代表倒塌極其嚴重。",
+      "esd_signature": "以 0 到 5 表示是否出現 I/O ESD 保護元件擊穿、特定 Pin 腳漏電、漏電曲線 diode 夾軌異常等 ESD 特徵。",
+      "eos_signature": "以 0 到 5 表示是否出現大面積金屬燒毀、融化、開蓋光學過載痕跡等 EOS 特徵強度。",
+      "bondwire_signature": "以 0 到 5 表示 X-ray、wire pull/shear 測試或打線連續性量測中是否表現出打線疲勞、裂損或開路特徵。"
+    };
+
+    function showPopover(key) {
+      const metric = METRICS.find(m => m.key === key);
+      if (!metric) return;
+      
+      const note = extraNotes[key] || metric.help;
+      const caption = thresholdCaption(metric);
+
+      document.getElementById("popover-title").innerText = `量測參數說明：${metric.label}`;
+      document.getElementById("popover-body").innerHTML = `
+        <div class="popover-section-title">定義與解讀</div>
+        <div class="popover-section-text">${note}</div>
+        
+        <div class="popover-section-title">輸入規格</div>
+        <div class="popover-section-text">請輸入量測值，單位為 <code>${metric.unit}</code>。</div>
+        
+        <div class="popover-section-title">指標參考界線</div>
+        <div class="popover-section-text">
+          &bull; 正常參考：<code>${metric.normal}</code><br>
+          &bull; 異常參考：<code>${metric.abnormal}</code>
+        </div>
+        
+        <div class="popover-section-title">專家推理評分級距</div>
+        <div class="popover-section-text" style="color:var(--orange); font-family:'JetBrains Mono', monospace; font-size:12px;">
+          ${caption}
+        </div>
+      `;
+
+      document.getElementById("popover-overlay").style.display = "grid";
+    }
+
+    // ==========================================================================
+    // JS 8. 全域事件監聽與功能綁定 (Global Event Handlers & Initializer)
+    // ==========================================================================
+    
+    // 初始化事件
+    window.addEventListener("DOMContentLoaded", () => {
+      initDropdowns();
+      
+      // 設定全域 input 的 default 值
+      METRICS.forEach(m => currentInputs[m.key] = m.default);
+
+      // 動態更新下拉 Preset 模型選項
+      document.getElementById("selected-stage").addEventListener("change", () => {
+        updatePresetModelOptions();
+        renderInputMetrics();
+        renderReferenceTab();
+      });
+
+      // 設定當下拉 Preset 缺陷模型被選擇時自動套用
+      document.getElementById("selected-model").addEventListener("change", loadPreset);
+
+      // 清除按鈕
+      document.getElementById("clear-btn").addEventListener("click", resetValues);
+
+      // Case ID 欄位即時生成報告
+      document.getElementById("case-id").addEventListener("input", updateDiagnosis);
+      
+      // Wafer Map 與 型貌改變時即時更新
+      document.getElementById("wafer-map").addEventListener("change", updateDiagnosis);
+      document.getElementById("morphology").addEventListener("change", updateDiagnosis);
+
+      // 頁籤切換事件
+      const tabBtns = document.querySelectorAll(".tab-btn");
+      tabBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          tabBtns.forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          
+          const tabId = btn.getAttribute("data-tab");
+          const tabContents = document.querySelectorAll(".tab-content");
+          tabContents.forEach(c => c.classList.remove("active"));
+          
+          document.getElementById(tabId).classList.add("active");
+        });
+      });
+
+      // 複製報告按鈕
+      document.getElementById("copy-report-btn").addEventListener("click", () => {
+        const text = document.getElementById("report-text-area").value;
+        navigator.clipboard.writeText(text).then(() => {
+          const originalText = document.getElementById("copy-report-btn").innerText;
+          document.getElementById("copy-report-btn").innerText = "已複製報告！";
+          setTimeout(() => {
+            document.getElementById("copy-report-btn").innerText = originalText;
+          }, 2000);
+        }).catch(err => {
+          alert("複製失敗，請手動全選複製。錯誤：" + err);
+        });
+      });
+
+      // 下載報告按鈕
+      document.getElementById("download-report-btn").addEventListener("click", () => {
+        const text = document.getElementById("report-text-area").value;
+        const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "wafer_pro_diagnosis_report.txt";
+        document.body.appendChild(a);
+        a.click();
+        
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      // 關閉提示泡泡
+      document.getElementById("popover-close-btn").addEventListener("click", () => {
+        document.getElementById("popover-overlay").style.display = "none";
+      });
+      
+      document.getElementById("popover-overlay").addEventListener("click", (e) => {
+        if (e.target === document.getElementById("popover-overlay")) {
+          document.getElementById("popover-overlay").style.display = "none";
+        }
+      });
+
+      // 初始執行一次畫出 UI
+      renderInputMetrics();
+      renderReferenceTab();
+    });
+  </script>
+</body>
+</html>
