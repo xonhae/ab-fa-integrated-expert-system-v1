@@ -83,10 +83,10 @@
     </div>
     <div class="deck-footer">
       <span class="mono">#wafer-pro #fault-diagnosis #reliability</span>
-      <span class="slide-number" data-current="1" data-total="10"></span>
+      <span class="slide-number" data-current="1" data-total="11"></span>
     </div>
     <aside class="notes">
-      <p>各位業界先進大家好，我是 Wafer-Pro 開發團隊的代表。今天很高興能與各位深入探討我們全新打造的<strong>「Wafer-Pro 半導體缺陷整合專家診斷系統」</strong>。</p>
+      <p>老師、助教、以及各位同學大家好，我是第七組IC故障檢測的XXX。今天很高興能與各位深入探討我們全新打造的<strong>「Wafer-Pro 半導體缺陷整合專家診斷系統」</strong>。</p>
       <p>過去在探討 FA (Failure Analysis) 系統時，大多只停留在數據收集與報表展示的層次。但今天，我們將直擊核心：<strong>如何將資深 FA 專家的物理直覺與判斷邏輯，轉化為嚴謹的數學模型與前端演算法？</strong></p>
       <p>這份簡報預計進行 15 分鐘。我們將從 IC 故障診斷的底層物理挑戰出發，剖析 Wafer-Pro 的架構設計、機率推論引擎，直到高階的可靠度 (Reliability) 數學建模。各位在背景看到的程式碼瀑布特效，象徵我們用純粹的數位邏輯解構實體的物理缺陷。現在，讓我們開始。</p>
     </aside>
@@ -108,7 +108,7 @@
       </div>
     </div>
     <aside class="notes">
-      <p>在先進節點製程中，IC 故障診斷的難度呈指數級上升。我們面臨的真正挑戰是什麼？背景的磁場擾動特效，正反映了這種混亂。</p>
+      <p>在先進節點製程中，IC 故障診斷的難度呈指數級上升。我們面臨的真正挑戰是什麼？</p>
       <p>首先是<strong>電性表徵與物理失效的非線性映射</strong>。當 WAT 測試顯示 IDDQ 異常飆高時，它只是一個「症狀」。導致這個症狀的物理機制可能有很多：是金屬層的微粒殘留造成的微短路？還是離子植入異常？又或者是閘極氧化層的早期崩潰？傳統上，這極度仰賴資深工程師的「直覺」，容易產生誤判。</p>
       <p>其次是<strong>數據維度的災難</strong>。我們需要同時檢視 CD 不均勻度、Overlay Error、蝕刻的 Plasma 偏差等十多項參數。這些參數本身還帶有正常的製程變異雜訊。要在龐大的數據矩陣中找出 Root Cause，單靠人工經驗已無法滿足高效率的量產需求，我們需要一套確定性的數學模型來輔助。</p>
     </aside>
@@ -195,6 +195,55 @@
       <p>核心中的核心，是我們的<strong>推理引擎與機率正規化演算法</strong>。就像背景中的知識圖譜一樣，它將各種證據串聯起來。</p>
       <p>首先是權重評分矩陣。我們將半導體常見的 10 多種缺陷模型（例如金屬微粒、氧化層崩潰等）建立了一個龐大的敏感度矩陣。當證據輸入時，系統會計算證據強度與該缺陷權重的內積，得出一個原始的吻合度分數。</p>
       <p>但原始分數無法直觀比較。因此我們進行了第二步：<strong>信心度正規化</strong>。我們不僅將分數轉換為百分比，更引入了一個次方函數。這個演算法的作用在於「拉開差距」：當某個缺陷的吻合度微幅領先時，經過次方放大與歸一化處理，它的機率會被顯著放大，從而幫工程師過濾掉雜訊，強烈收斂並凸顯出真正的根本原因。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 5b. DECISION CONVERGENCE ============ -->
+  <section class="slide" data-title="Decision Convergence">
+    <div data-fx="chain-react" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:-1;opacity:0.15"></div>
+    <p class="kicker" style="font-size: 1.4rem;">PART 04b · CONVERGENCE ALGORITHM</p>
+    <h2 class="h2">決策收斂演算法：為何會出現 100% 機率？</h2>
+    <div class="grid g2 mt-l">
+      <div class="anim-fade-up" data-anim="fade-up">
+        <h3 class="h3 mb-s" style="color:var(--orange)">訊號放大器：30 次冪變換</h3>
+        <p class="dim mb-m">當多項製程數據同時指向某特定缺陷時，系統透過將擬合分數進行 30 次方放大（$S_i^{30}$），以極端壓制製程變異產生的雜訊，凸顯最顯著的失效特徵。</p>
+        <div class="math-block" style="font-size: 1.6rem !important;">
+          <span style="color:var(--blue)">P(i)</span> = <span style="color:var(--purple)">S<sub>i</sub><sup>30</sup></span> / 加總 ( <span style="color:var(--orange)">S<sub>j</sub><sup>30</sup></span> )
+        </div>
+      </div>
+      <div class="anim-fade-up" data-anim="fade-up" style="animation-delay: 0.1s">
+        <h3 class="h3 mb-s" style="color:var(--orange)">線性平分 vs 冪次收斂</h3>
+        <p class="dim mb-s">以「0.9 符合度」與「0.7 符合度」的缺陷為例，傳統算法會讓兩者機率非常接近，而 30 次方放大的贏家全拿（Winner-Takes-All）演算法，則能給出果斷的臨床決策：</p>
+        <div style="background:var(--surface-2); padding:1rem; border-radius:8px; border:1px solid var(--border)">
+          <table style="width:100%; font-size:1.5rem; text-align:left; border-collapse:collapse;">
+            <thead>
+              <tr style="border-bottom:1px solid var(--border)">
+                <th style="padding:6px 0;">指標 / 算法</th>
+                <th style="padding:6px 0; color:var(--blue)">典型缺陷 A (0.9)</th>
+                <th style="padding:6px 0; color:var(--orange)">干擾缺陷 B (0.7)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+                <td style="padding:8px 0; color:var(--text-2)">傳統線性分配</td>
+                <td style="padding:8px 0;">42.8% (模糊)</td>
+                <td style="padding:8px 0;">33.3% (模糊)</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0; color:var(--text-1); font-weight:bold;">30次冪收斂</td>
+                <td style="padding:8px 0; color:var(--green); font-weight:bold;">99.95% (確診)</td>
+                <td style="padding:8px 0; color:var(--red)">0.05% (消除)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>在日常診斷中，工程師可能會好奇：為什麼當數據輸入後，最可能的缺陷往往會直接顯示 100% 的機率？這合理嗎？</p>
+      <p>答案是：這在數學上非常合理，而且是為了精準決策而刻意設計的。背景的鏈式反應特效，正代表著多項證據融合時的指數級放大效應。</p>
+      <p>當工程師輸入一組數據時，如果缺陷A的符合度是0.9，缺陷B是0.7。在傳統線性平分下，兩者的機率分別是43%和33%。這會讓排班的FA分析人員非常困惑，無法判斷該進行哪種昂貴的破壞性物理檢測。</p>
+      <p>為此，Wafer-Pro 引入了30次冪的 Power-Softmax 正規化演算法。在30次方放大下，0.9與0.7的微幅差距，其權重分量會被拉開到 1880 倍！因此最終計算出的機率，領先者會直接衝上 99.95%（四捨五入後為 100%），而干擾項則被壓制到接近 0%。這實踐了『贏家全拿』的統計收斂，能大幅降低雜訊，讓晶圓廠能秒級定位問題，實現真正的快速精準決策。</p>
     </aside>
   </section>
 
@@ -333,7 +382,7 @@
     <p class="lede mt-l tc" style="font-weight:600; color:var(--text-1)">感謝您的聆聽！接下來開放技術問答</p>
     <div class="deck-footer">
       <span class="mono">#end #q-and-a #expert-system</span>
-      <span class="slide-number" data-current="10" data-total="10"></span>
+      <span class="slide-number" data-current="11" data-total="11"></span>
     </div>
     <aside class="notes">
       <p>最後，為今天的分享做個總結。Wafer-Pro 帶來的，不僅是一個工具的升級，而是一場 FA 分析流程的典範轉移 (Paradigm Shift)。</p>
